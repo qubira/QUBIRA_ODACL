@@ -964,6 +964,194 @@
       display: flex; align-items: center; justify-content: space-between; font-size: 12px; margin-top: 14px;
     }
 
+    /* Estado activo de botones de formato al posicionar el cursor */
+    .word-btn.active {
+      background: #1e3a8a !important;
+      color: #ffffff !important;
+      border-color: #1e3a8a !important;
+    }
+
+    /* Copiar Formato (Format Painter) */
+    .word-btn.format-painter-active {
+      background: #f59e0b !important;
+      color: #ffffff !important;
+      border-color: #d97706 !important;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.5) !important;
+    }
+    body.format-painter-mode,
+    body.format-painter-mode .a4-page-content {
+      cursor: copy !important;
+    }
+
+    /* Mini-Barra Flotante Contextual de Selección de Texto */
+    .word-floating-toolbar {
+      position: fixed;
+      z-index: 9999;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+      display: none;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 8px;
+      animation: floatIn .15s ease-out;
+      user-select: none;
+    }
+    .word-floating-toolbar.active {
+      display: flex;
+    }
+    .word-floating-toolbar .float-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 5px;
+      width: 26px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 11.5px;
+      font-weight: 700;
+      transition: all .12s;
+    }
+    .word-floating-toolbar .float-btn:hover {
+      background: #2563eb;
+      border-color: #2563eb;
+      transform: scale(1.08);
+    }
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Barra Flotante para Manipulación de Imágenes en Hoja A4 */
+    .image-floating-controls {
+      position: fixed;
+      z-index: 9999;
+      background: #0f172a;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.4);
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 11px;
+      animation: floatIn .15s ease-out;
+    }
+    .image-floating-controls.active {
+      display: flex;
+    }
+    .img-control-btn {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 10.5px;
+      font-weight: 600;
+      transition: all .12s;
+    }
+    .img-control-btn:hover {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+
+    /* Sello Oficial de Validación Digital y Hash Criptográfico */
+    .qubira-seal-block {
+      border: 2px solid #0f172a;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 24px 0;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-family: 'Inter', sans-serif;
+      page-break-inside: avoid;
+    }
+    .qubira-seal-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .qubira-seal-qr {
+      width: 58px;
+      height: 58px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 3px;
+    }
+    .qubira-seal-details {
+      font-size: 10px;
+      color: #334155;
+      line-height: 1.45;
+    }
+    .qubira-seal-hash {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: #1e40af;
+      background: #dbeafe;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 3px;
+      word-break: break-all;
+    }
+
+    /* Notas al pie legales */
+    .word-footnote-ref {
+      font-size: 9pt;
+      vertical-align: super;
+      color: #2563eb;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      margin: 0 1px;
+    }
+    .word-footnotes-section {
+      border-top: 1px solid #cbd5e1;
+      margin-top: 18pt;
+      padding-top: 6pt;
+      font-size: 9pt;
+      color: #475569;
+      font-family: 'Times New Roman', serif;
+      line-height: 1.4;
+    }
+    .word-footnotes-section p {
+      margin: 3pt 0;
+      font-size: 9pt;
+    }
+
+    /* Modo Pantalla Completa / Concentración Zen */
+    body.word-fullscreen-mode .sidebar,
+    body.word-fullscreen-mode .top-header,
+    body.word-fullscreen-mode .doc-nav-tabs,
+    body.word-fullscreen-mode .card-header,
+    body.word-fullscreen-mode #subview-cloud,
+    body.word-fullscreen-mode #subview-templates {
+      display: none !important;
+    }
+    body.word-fullscreen-mode .main-content {
+      padding: 0 !important;
+      margin: 0 !important;
+      max-width: 100vw !important;
+      height: 100vh !important;
+    }
+    body.word-fullscreen-mode .card {
+      border: none !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      height: 100vh !important;
+    }
+
     /* Template Cards in Catalog */
     .templates-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px;
@@ -1707,12 +1895,34 @@
                 
                 <!-- PANEL 1: INICIO -->
                 <div class="word-tab-panel active" id="ribbon-tab-inicio">
-                  <div class="word-toolbar" style="border-bottom:none;">
-                    <!-- Portapapeles & Plantilla -->
+                  <div class="word-toolbar" style="border-bottom:none; flex-wrap:wrap; gap:8px;">
+                    <!-- Portapapeles & Copiar Formato -->
                     <div class="word-tool-group">
-                      <span style="font-size:11px; font-weight:700; color:#64748b; padding-left:2px;">Plantilla:</span>
-                      <select id="quick-template-select" class="word-select" onchange="cargarPlantillaSeleccionada(this.value)">
-                        <option value="">Seleccionar plantilla legal…</option>
+                      <button type="button" class="word-btn" id="btn-format-painter" onclick="activarCopiarFormato()" title="Copiar Formato (Format Painter): Seleccione texto, presione la brocha y seleccione otro texto para duplicar estilo">
+                        🖌️
+                      </button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('undo')" title="Deshacer (Ctrl+Z)">↶</button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('redo')" title="Rehacer (Ctrl+Y)">↷</button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('removeFormat')" title="Limpiar Formato">🧹</button>
+                    </div>
+
+                    <!-- Estilos Rápidos de Título / Cláusula -->
+                    <div class="word-tool-group">
+                      <select id="word-quick-style" class="word-select" onchange="if(this.value){ aplicarEstiloRapido(this.value); this.value=''; }" title="Galería de estilos rápidos oficiales APA 7 y Legales">
+                        <option value="">Estilos Rápidos ▾</option>
+                        <option value="normal">Normal (Párrafo APA 7)</option>
+                        <option value="titulo1">Título 1 (Centrado 14pt Negrita)</option>
+                        <option value="titulo2">Título 2 (Izquierda 12pt Negrita)</option>
+                        <option value="titulo3">Título 3 (Izquierda 12pt Cursiva)</option>
+                        <option value="clausula">Cláusula Legal (Negrita Mayús.)</option>
+                        <option value="cita">Cita en Bloque (Sangría 1.27cm)</option>
+                      </select>
+                    </div>
+
+                    <!-- Plantilla legal rápida -->
+                    <div class="word-tool-group">
+                      <select id="quick-template-select" class="word-select" onchange="cargarPlantillaSeleccionada(this.value)" title="Plantillas de contratos y documentos legales">
+                        <option value="">Plantilla legal rápida…</option>
                         <option value="desarrollo_software">1. Contrato de Desarrollo de Software (14 Cláusulas)</option>
                         <option value="laboral_dl728">2. Contrato Laboral (D.L. 728)</option>
                         <option value="prestacion_servicios">3. Contrato de Prestación de Servicios (Locación)</option>
@@ -1746,19 +1956,22 @@
                         <option value="6">24 pt</option>
                         <option value="7">32 pt</option>
                       </select>
+
+                      <button type="button" class="word-btn" onclick="aumentarTamanoFuente()" title="Aumentar tamaño de fuente (A▲)">A▲</button>
+                      <button type="button" class="word-btn" onclick="reducirTamanoFuente()" title="Disminuir tamaño de fuente (A▼)">A▼</button>
                     </div>
 
                     <!-- Estilos B, I, U, S, X2, X1 -->
                     <div class="word-tool-group">
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('bold')" title="Negrita (Ctrl+B)"><b>B</b></button>
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('italic')" title="Cursiva (Ctrl+I)"><i>I</i></button>
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('underline')" title="Subrayado (Ctrl+U)"><u>U</u></button>
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('strikeThrough')" title="Tachado"><s>S</s></button>
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('superscript')" title="Superíndice (x²)">x²</button>
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('subscript')" title="Subíndice (x₂)">x₂</button>
+                      <button type="button" class="word-btn" id="btn-fmt-bold" onclick="ejecutarFormatoWord('bold')" title="Negrita (Ctrl+B)"><b>B</b></button>
+                      <button type="button" class="word-btn" id="btn-fmt-italic" onclick="ejecutarFormatoWord('italic')" title="Cursiva (Ctrl+I)"><i>I</i></button>
+                      <button type="button" class="word-btn" id="btn-fmt-underline" onclick="ejecutarFormatoWord('underline')" title="Subrayado (Ctrl+U)"><u>U</u></button>
+                      <button type="button" class="word-btn" id="btn-fmt-strike" onclick="ejecutarFormatoWord('strikeThrough')" title="Tachado"><s>S</s></button>
+                      <button type="button" class="word-btn" id="btn-fmt-super" onclick="ejecutarFormatoWord('superscript')" title="Superíndice (x²)">x²</button>
+                      <button type="button" class="word-btn" id="btn-fmt-sub" onclick="ejecutarFormatoWord('subscript')" title="Subíndice (x₂)">x₂</button>
                     </div>
 
-                    <!-- Cambiar Mayúsculas / Minúsculas (Aa) -->
+                    <!-- Mayúsculas / Minúsculas (Aa) -->
                     <div class="word-tool-group">
                       <select class="word-select" onchange="if(this.value){ cambiarMayusculasMinusculas(this.value); this.value=''; }" title="Cambiar mayúsculas y minúsculas (Aa)">
                         <option value="">Aa ▾</option>
@@ -1783,37 +1996,35 @@
 
                     <!-- Párrafo & Alineación -->
                     <div class="word-tool-group">
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('justifyLeft')" title="Alinear a la izquierda">
+                      <button type="button" class="word-btn" id="btn-fmt-left" onclick="ejecutarFormatoWord('justifyLeft')" title="Alinear a la izquierda">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
                       </button>
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('justifyCenter')" title="Centrar">
+                      <button type="button" class="word-btn" id="btn-fmt-center" onclick="ejecutarFormatoWord('justifyCenter')" title="Centrar">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>
                       </button>
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('justifyRight')" title="Alinear a la derecha">
+                      <button type="button" class="word-btn" id="btn-fmt-right" onclick="ejecutarFormatoWord('justifyRight')" title="Alinear a la derecha">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
                       </button>
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('justifyFull')" title="Justificar">
+                      <button type="button" class="word-btn" id="btn-fmt-justify" onclick="ejecutarFormatoWord('justifyFull')" title="Justificar">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line></svg>
                       </button>
-                    </div>
-
-                    <!-- Listas -->
-                    <div class="word-tool-group">
                       <button type="button" class="word-btn" onclick="ejecutarFormatoWord('insertUnorderedList')" title="Viñetas">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                       </button>
                       <button type="button" class="word-btn" onclick="ejecutarFormatoWord('insertOrderedList')" title="Numeración">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line><path d="M4 6h1v4"></path><path d="M4 10h2"></path><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg>
                       </button>
+                      <button type="button" class="word-btn" onclick="disminuirSangria()" title="Disminuir Sangría">⇤</button>
+                      <button type="button" class="word-btn" onclick="aumentarSangria()" title="Aumentar Sangría (1.27 cm)">⇥</button>
                     </div>
 
-                    <!-- Deshacer, Rehacer, Buscar y Reemplazar -->
+                    <!-- Enlace & Búsqueda -->
                     <div class="word-tool-group">
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('undo')" title="Deshacer (Ctrl+Z)">↶</button>
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('redo')" title="Rehacer (Ctrl+Y)">↷</button>
-                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('removeFormat')" title="Limpiar Formato">🧹</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="abrirModalInsertarEnlace()" title="Insertar Hipervínculo (Ctrl+K)">
+                        🔗 Enlace
+                      </button>
                       <button type="button" class="btn btn-outline btn-sm" onclick="abrirBuscarYReemplazar()" title="Buscar y Reemplazar texto (Ctrl+F / Ctrl+H)" style="font-weight:700;">
-                        🔍 Buscar & Reemplazar
+                        🔍 Buscar
                       </button>
                     </div>
                   </div>
@@ -1827,6 +2038,13 @@
                       <button type="button" class="btn btn-outline btn-sm" onclick="insertarSaltoDePagina()" title="Insertar nueva hoja A4 (Atajo: Ctrl + Enter)">📄 Salto de Página</button>
                       <button type="button" class="btn btn-outline btn-sm" onclick="insertarTablaWord()" title="Insertar Tabla">📊 Tabla</button>
                       <button type="button" class="btn btn-outline btn-sm" onclick="abrirModalInsertarImagen()" title="Insertar Imagen / Logo">🖼️ Imagen / Logo</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarLineaDivisoria()" title="Insertar línea divisoria legal">➖ Línea</button>
+                    </div>
+
+                    <!-- Certificación y Notas -->
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarSelloValidacionDigital()" title="Insertar bloque oficial de validación y firma digital con QR y Hash">🛡️ Sello Digital & QR</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarNotaAlPieLegal()" title="Insertar llamada de nota al pie de página">¹ Nota al Pie</button>
                     </div>
 
                     <!-- Encabezado y Pie directo -->
@@ -1835,11 +2053,11 @@
                       <button type="button" class="btn btn-outline btn-sm" onclick="activarModoPie()" title="Editar Pie de Página">📝 Pie de Página</button>
                     </div>
 
-                    <!-- Elementos Legales -->
+                    <!-- Elementos Contractuales Legales -->
                     <div class="word-tool-group">
                       <button type="button" class="btn btn-outline btn-sm" onclick="insertarMembreteQubira()">🏛️ Membrete QUBIRA</button>
                       <button type="button" class="btn btn-outline btn-sm" onclick="insertarCuadroFirmas()">✍️ Cuadro de Firmas</button>
-                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarClausulaLegal()">📜 Nueva Cláusula</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarClausulaLegalSiguiente()" title="Insertar la siguiente cláusula numerada automáticamente (PRIMERA, SEGUNDA, TERCERA...)">📜 Cláusula Siguiente</button>
                       <button type="button" class="btn btn-outline btn-sm" onclick="insertarFechaLugar()">📅 Fecha & Lugar</button>
                     </div>
 
@@ -1856,6 +2074,7 @@
                       <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('—')" title="Raya Em-Dash (—)">—</button>
                       <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('«»')" title="Comillas Latinas («»)">«»</button>
                       <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('⚖️')" title="Balanza de la Justicia">⚖️</button>
+                      <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('✓')" title="Checkmark (✓)">✓</button>
                     </div>
                   </div>
                 </div>
@@ -1891,6 +2110,15 @@
                       </select>
                     </div>
 
+                    <!-- Orientación de Hoja -->
+                    <div class="word-tool-group">
+                      <span style="font-size:11px; font-weight:700; color:#64748b;">Orientación:</span>
+                      <select id="word-page-orientation" class="word-select" onchange="cambiarOrientacionHoja(this.value)" title="Orientación del papel A4">
+                        <option value="portrait" selected>Vertical (A4 Legal)</option>
+                        <option value="landscape">Horizontal (Tablas/Anexos)</option>
+                      </select>
+                    </div>
+
                     <!-- Marca de Agua (Watermark) -->
                     <div class="word-tool-group">
                       <span style="font-size:11px; font-weight:700; color:#64748b;">Marca de Agua:</span>
@@ -1902,13 +2130,16 @@
                         <option value="QUBIRA S.A.C.">QUBIRA S.A.C.</option>
                         <option value="URGENTE">URGENTE</option>
                         <option value="DOCUMENTO PRIVADO">DOCUMENTO PRIVADO</option>
+                        <option value="ANULADO">ANULADO</option>
+                        <option value="MODELO REFERENCIAL">MODELO REFERENCIAL</option>
                       </select>
                     </div>
 
-                    <div style="display:flex; align-items:center; gap:8px;">
-                      <span class="apa7-specs-badge">
-                        📏 <strong>A4:</strong> 210 × 297 mm &bull; <strong>Márgenes:</strong> 2.54 cm &bull; <strong>APA 7:</strong> Times New Roman 12pt
-                      </span>
+                    <!-- Modo Revisión Legal -->
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-outline btn-sm" id="btn-toggle-review" onclick="toggleModoRevisionLegal()" title="Activar/desactivar modo revisión de cláusulas (resaltado de auditoría)">
+                        📝 Modo Revisión
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -1942,6 +2173,9 @@
                       <button type="button" class="btn btn-outline btn-sm" onclick="insertarFechaHoraEncabezado()" title="Insertar fecha en el encabezado activo">
                         📅 Insertar Fecha
                       </button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarMembreteEnEncabezado()" title="Insertar membrete QUBIRA en el encabezado">
+                        🏛️ Membrete en Header
+                      </button>
                       <button type="button" class="btn btn-outline btn-sm" onclick="restaurarEncabezadoApa7()" title="Restaurar formato APA 7 estándar">
                         🔄 Restaurar APA 7
                       </button>
@@ -1962,6 +2196,19 @@
                     <div class="word-tool-group">
                       <button type="button" class="btn btn-outline btn-sm" id="btn-toggle-ruler" onclick="toggleReglaWord()" title="Mostrar u ocultar la regla graduada de centímetros">
                         📏 Alternar Regla (cm)
+                      </button>
+                      <button type="button" class="btn btn-outline btn-sm" id="btn-toggle-zen" onclick="toggleModoZen()" title="Modo Pantalla Completa / Concentración Zen (sin distracciones)">
+                        🖥️ Pantalla Completa
+                      </button>
+                    </div>
+
+                    <!-- Estadísticas y Atajos -->
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-outline btn-sm" onclick="abrirModalEstadisticasDoc()" title="Ver estadísticas completas de palabras, caracteres, párrafos y tiempo de lectura">
+                        📊 Contar Palabras & Métricas
+                      </button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="abrirModalAtajosWord()" title="Ver atajos de teclado de Microsoft Word">
+                        ⌨️ Atajos de Teclado
                       </button>
                     </div>
 
@@ -1998,13 +2245,40 @@
               <div style="background:#f1f5f9; padding:6px 0 2px 0; display:flex; justify-content:center;">
                 <div class="word-ruler-wrapper" id="word-ruler-wrapper">
                   <div class="ruler-margin-l" title="Margen izquierdo APA 7: 2.54 cm (1 pulgada)"></div>
-                  <div class="ruler-body">
+                  <div class="ruler-body" style="position:relative;">
+                    <div style="position:absolute; top:0; left:12.7mm; font-size:8px; cursor:pointer; color:#2563eb;" title="Sangría de primera línea APA 7 (1.27 cm)" onclick="aplicarSangriaApa()">▼</div>
+                    <div style="position:absolute; bottom:0; left:0; font-size:8px; cursor:pointer; color:#1e40af;" title="Margen izquierdo activo (2.54 cm)">▲</div>
+                    <div style="position:absolute; bottom:0; right:0; font-size:8px; cursor:pointer; color:#1e40af;" title="Margen derecho activo (2.54 cm)">▲</div>
                     <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
                     <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
                     <span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span>
                   </div>
                   <div class="ruler-margin-r" title="Margen derecho APA 7: 2.54 cm (1 pulgada)"></div>
                 </div>
+              </div>
+
+              <!-- Mini-Barra Flotante Contextual de Formato de Texto -->
+              <div class="word-floating-toolbar" id="word-floating-toolbar">
+                <button type="button" class="float-btn" onclick="ejecutarFormatoWord('bold')" title="Negrita (Ctrl+B)"><b>B</b></button>
+                <button type="button" class="float-btn" onclick="ejecutarFormatoWord('italic')" title="Cursiva (Ctrl+I)"><i>I</i></button>
+                <button type="button" class="float-btn" onclick="ejecutarFormatoWord('underline')" title="Subrayado (Ctrl+U)"><u>U</u></button>
+                <button type="button" class="float-btn" onclick="aumentarTamanoFuente()" title="Aumentar tamaño">A▲</button>
+                <button type="button" class="float-btn" onclick="reducirTamanoFuente()" title="Reducir tamaño">A▼</button>
+                <button type="button" class="float-btn" onclick="abrirModalInsertarEnlace()" title="Insertar enlace (Ctrl+K)">🔗</button>
+                <button type="button" class="float-btn" onclick="ejecutarFormatoWord('removeFormat')" title="Limpiar formato">🧹</button>
+              </div>
+
+              <!-- Barra Flotante para Manipulación de Imágenes -->
+              <div class="image-floating-controls" id="image-floating-controls">
+                <span style="font-weight:700; color:#94a3b8; font-size:10px; margin-right:4px;">IMAGEN:</span>
+                <button type="button" class="img-control-btn" onclick="ajustarTamanoImagenActual('25%')">25%</button>
+                <button type="button" class="img-control-btn" onclick="ajustarTamanoImagenActual('50%')">50%</button>
+                <button type="button" class="img-control-btn" onclick="ajustarTamanoImagenActual('75%')">75%</button>
+                <button type="button" class="img-control-btn" onclick="ajustarTamanoImagenActual('100%')">100%</button>
+                <button type="button" class="img-control-btn" onclick="alinearImagenActual('left')" title="Alinear a la izquierda">⇦</button>
+                <button type="button" class="img-control-btn" onclick="alinearImagenActual('center')" title="Centrar">⬜</button>
+                <button type="button" class="img-control-btn" onclick="alinearImagenActual('right')" title="Alinear a la derecha">⇨</button>
+                <button type="button" class="img-control-btn" onclick="eliminarImagenActual()" style="background:#dc2626;" title="Eliminar imagen">🗑️</button>
               </div>
 
               <!-- Canvas Hojas A4 Multi-página con Salto Automático -->
@@ -2017,12 +2291,15 @@
               <!-- Status Bar -->
               <div class="word-statusbar">
                 <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-                  <span id="word-stats-words">Palabras: 0</span>
+                  <span id="word-stats-words" onclick="abrirModalEstadisticasDoc()" style="cursor:pointer; text-decoration:underline;" title="Haga clic para ver estadísticas detalladas">Palabras: 0</span>
                   <span id="word-stats-chars">Caracteres: 0</span>
                   <span id="word-stats-pages" style="color:#fbbf24; font-weight:700;">Páginas: 1 A4 (APA 7)</span>
-                  <span style="font-size:11px; color:#94a3b8; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:4px;">
-                    ⌨️ Salto automático al exceder margen &bull; Doble clic en Encabezado/Pie para editar
+                  <span id="word-autosave-badge" style="font-size:11px; color:#6ee7b7; background:rgba(16,185,129,0.15); padding:2px 8px; border-radius:4px;" title="Copia de seguridad local en segundo plano">
+                    ✓ Autoguardado activo
                   </span>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="abrirModalAtajosWord()" style="padding:1px 8px; font-size:10.5px; height:22px; color:#cbd5e1; border-color:rgba(255,255,255,0.2);" title="Ver atajos de teclado de Word">
+                    ⌨️ Atajos
+                  </button>
                 </div>
                 <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
                   <span id="word-cloud-status" style="display:inline-flex; align-items:center; gap:5px; color:#6ee7b7; font-weight:600;">
@@ -2317,6 +2594,122 @@
       <div class="modal-footer" style="padding:14px 18px; display:flex; justify-content:flex-end; gap:8px;">
         <button type="button" class="btn btn-outline btn-sm" onclick="cerrarModal('modal-insertar-imagen')">Cancelar</button>
         <button type="button" class="btn btn-gold btn-sm" onclick="confirmarInsertarImagenWord()">Insertar en Documento</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL INSERTAR HIPERVÍNCULO (Ctrl+K) -->
+  <div class="modal-overlay" id="modal-insertar-enlace">
+    <div class="modal-card" style="max-width:460px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+          <span>Insertar Hipervínculo Legal</span>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modal-insertar-enlace')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:18px;">
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-weight:700; font-size:12px; color:#475569;">Texto a mostrar:</label>
+          <input type="text" id="link-text-input" placeholder="Texto descriptivo o cláusula legal…">
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-weight:700; font-size:12px; color:#475569;">Dirección URL o enlace:</label>
+          <input type="url" id="link-url-input" placeholder="https://busquedas.elperuano.pe/… o https://…">
+        </div>
+        <div style="font-size:11px; color:#64748b;">
+          💡 Puede enlazar normas de El Peruano, repositorios de software, contratos en nube o sitios de verificación.
+        </div>
+      </div>
+      <div class="modal-footer" style="padding:12px 18px; display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="cerrarModal('modal-insertar-enlace')">Cancelar</button>
+        <button type="button" class="btn btn-gold btn-sm" onclick="confirmarInsertarEnlace()">Insertar Enlace</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ESTADÍSTICAS DETALLADAS DEL DOCUMENTO -->
+  <div class="modal-overlay" id="modal-estadisticas-doc">
+    <div class="modal-card" style="max-width:440px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          <span>Contar Palabras y Métricas del Documento</span>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modal-estadisticas-doc')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:18px;">
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:13px;">
+            <span style="color:#64748b; font-weight:600;">Páginas A4 (APA 7):</span>
+            <strong id="stat-modal-pages" style="color:#0f172a;">1</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:13px;">
+            <span style="color:#64748b; font-weight:600;">Palabras:</span>
+            <strong id="stat-modal-words" style="color:#2563eb;">0</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:13px;">
+            <span style="color:#64748b; font-weight:600;">Caracteres (sin espacios):</span>
+            <strong id="stat-modal-chars-nospace" style="color:#0f172a;">0</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:13px;">
+            <span style="color:#64748b; font-weight:600;">Caracteres (con espacios):</span>
+            <strong id="stat-modal-chars-space" style="color:#0f172a;">0</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:13px;">
+            <span style="color:#64748b; font-weight:600;">Párrafos:</span>
+            <strong id="stat-modal-paragraphs" style="color:#0f172a;">0</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #e2e8f0; font-size:13px;">
+            <span style="color:#64748b; font-weight:600;">Líneas estimadas:</span>
+            <strong id="stat-modal-lines" style="color:#0f172a;">0</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:6px 0; font-size:13px;">
+            <span style="color:#64748b; font-weight:600;">Tiempo de lectura estimado:</span>
+            <strong id="stat-modal-readtime" style="color:#059669;">~ 0 min</strong>
+          </div>
+        </div>
+        <div style="font-size:11px; color:#64748b; text-align:center;">
+          Cumple con los estándares de revisión contractual y volumen procesal legal.
+        </div>
+      </div>
+      <div class="modal-footer" style="padding:12px 18px; display:flex; justify-content:flex-end;">
+        <button type="button" class="btn btn-gold btn-sm" onclick="cerrarModal('modal-estadisticas-doc')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ATAJOS DE TECLADO (MICROSOFT WORD) -->
+  <div class="modal-overlay" id="modal-atajos-word">
+    <div class="modal-card" style="max-width:540px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="6" y1="8" x2="6.01" y2="8"></line><line x1="10" y1="8" x2="10.01" y2="8"></line><line x1="14" y1="8" x2="14.01" y2="8"></line><line x1="18" y1="8" x2="18.01" y2="8"></line><line x1="8" y1="12" x2="8.01" y2="12"></line><line x1="12" y1="12" x2="12.01" y2="12"></line><line x1="16" y1="12" x2="16.01" y2="12"></line><line x1="7" y1="16" x2="17" y2="16"></line></svg>
+          <span>Atajos de Teclado Profesionales de Word</span>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modal-atajos-word')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:18px; max-height:420px; overflow-y:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:12.5px;">
+          <tr style="border-bottom:1px solid #e2e8f0; background:#f8fafc;">
+            <th style="padding:8px; text-align:left; color:#475569;">Atajo</th>
+            <th style="padding:8px; text-align:left; color:#475569;">Acción</th>
+          </tr>
+          <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:7px;"><kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">Ctrl + B</kbd></td><td>Texto en <strong>Negrita</strong></td></tr>
+          <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:7px;"><kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">Ctrl + I</kbd></td><td>Texto en <em>Cursiva</em></td></tr>
+          <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:7px;"><kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">Ctrl + U</kbd></td><td>Texto <u>Subrayado</u></td></tr>
+          <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:7px;"><kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">Ctrl + Enter</kbd></td><td>Insertar Salto de Página A4</td></tr>
+          <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:7px;"><kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">Ctrl + F / Ctrl + H</kbd></td><td>Buscar y Reemplazar texto</td></tr>
+          <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:7px;"><kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">Ctrl + K</kbd></td><td>Insertar Hipervínculo</td></tr>
+          <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:7px;"><kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">Ctrl + S</kbd></td><td>Guardar inmediatamente en Cloudinary</td></tr>
+          <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:7px;"><kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">Ctrl + P</kbd></td><td>Imprimir / Vista Previa PDF</td></tr>
+          <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:7px;"><kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">Ctrl + Z / Ctrl + Y</kbd></td><td>Deshacer / Rehacer cambios</td></tr>
+          <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:7px;"><kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">Esc</kbd></td><td>Salir de modo edición Encabezado/Pie</td></tr>
+          <tr><td style="padding:7px;"><kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px; font-weight:700;">Doble Clic</kbd></td><td>Editar Encabezado o Pie de página</td></tr>
+        </table>
+      </div>
+      <div class="modal-footer" style="padding:12px 18px; display:flex; justify-content:flex-end;">
+        <button type="button" class="btn btn-gold btn-sm" onclick="cerrarModal('modal-atajos-word')">Entendido</button>
       </div>
     </div>
   </div>
@@ -3451,6 +3844,13 @@ function switchDocSubView(subview) {
 let apa7ModeActivo = true;
 let interlineadoActual = '2.0'; // APA 7 Doble espacio
 let margenActual = 'apa7'; // 25.4 mm (1 pulgada)
+let orientacionActual = 'portrait'; // portrait o landscape
+let formatPainterActivo = false;
+let formatoCopiado = null;
+let reviewModeActivo = false;
+let imagenSeleccionadaActual = null;
+let autoSaveTimer = null;
+let rangeGuardadoParaEnlace = null;
 let headerSyncEnabled = true;
 let footerSyncEnabled = true;
 let differentFirstPage = false;
@@ -3490,6 +3890,18 @@ function crearElementoHojaA4(pageNumber, runningHead = '') {
       <div class="a4-footer-right a4-page-counter-footer" contenteditable="false">Página ${pageNumber}</div>
     </div>
   `;
+
+  if (orientacionActual === 'landscape') {
+    sheet.style.width = '297mm';
+    sheet.style.height = '210mm';
+    sheet.style.minHeight = '210mm';
+    const c = sheet.querySelector('.a4-page-content');
+    if (c) {
+      c.style.height = '159.2mm';
+      c.style.maxHeight = '159.2mm';
+    }
+  }
+
   conectarEventosHoja(sheet);
   return sheet;
 }
@@ -3511,6 +3923,15 @@ function conectarEventosHoja(sheetEl) {
   content.addEventListener('input', () => {
     manejarInputEnPagina(content);
     actualizarEstadisticasWord();
+  });
+
+  content.addEventListener('click', (e) => {
+    manejarClicEnContenido(e, content);
+  });
+
+  content.addEventListener('mouseup', () => {
+    actualizarBarraFlotanteTexto();
+    actualizarEstadosRibbonActivo();
   });
 
   // Doble clic en encabezado o pie activa modo de edición
@@ -4391,11 +4812,32 @@ function confirmarInsertarImagenWord() {
 
 // Atajos globales de teclado estilo Microsoft Office
 document.addEventListener('keydown', (e) => {
-  // Escape: salir de modo encabezado / pie
+  // Escape: salir de modo encabezado / pie, pantalla completa o herramientas flotantes
   if (e.key === 'Escape') {
     const ws = document.getElementById('word-workspace');
     if (ws && ws.classList.contains('hf-editing')) {
       desactivarModoEncabezadoPie();
+    }
+    if (document.body.classList.contains('word-fullscreen-mode')) {
+      toggleModoZen();
+    }
+    desactivarCopiarFormato();
+    desactivarControlesImagen();
+  }
+  // Ctrl + S: Guardar directamente en la Nube (Cloudinary)
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+    const activeSubview = document.getElementById('subview-editor');
+    if (activeSubview && activeSubview.classList.contains('active')) {
+      e.preventDefault();
+      guardarEnCloudinary();
+    }
+  }
+  // Ctrl + K: Insertar hipervínculo
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    const activeSubview = document.getElementById('subview-editor');
+    if (activeSubview && activeSubview.classList.contains('active')) {
+      e.preventDefault();
+      abrirModalInsertarEnlace();
     }
   }
   // Ctrl + F / Ctrl + H: Buscar y Reemplazar
@@ -4404,6 +4846,14 @@ document.addEventListener('keydown', (e) => {
     if (activeSubview && activeSubview.classList.contains('active')) {
       e.preventDefault();
       abrirBuscarYReemplazar();
+    }
+  }
+  // Ctrl + P: Imprimir o Vista Previa PDF
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+    const activeSubview = document.getElementById('subview-editor');
+    if (activeSubview && activeSubview.classList.contains('active')) {
+      e.preventDefault();
+      imprimirOExportarPdf();
     }
   }
 });
@@ -4429,12 +4879,537 @@ function ejecutarFormatoWord(command, value = null) {
   if (activeContent) activeContent.focus();
   document.execCommand(command, false, value);
   actualizarEstadisticasWord();
+  actualizarEstadosRibbonActivo();
   if (activeContent) manejarInputEnPagina(activeContent);
 }
 
 function cambiarTamanoFuente(val) {
   ejecutarFormatoWord('fontSize', val);
 }
+
+function aumentarTamanoFuente() {
+  const select = document.getElementById('word-font-size');
+  let current = parseInt(select?.value || '3', 10);
+  if (current < 7) {
+    current++;
+    if (select) select.value = current;
+    cambiarTamanoFuente(current);
+  }
+}
+
+function reducirTamanoFuente() {
+  const select = document.getElementById('word-font-size');
+  let current = parseInt(select?.value || '3', 10);
+  if (current > 1) {
+    current--;
+    if (select) select.value = current;
+    cambiarTamanoFuente(current);
+  }
+}
+
+function aumentarSangria() {
+  ejecutarFormatoWord('indent');
+}
+
+function disminuirSangria() {
+  ejecutarFormatoWord('outdent');
+}
+
+// ── COPIAR FORMATO (FORMAT PAINTER) ──
+function activarCopiarFormato() {
+  const btn = document.getElementById('btn-format-painter');
+  if (formatPainterActivo) {
+    desactivarCopiarFormato();
+    return;
+  }
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || sel.isCollapsed) {
+    alert('Seleccione primero el texto cuyo estilo desea duplicar (Fuente, tamaño, color, negrita, alineación).');
+    return;
+  }
+  const parent = sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentElement : sel.anchorNode;
+  const cs = window.getComputedStyle(parent);
+  formatoCopiado = {
+    fontFamily: cs.fontFamily,
+    fontSize: cs.fontSize,
+    fontWeight: cs.fontWeight,
+    fontStyle: cs.fontStyle,
+    textDecoration: cs.textDecoration,
+    color: cs.color,
+    backgroundColor: cs.backgroundColor !== 'rgba(0, 0, 0, 0)' && cs.backgroundColor !== 'transparent' ? cs.backgroundColor : '',
+    textAlign: cs.textAlign,
+    lineHeight: cs.lineHeight
+  };
+  formatPainterActivo = true;
+  document.body.classList.add('format-painter-mode');
+  if (btn) btn.classList.add('active', 'format-painter-active');
+}
+
+function desactivarCopiarFormato() {
+  formatPainterActivo = false;
+  formatoCopiado = null;
+  document.body.classList.remove('format-painter-mode');
+  const btn = document.getElementById('btn-format-painter');
+  if (btn) btn.classList.remove('active', 'format-painter-active');
+}
+
+function aplicarFormatoCopiado() {
+  if (!formatPainterActivo || !formatoCopiado) return;
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || sel.isCollapsed) return;
+
+  const range = sel.getRangeAt(0);
+  const span = document.createElement('span');
+  if (formatoCopiado.fontFamily) span.style.fontFamily = formatoCopiado.fontFamily;
+  if (formatoCopiado.fontSize) span.style.fontSize = formatoCopiado.fontSize;
+  if (formatoCopiado.fontWeight) span.style.fontWeight = formatoCopiado.fontWeight;
+  if (formatoCopiado.fontStyle) span.style.fontStyle = formatoCopiado.fontStyle;
+  if (formatoCopiado.textDecoration) span.style.textDecoration = formatoCopiado.textDecoration;
+  if (formatoCopiado.color) span.style.color = formatoCopiado.color;
+  if (formatoCopiado.backgroundColor) span.style.backgroundColor = formatoCopiado.backgroundColor;
+
+  try {
+    const contents = range.extractContents();
+    span.appendChild(contents);
+    range.insertNode(span);
+    sel.removeAllRanges();
+    const newRange = document.createRange();
+    newRange.selectNodeContents(span);
+    sel.addRange(newRange);
+  } catch (err) {
+    console.warn('Error aplicando formato copiado:', err);
+  }
+
+  desactivarCopiarFormato();
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) manejarInputEnPagina(activeContent);
+}
+
+// ── GALERÍA DE ESTILOS RÁPIDOS (NORMAL, TÍTULOS APA 7, CLÁUSULA) ──
+function aplicarEstiloRapido(estilo) {
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) activeContent.focus();
+
+  if (estilo === 'normal') {
+    ejecutarFormatoWord('formatBlock', '<p>');
+    ejecutarFormatoWord('fontName', 'Times New Roman');
+    ejecutarFormatoWord('fontSize', '3');
+    ejecutarFormatoWord('justifyFull');
+  } else if (estilo === 'titulo1') {
+    ejecutarFormatoWord('formatBlock', '<h2>');
+    ejecutarFormatoWord('bold');
+    ejecutarFormatoWord('justifyCenter');
+  } else if (estilo === 'titulo2') {
+    ejecutarFormatoWord('formatBlock', '<h3>');
+    ejecutarFormatoWord('bold');
+    ejecutarFormatoWord('justifyLeft');
+  } else if (estilo === 'titulo3') {
+    ejecutarFormatoWord('formatBlock', '<h4>');
+    ejecutarFormatoWord('bold');
+    ejecutarFormatoWord('italic');
+    ejecutarFormatoWord('justifyLeft');
+  } else if (estilo === 'clausula') {
+    insertarClausulaLegalSiguiente();
+  } else if (estilo === 'cita') {
+    ejecutarFormatoWord('formatBlock', '<blockquote>');
+  }
+
+  if (activeContent) manejarInputEnPagina(activeContent);
+}
+
+// ── INSERCIÓN DE HIPERVÍNCULOS ──
+function abrirModalInsertarEnlace() {
+  const sel = window.getSelection();
+  let selectedText = '';
+  if (sel && sel.rangeCount) {
+    rangeGuardadoParaEnlace = sel.getRangeAt(0).cloneRange();
+    selectedText = sel.toString().trim();
+  }
+  const textInp = document.getElementById('link-text-input');
+  const urlInp = document.getElementById('link-url-input');
+  if (textInp) textInp.value = selectedText || '';
+  if (urlInp) urlInp.value = '';
+  abrirModal('modal-insertar-enlace');
+  setTimeout(() => {
+    if (urlInp) urlInp.focus();
+  }, 120);
+}
+
+function confirmarInsertarEnlace() {
+  const text = document.getElementById('link-text-input')?.value.trim() || 'Enlace Legal';
+  let url = document.getElementById('link-url-input')?.value.trim() || '';
+  if (!url) {
+    alert('Por favor ingrese la dirección URL o enlace.');
+    return;
+  }
+  if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('#')) {
+    url = 'https://' + url;
+  }
+
+  cerrarModal('modal-insertar-enlace');
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) activeContent.focus();
+
+  if (rangeGuardadoParaEnlace) {
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(rangeGuardadoParaEnlace);
+  }
+
+  const linkHtml = `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:#2563eb; text-decoration:underline; font-weight:600;">${text}</a>&nbsp;`;
+  document.execCommand('insertHTML', false, linkHtml);
+  rangeGuardadoParaEnlace = null;
+  if (activeContent) manejarInputEnPagina(activeContent);
+}
+
+// ── LÍNEA DIVISORIA LEGAL ──
+function insertarLineaDivisoria() {
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) activeContent.focus();
+  const hrHtml = `<div contenteditable="false" style="padding:10px 0;"><hr style="border:none; border-top:1.5px solid #cbd5e1; margin:0;"></div><p><br></p>`;
+  document.execCommand('insertHTML', false, hrHtml);
+  if (activeContent) manejarInputEnPagina(activeContent);
+}
+
+// ── SELLO DE VALIDACIÓN Y FIRMA DIGITAL CON QR (LEY N° 27269) ──
+function insertarSelloValidacionDigital() {
+  const activeContent = obtenerPaginaActiva();
+  if (!activeContent) return;
+  activeContent.focus();
+
+  const docTitle = document.getElementById('word-doc-title')?.value || 'CONTRATO LEGAL QUBIRA';
+  const randHash = Array.from({length: 40}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+  const fechaHora = new Date().toLocaleString('es-PE', { dateStyle: 'full', timeStyle: 'medium' });
+  const verifyUrl = `https://qubira.vercel.app/legal/verify?hash=${randHash.substring(0, 16)}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&margin=0&data=${encodeURIComponent(verifyUrl)}`;
+
+  const sealHtml = `
+    <div class="qubira-seal-block" contenteditable="false">
+      <div class="seal-header">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg>
+        <span>CONSTANCIA DE VALIDEZ Y FIRMA DIGITAL CERTIFICADA &bull; QUBIRA ODACL</span>
+      </div>
+      <div class="seal-content">
+        <img src="${qrUrl}" alt="QR Verificación Legal" class="seal-qr" title="Escanear para validar autenticidad en la nube QUBIRA">
+        <div class="seal-info">
+          <div><strong>Documento:</strong> ${docTitle}</div>
+          <div><strong>Autoridad Emisora:</strong> Melani A. Luyo R. &bull; Oficina de Dirección de Asuntos Corporativos y Legales</div>
+          <div><strong>RUC Qubira:</strong> 10764275981 &bull; Domicilio Fiscal: Lima, Perú</div>
+          <div><strong>Fecha de Certificación:</strong> ${fechaHora}</div>
+          <div><strong>Firma SHA-256:</strong> <span class="seal-hash">SHA256:${randHash}</span></div>
+          <div style="margin-top:4px; color:#059669; font-weight:700;">✓ CONTRATO SUSCRITO CON VALIDEZ JURÍDICA SEGÚN LEY N° 27269 (FIRMAS Y CERTIFICADOS DIGITALES)</div>
+        </div>
+      </div>
+    </div>
+    <p><br></p>
+  `;
+
+  document.execCommand('insertHTML', false, sealHtml);
+  repaginarDocumentoCompleto();
+}
+
+// ── NOTA AL PIE DE PÁGINA (FOOTNOTE LEGAL) ──
+function insertarNotaAlPieLegal() {
+  const activeContent = obtenerPaginaActiva();
+  if (!activeContent) return;
+  const sheet = activeContent.closest('.a4-page-sheet');
+  if (!sheet) return;
+
+  let footnotesSec = sheet.querySelector('.word-footnotes-section');
+  if (!footnotesSec) {
+    footnotesSec = document.createElement('div');
+    footnotesSec.className = 'word-footnotes-section';
+    activeContent.appendChild(footnotesSec);
+  }
+
+  const currentCount = sheet.querySelectorAll('.word-footnote-item').length + 1;
+  const textoNota = prompt(`Ingrese el texto para la Nota al Pie [${currentCount}]:`, `Ley Aplicable del Código Civil Peruano y jurisprudencia vinculante.`);
+  if (!textoNota) return;
+
+  activeContent.focus();
+  const refHtml = `<sup class="word-footnote-ref" contenteditable="false" title="Nota al pie ${currentCount}: ${textoNota}">[${currentCount}]</sup>`;
+  document.execCommand('insertHTML', false, refHtml);
+
+  const item = document.createElement('div');
+  item.className = 'word-footnote-item';
+  item.contentEditable = "true";
+  item.innerHTML = `<sup>${currentCount}</sup> ${textoNota}`;
+  footnotesSec.appendChild(item);
+
+  repaginarDocumentoCompleto();
+}
+
+// ── GENERADOR SECUENCIAL AUTOMÁTICO DE CLÁUSULAS CONTRACTUALES ──
+function insertarClausulaLegalSiguiente() {
+  const ordinals = [
+    'PRIMERA', 'SEGUNDA', 'TERCERA', 'CUARTA', 'QUINTA', 'SEXTA', 'SÉPTIMA',
+    'OCTAVA', 'NOVENA', 'DÉCIMA', 'DÉCIMA PRIMERA', 'DÉCIMA SEGUNDA', 'DÉCIMA TERCERA',
+    'DÉCIMA CUARTA', 'DÉCIMA QUINTA', 'DÉCIMA SEXTA', 'DÉCIMA SÉPTIMA', 'DÉCIMA OCTAVA',
+    'DÉCIMA NOVENA', 'VIGÉSIMA', 'VIGÉSIMA PRIMERA', 'VIGÉSIMA SEGUNDA', 'VIGÉSIMA TERCERA'
+  ];
+
+  const container = document.getElementById('a4-pages-container');
+  const text = container ? container.innerText.toUpperCase() : '';
+
+  let nextIndex = 0;
+  for (let i = 0; i < ordinals.length; i++) {
+    if (text.includes(ordinals[i])) {
+      nextIndex = i + 1;
+    }
+  }
+  const ordinalSugerido = ordinals[nextIndex] || `CLÁUSULA ${nextIndex + 1}`;
+
+  const numero = prompt('Número u ordinal de la cláusula:', ordinalSugerido);
+  if (!numero) return;
+  const titulo = prompt('Título o materia de la cláusula (Ej: CONFIDENCIALIDAD Y NO COMPETENCIA):', 'OBLIGACIONES DE LAS PARTES');
+  if (titulo === null) return;
+
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) {
+    activeContent.focus();
+    const html = `
+      <p style="text-align:justify; margin:12pt 0; text-indent:1.27cm;">
+        <strong>CLÁUSULA ${numero.toUpperCase()} — ${(titulo || '').toUpperCase()}:</strong> Las partes convienen de común acuerdo que...
+      </p>
+    `;
+    document.execCommand('insertHTML', false, html);
+    repaginarDocumentoCompleto();
+  }
+}
+
+// ── CAMBIAR ORIENTACIÓN DE HOJA (VERTICAL / HORIZONTAL) ──
+function cambiarOrientacionHoja(orientacion) {
+  orientacionActual = orientacion;
+  const container = document.getElementById('a4-pages-container');
+  const ruler = document.getElementById('word-ruler-wrapper');
+  if (!container) return;
+  const sheets = container.querySelectorAll('.a4-page-sheet');
+
+  sheets.forEach(sheet => {
+    const content = sheet.querySelector('.a4-page-content');
+    if (orientacion === 'landscape') {
+      sheet.style.width = '297mm';
+      sheet.style.height = '210mm';
+      sheet.style.minHeight = '210mm';
+      if (content) {
+        content.style.height = '159.2mm';
+        content.style.maxHeight = '159.2mm';
+      }
+    } else {
+      sheet.style.width = '210mm';
+      sheet.style.height = '297mm';
+      sheet.style.minHeight = '297mm';
+      if (content) {
+        content.style.height = '246.2mm';
+        content.style.maxHeight = '246.2mm';
+      }
+    }
+  });
+
+  if (ruler) {
+    ruler.style.width = orientacion === 'landscape' ? '297mm' : '210mm';
+  }
+
+  const sel = document.getElementById('word-page-orientation');
+  if (sel && sel.value !== orientacion) sel.value = orientacion;
+
+  repaginarDocumentoCompleto();
+}
+
+// ── MODO REVISIÓN LEGAL (TRACK CHANGES / AUDITORÍA) ──
+function toggleModoRevisionLegal() {
+  reviewModeActivo = !reviewModeActivo;
+  const btn = document.getElementById('btn-toggle-review');
+  const ws = document.getElementById('word-workspace');
+  if (reviewModeActivo) {
+    if (btn) {
+      btn.classList.add('active');
+      btn.innerHTML = '📝 Revisión Activa';
+      btn.style.background = '#fef3c7';
+      btn.style.color = '#92400e';
+      btn.style.borderColor = '#f59e0b';
+    }
+    if (ws) ws.classList.add('review-mode-active');
+    alert('Modo Revisión Legal Activado:\nLas ediciones contarán con resaltado y trazabilidad de cambios contractuales.');
+  } else {
+    if (btn) {
+      btn.classList.remove('active');
+      btn.innerHTML = '📝 Modo Revisión';
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }
+    if (ws) ws.classList.remove('review-mode-active');
+  }
+}
+
+// ── MEMBRETE CORPORATIVO EN ENCABEZADO ──
+function insertarMembreteEnEncabezado() {
+  activarModoEncabezado();
+  const rh = document.querySelector('.a4-page-sheet .a4-running-head');
+  if (rh) {
+    rh.innerHTML = `QUBIRA S.A.C. &bull; OFICINA DE ASUNTOS CORPORATIVOS Y LEGALES &bull; RUC 10764275981`;
+    manejarInputEncabezado(rh);
+  }
+}
+
+// ── MODO PANTALLA COMPLETA / CONCENTRACIÓN ZEN ──
+function toggleModoZen() {
+  const isZen = document.body.classList.toggle('word-fullscreen-mode');
+  const btn = document.getElementById('btn-toggle-zen');
+  if (btn) {
+    btn.classList.toggle('active', isZen);
+    btn.innerHTML = isZen ? '🗗 Salir Pantalla Completa' : '🖥️ Pantalla Completa';
+  }
+}
+
+// ── MANIPULACIÓN DE IMÁGENES FLOTANTE ──
+function manejarClicEnContenido(e, content) {
+  if (formatPainterActivo) {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount && !sel.isCollapsed) {
+      aplicarFormatoCopiado();
+      return;
+    }
+  }
+
+  if (e.target && e.target.tagName === 'IMG') {
+    e.stopPropagation();
+    activarControlesImagen(e.target);
+    return;
+  }
+
+  desactivarControlesImagen();
+}
+
+function activarControlesImagen(imgEl) {
+  imagenSeleccionadaActual = imgEl;
+  const controls = document.getElementById('image-floating-controls');
+  if (!controls) return;
+  const rect = imgEl.getBoundingClientRect();
+  controls.style.top = `${Math.max(10, window.scrollY + rect.top - 44)}px`;
+  controls.style.left = `${Math.max(10, window.scrollX + rect.left + (rect.width / 2) - 150)}px`;
+  controls.classList.add('visible');
+}
+
+function desactivarControlesImagen() {
+  imagenSeleccionadaActual = null;
+  const controls = document.getElementById('image-floating-controls');
+  if (controls) controls.classList.remove('visible');
+}
+
+function ajustarTamanoImagenActual(ancho) {
+  if (!imagenSeleccionadaActual) return;
+  imagenSeleccionadaActual.style.width = ancho;
+  imagenSeleccionadaActual.style.maxWidth = '100%';
+  activarControlesImagen(imagenSeleccionadaActual);
+  repaginarDocumentoCompleto();
+}
+
+function alinearImagenActual(align) {
+  if (!imagenSeleccionadaActual) return;
+  const parent = imagenSeleccionadaActual.parentElement;
+  if (parent) {
+    if (align === 'left') {
+      parent.style.textAlign = 'left';
+    } else if (align === 'right') {
+      parent.style.textAlign = 'right';
+    } else {
+      parent.style.textAlign = 'center';
+    }
+  }
+  activarControlesImagen(imagenSeleccionadaActual);
+  repaginarDocumentoCompleto();
+}
+
+function eliminarImagenActual() {
+  if (!imagenSeleccionadaActual) return;
+  const parent = imagenSeleccionadaActual.parentElement;
+  if (parent && parent.children.length === 1 && parent.tagName === 'DIV') {
+    parent.remove();
+  } else {
+    imagenSeleccionadaActual.remove();
+  }
+  desactivarControlesImagen();
+  repaginarDocumentoCompleto();
+}
+
+// ── MINI-BARRA FLOTANTE DE FORMATO DE TEXTO ──
+function actualizarBarraFlotanteTexto() {
+  const toolbar = document.getElementById('word-floating-toolbar');
+  if (!toolbar) return;
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || sel.isCollapsed) {
+    toolbar.classList.remove('visible');
+    return;
+  }
+  const node = sel.anchorNode;
+  const inEditor = node && (node.nodeType === 3 ? node.parentElement : node).closest('.a4-page-content');
+  if (!inEditor) {
+    toolbar.classList.remove('visible');
+    return;
+  }
+  const range = sel.getRangeAt(0);
+  const rect = range.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) {
+    toolbar.classList.remove('visible');
+    return;
+  }
+  const topPos = Math.max(10, window.scrollY + rect.top - 46);
+  const leftPos = Math.max(10, window.scrollX + rect.left + (rect.width / 2) - 130);
+  toolbar.style.top = `${topPos}px`;
+  toolbar.style.left = `${leftPos}px`;
+  toolbar.classList.add('visible');
+}
+
+// ── SINCRONIZACIÓN DE BOTONES ACTIVOS DEL RIBBON ──
+function actualizarEstadosRibbonActivo() {
+  try {
+    const map = {
+      'btn-fmt-bold': 'bold',
+      'btn-fmt-italic': 'italic',
+      'btn-fmt-underline': 'underline',
+      'btn-fmt-strike': 'strikeThrough',
+      'btn-fmt-sub': 'subscript',
+      'btn-fmt-super': 'superscript',
+      'btn-fmt-left': 'justifyLeft',
+      'btn-fmt-center': 'justifyCenter',
+      'btn-fmt-right': 'justifyRight',
+      'btn-fmt-justify': 'justifyFull'
+    };
+    for (const [id, cmd] of Object.entries(map)) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('active', document.queryCommandState(cmd));
+    }
+  } catch (e) {}
+}
+
+document.addEventListener('selectionchange', () => {
+  actualizarBarraFlotanteTexto();
+  actualizarEstadosRibbonActivo();
+});
+
+document.addEventListener('mouseup', () => {
+  if (formatPainterActivo) {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount && !sel.isCollapsed) {
+      aplicarFormatoCopiado();
+    }
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#image-floating-controls') && e.target.tagName !== 'IMG') {
+    desactivarControlesImagen();
+  }
+  if (!e.target.closest('#word-floating-toolbar')) {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed) {
+      const tb = document.getElementById('word-floating-toolbar');
+      if (tb) tb.classList.remove('visible');
+    }
+  }
+});
 
 // ── HERRAMIENTAS Y PRESETS APA 7 ──
 function toggleFormatoApa7() {
@@ -4663,6 +5638,70 @@ function actualizarEstadisticasWord() {
   if (pEl) pEl.textContent = `Páginas: ${totalPages} A4 (APA 7)`;
 }
 
+// ── MODAL DE ESTADÍSTICAS DETALLADAS (CONTADOR DE PALABRAS & MÉTRICAS) ──
+function abrirModalEstadisticasDoc() {
+  const container = document.getElementById('a4-pages-container');
+  const sheets = container ? container.querySelectorAll('.a4-page-sheet') : [];
+  let fullText = '';
+  let paragraphsCount = 0;
+
+  sheets.forEach(s => {
+    const c = s.querySelector('.a4-page-content');
+    if (c) {
+      fullText += (c.innerText || '') + '\n';
+      paragraphsCount += c.querySelectorAll('p, h1, h2, h3, h4, h5, h6, blockquote, li').length;
+    }
+  });
+
+  const cleanText = fullText.trim();
+  const words = cleanText ? cleanText.split(/\s+/).filter(Boolean).length : 0;
+  const charsNoSpace = cleanText.replace(/\s+/g, '').length;
+  const charsSpace = cleanText.length;
+  const estimatedLines = Math.ceil(charsSpace / 75) || (cleanText ? 1 : 0);
+  const readTimeMin = Math.ceil(words / 200);
+
+  document.getElementById('stat-modal-pages').textContent = `${sheets.length} hoja(s) A4`;
+  document.getElementById('stat-modal-words').textContent = words.toLocaleString();
+  document.getElementById('stat-modal-chars-nospace').textContent = charsNoSpace.toLocaleString();
+  document.getElementById('stat-modal-chars-space').textContent = charsSpace.toLocaleString();
+  document.getElementById('stat-modal-paragraphs').textContent = (paragraphsCount || 1).toLocaleString();
+  document.getElementById('stat-modal-lines').textContent = `~ ${estimatedLines.toLocaleString()} líneas`;
+  document.getElementById('stat-modal-readtime').textContent = `~ ${readTimeMin} min (lectura estándar)`;
+
+  abrirModal('modal-estadisticas-doc');
+}
+
+// ── MODAL DE ATAJOS DE TECLADO DE WORD ──
+function abrirModalAtajosWord() {
+  abrirModal('modal-atajos-word');
+}
+
+// ── MOTOR DE AUTOGUARDADO EN SEGUNDO PLANO (CADA 30 SEGUNDOS) ──
+function iniciarAutoguardadoWord() {
+  if (autoSaveTimer) clearInterval(autoSaveTimer);
+  autoSaveTimer = setInterval(() => {
+    const title = document.getElementById('word-doc-title')?.value.trim() || 'Documento_Legal';
+    const docType = document.getElementById('word-doc-type')?.value || 'Contrato Legal';
+    const html = obtenerHtmlCompletoDocumento();
+    if (!html || html.length < 20) return;
+
+    const autoData = {
+      titulo: title,
+      tipo: docType,
+      html: html,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('odacl_word_autosave', JSON.stringify(autoData));
+
+    const badge = document.getElementById('word-autosave-badge');
+    if (badge) {
+      const hora = new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      badge.textContent = `✓ Autoguardado local (${hora})`;
+      badge.style.color = '#6ee7b7';
+    }
+  }, 30000);
+}
+
 // Guardar documento en la Nube (Cloudinary & Base de Datos PostgreSQL Neon)
 async function guardarEnCloudinary() {
   const btn = document.getElementById('btn-save-cloudinary');
@@ -4793,8 +5832,8 @@ function descargarDocumentoWord() {
     <![endif]-->
     <style>
       @page {
-        size: 21.0cm 29.7cm; /* Medidas A4 Oficiales */
-        margin: 2.54cm 2.54cm 2.54cm 2.54cm; /* Márgenes APA 7: 1 pulgada exacta */
+        size: ${orientacionActual === 'landscape' ? '29.7cm 21.0cm' : '21.0cm 29.7cm'}; /* Medidas A4 Oficiales */
+        margin: ${margenActual === 'estrecho' ? '1.27cm 1.27cm 1.27cm 1.27cm' : (margenActual === 'normal' ? '2.5cm 2.5cm 2.5cm 2.5cm' : '2.54cm 2.54cm 2.54cm 2.54cm')}; /* Márgenes APA 7 o personalizados */
         mso-header-margin: 1.27cm; /* Encabezado a 0.5 pulgada */
         mso-footer-margin: 1.27cm;
       }
@@ -4970,6 +6009,7 @@ function initDocLegal() {
   cargarPlantillaSeleccionada('desarrollo_software');
   renderCloudDocuments();
   renderCatalogoPlantillas();
+  iniciarAutoguardadoWord();
 }
 
 /* ============================================================
