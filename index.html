@@ -537,40 +537,340 @@
     }
 
     /* Encabezado APA 7 (Header): situado a 12.7 mm (0.5 in) del borde superior */
+    /* ═══════════════════════════════════════════════════════════
+       ENCABEZADO Y PIE DE PÁGINA EDITABLES (MICROSOFT WORD APA 7)
+       ═══════════════════════════════════════════════════════════ */
     .a4-page-header {
       position: absolute;
       top: 12.7mm;
       left: 25.4mm;
       right: 25.4mm;
-      height: 8mm;
+      min-height: 9mm;
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-family: 'Times New Roman', Georgia, serif;
       font-size: 10pt;
       color: #475569;
-      user-select: none;
-      pointer-events: none;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px dashed #cbd5e1;
       padding-bottom: 2px;
       box-sizing: border-box;
+      cursor: text;
+      z-index: 10;
+      transition: all .15s ease;
+      user-select: text;
     }
+    .a4-page-header:hover {
+      background: rgba(239, 246, 255, 0.7);
+      border-bottom-color: #2563eb;
+    }
+    .a4-page-header::before {
+      content: 'Encabezado (APA 7)';
+      position: absolute;
+      top: -14px;
+      left: 0;
+      font-size: 9.5px;
+      font-family: 'Inter', sans-serif;
+      color: #94a3b8;
+      opacity: 0;
+      transition: opacity .15s;
+      pointer-events: none;
+    }
+    .a4-page-header:hover::before,
+    .hf-editing .a4-page-header::before {
+      opacity: 1;
+      color: #2563eb;
+      font-weight: 700;
+    }
+
     .a4-running-head {
       text-transform: uppercase;
       font-size: 8.5pt;
       font-weight: 600;
       letter-spacing: 0.5px;
-      color: #64748b;
+      color: #334155;
+      outline: none;
+      min-width: 140px;
       max-width: 75%;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      padding: 1px 6px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      transition: all .15s;
+    }
+    .a4-running-head:hover {
+      background: #ffffff;
+      border-color: #93c5fd;
+    }
+    .a4-running-head:focus {
+      background: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+      white-space: normal;
+      overflow: visible;
+    }
+
+    .a4-page-number-box {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-left: auto;
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #0f172a;
+      user-select: none;
     }
     .a4-page-number {
       font-size: 11pt;
       font-weight: 700;
       color: #0f172a;
+    }
+
+    /* Pie de página A4 Editable a 12.7 mm del fondo */
+    .a4-page-footer {
+      position: absolute;
+      bottom: 10mm;
+      left: 25.4mm;
+      right: 25.4mm;
+      min-height: 8mm;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'Arial', sans-serif;
+      font-size: 8.5pt;
+      color: #64748b;
+      border-top: 1px dashed #cbd5e1;
+      padding-top: 3px;
+      box-sizing: border-box;
+      cursor: text;
+      z-index: 10;
+      transition: all .15s ease;
+      user-select: text;
+    }
+    .a4-page-footer:hover {
+      background: rgba(239, 246, 255, 0.7);
+      border-top-color: #2563eb;
+    }
+    .a4-page-footer::before {
+      content: 'Pie de página (APA 7)';
+      position: absolute;
+      bottom: -15px;
+      left: 0;
+      font-size: 9.5px;
+      font-family: 'Inter', sans-serif;
+      color: #94a3b8;
+      opacity: 0;
+      transition: opacity .15s;
+      pointer-events: none;
+    }
+    .a4-page-footer:hover::before,
+    .hf-editing .a4-page-footer::before {
+      opacity: 1;
+      color: #2563eb;
+      font-weight: 700;
+    }
+
+    .a4-footer-left {
+      outline: none;
+      padding: 1px 6px;
+      border-radius: 4px;
+      min-width: 140px;
+      max-width: 65%;
+      border: 1px solid transparent;
+      transition: all .15s;
+    }
+    .a4-footer-left:hover {
+      background: #ffffff;
+      border-color: #93c5fd;
+    }
+    .a4-footer-left:focus {
+      background: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+
+    .a4-footer-right {
+      outline: none;
+      padding: 1px 6px;
+      border-radius: 4px;
+      min-width: 90px;
+      text-align: right;
       margin-left: auto;
+      border: 1px solid transparent;
+      transition: all .15s;
+    }
+    .a4-footer-right:hover {
+      background: #ffffff;
+      border-color: #93c5fd;
+    }
+    .a4-footer-right:focus {
+      background: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+
+    /* Modo de edición activa de encabezado y pie */
+    .hf-editing .a4-page-content {
+      opacity: 0.55;
+      transition: opacity .2s ease;
+    }
+    .hf-editing .a4-page-header,
+    .hf-editing .a4-page-footer {
+      border-style: solid;
+      border-color: #2563eb;
+      background: rgba(239, 246, 255, 0.85);
+    }
+
+    /* Marca de agua (Watermark) */
+    .a4-watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      font-size: 58pt;
+      font-weight: 900;
+      color: rgba(100, 116, 139, 0.12);
+      letter-spacing: 8px;
+      user-select: none;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 1;
+      text-transform: uppercase;
+      display: none;
+    }
+    .a4-watermark.active {
+      display: block;
+    }
+
+    /* Regla graduada horizontal estilo Microsoft Word */
+    .word-ruler-wrapper {
+      width: 210mm;
+      max-width: 210mm;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-bottom: 2px solid #94a3b8;
+      height: 24px;
+      margin-bottom: 14px;
+      border-radius: 4px;
+      display: flex;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      overflow: hidden;
+      user-select: none;
+    }
+    .ruler-margin-l {
+      width: 25.4mm;
+      background: #e2e8f0;
+      border-right: 1px solid #94a3b8;
+      height: 100%;
+      position: relative;
+    }
+    .ruler-margin-l::after {
+      content: '2.54cm';
+      position: absolute;
+      top: 5px;
+      left: 6px;
+      font-size: 9px;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+    }
+    .ruler-body {
+      width: 159.2mm; /* 210mm - (25.4mm * 2) */
+      background: #ffffff;
+      height: 100%;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 0 4px 3px 4px;
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #64748b;
+    }
+    .ruler-tick {
+      height: 6px;
+      width: 1px;
+      background: #94a3b8;
+      display: inline-block;
+    }
+    .ruler-margin-r {
+      width: 25.4mm;
+      background: #e2e8f0;
+      border-left: 1px solid #94a3b8;
+      height: 100%;
+      position: relative;
+    }
+    .ruler-margin-r::after {
+      content: '2.54cm';
+      position: absolute;
+      top: 5px;
+      right: 6px;
+      font-size: 9px;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+    }
+
+    /* Pestañas de la cinta de opciones Office (Ribbon Tabs) */
+    .word-ribbon-tabs-bar {
+      display: flex;
+      gap: 3px;
+      background: #f1f5f9;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 4px 16px 0 16px;
+    }
+    .word-ribbon-tab-btn {
+      padding: 7px 16px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #64748b;
+      cursor: pointer;
+      border-radius: 7px 7px 0 0;
+      border: 1px solid transparent;
+      border-bottom: none;
+      background: transparent;
+      transition: all .15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .word-ribbon-tab-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .word-ribbon-tab-btn.active {
+      background: #ffffff;
+      color: #1e3a8a;
+      border-color: #cbd5e1;
+      border-bottom: 2px solid #ffffff;
+      margin-bottom: -1px;
+      box-shadow: 0 -2px 6px rgba(0,0,0,.03);
+    }
+    .word-tab-panel {
+      display: none;
+    }
+    .word-tab-panel.active {
+      display: block;
+    }
+
+    /* Paleta de símbolos legales rápidos */
+    .symbols-palette-btn {
+      font-size: 14px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 5px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      cursor: pointer;
+      transition: all .12s;
+      color: #0f172a;
+    }
+    .symbols-palette-btn:hover {
+      background: #1e3a8a;
+      color: #ffffff;
+      border-color: #1e3a8a;
     }
 
     /* Contenido editable enmarcado en el espacio imprimible A4 */
@@ -614,25 +914,11 @@
       padding: 5pt 8pt;
       font-size: 10pt;
     }
-
-    /* Pie de página A4 a 12.7 mm del fondo */
-    .a4-page-footer {
-      position: absolute;
-      bottom: 10mm;
-      left: 25.4mm;
-      right: 25.4mm;
-      height: 7mm;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-family: 'Arial', sans-serif;
-      font-size: 8pt;
-      color: #94a3b8;
-      user-select: none;
-      pointer-events: none;
-      border-top: 1px solid #e2e8f0;
-      padding-top: 2px;
-      box-sizing: border-box;
+    .a4-page-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin: 8px 0;
     }
 
     /* Insignias de la barra de herramientas Word */
@@ -1397,165 +1683,359 @@
                 </div>
               </div>
 
-              <!-- Toolbar Row 1: Formatting -->
-              <div class="word-toolbar">
-                <!-- Plantilla rápida -->
-                <div class="word-tool-group">
-                  <span style="font-size:11px; font-weight:700; color:#64748b; padding-left:4px;">Plantilla:</span>
-                  <select id="quick-template-select" class="word-select" onchange="cargarPlantillaSeleccionada(this.value)">
-                    <option value="">Seleccionar plantilla…</option>
-                    <option value="desarrollo_software">1. Contrato de Desarrollo de Software (14 Cláusulas)</option>
-                    <option value="laboral_dl728">2. Contrato Laboral (D.L. 728)</option>
-                    <option value="prestacion_servicios">3. Contrato de Prestación de Servicios (Locación)</option>
-                    <option value="licenciamiento_software">4. Contrato de Licenciamiento Software (SaaS)</option>
-                    <option value="sla_servicio">5. Acuerdo de Nivel de Servicio (SLA)</option>
-                    <option value="servicios_profesionales">6. Contrato Servicios Profesionales TI</option>
-                    <option value="servicios_preprofesionales">7. Contrato Prácticas Pre Profesionales (Ley 28518)</option>
-                    <option value="proveedores_infraestructura">8. Contrato Proveedores de Infraestructura</option>
-                    <option value="acuerdo_nda">9. Acuerdo de Confidencialidad (NDA)</option>
-                    <option value="politica_privacidad">10. Políticas de Privacidad (Ley 29733)</option>
-                    <option value="terminos_condiciones">11. Términos y Condiciones de Uso</option>
-                    <option value="en_blanco">12. Documento en Blanco con Membrete</option>
-                  </select>
+              <!-- Office Word Ribbon: Tabs Navigation -->
+              <div class="word-ribbon-tabs-bar" id="word-ribbon-tabs-bar">
+                <button type="button" class="word-ribbon-tab-btn active" data-tab="inicio" onclick="cambiarPestanaRibbon('inicio')">
+                  🏠 Inicio
+                </button>
+                <button type="button" class="word-ribbon-tab-btn" data-tab="insertar" onclick="cambiarPestanaRibbon('insertar')">
+                  ➕ Insertar
+                </button>
+                <button type="button" class="word-ribbon-tab-btn" data-tab="disposicion" onclick="cambiarPestanaRibbon('disposicion')">
+                  📐 Disposición & APA 7
+                </button>
+                <button type="button" class="word-ribbon-tab-btn" data-tab="encabezado-pie" id="tab-btn-encabezado-pie" onclick="cambiarPestanaRibbon('encabezado-pie')">
+                  📝 Encabezado & Pie
+                </button>
+                <button type="button" class="word-ribbon-tab-btn" data-tab="vista" onclick="cambiarPestanaRibbon('vista')">
+                  👁️ Vista & Herramientas
+                </button>
+              </div>
+
+              <!-- Ribbon Tab Panels -->
+              <div class="word-ribbon-panels" style="background:#ffffff; border-bottom:1px solid #cbd5e1;">
+                
+                <!-- PANEL 1: INICIO -->
+                <div class="word-tab-panel active" id="ribbon-tab-inicio">
+                  <div class="word-toolbar" style="border-bottom:none;">
+                    <!-- Portapapeles & Plantilla -->
+                    <div class="word-tool-group">
+                      <span style="font-size:11px; font-weight:700; color:#64748b; padding-left:2px;">Plantilla:</span>
+                      <select id="quick-template-select" class="word-select" onchange="cargarPlantillaSeleccionada(this.value)">
+                        <option value="">Seleccionar plantilla legal…</option>
+                        <option value="desarrollo_software">1. Contrato de Desarrollo de Software (14 Cláusulas)</option>
+                        <option value="laboral_dl728">2. Contrato Laboral (D.L. 728)</option>
+                        <option value="prestacion_servicios">3. Contrato de Prestación de Servicios (Locación)</option>
+                        <option value="licenciamiento_software">4. Contrato de Licenciamiento Software (SaaS)</option>
+                        <option value="sla_servicio">5. Acuerdo de Nivel de Servicio (SLA)</option>
+                        <option value="servicios_profesionales">6. Contrato Servicios Profesionales TI</option>
+                        <option value="servicios_preprofesionales">7. Contrato Prácticas Pre Profesionales (Ley 28518)</option>
+                        <option value="proveedores_infraestructura">8. Contrato Proveedores de Infraestructura</option>
+                        <option value="acuerdo_nda">9. Acuerdo de Confidencialidad (NDA)</option>
+                        <option value="politica_privacidad">10. Políticas de Privacidad (Ley 29733)</option>
+                        <option value="terminos_condiciones">11. Términos y Condiciones de Uso</option>
+                        <option value="en_blanco">12. Documento en Blanco con Membrete</option>
+                      </select>
+                    </div>
+
+                    <!-- Fuente y Tamaño -->
+                    <div class="word-tool-group">
+                      <select id="word-font-family" class="word-select" onchange="ejecutarFormatoWord('fontName', this.value)" title="Tipo de fuente">
+                        <option value="Times New Roman" selected>Times New Roman (APA 7)</option>
+                        <option value="Arial">Arial (APA 7)</option>
+                        <option value="Georgia">Georgia (APA 7)</option>
+                        <option value="Inter">Inter</option>
+                        <option value="Courier New">Courier New</option>
+                      </select>
+
+                      <select id="word-font-size" class="word-select" onchange="cambiarTamanoFuente(this.value)" title="Tamaño de fuente">
+                        <option value="2">10 pt</option>
+                        <option value="3" selected>12 pt (APA 7)</option>
+                        <option value="4">14 pt</option>
+                        <option value="5">18 pt</option>
+                        <option value="6">24 pt</option>
+                        <option value="7">32 pt</option>
+                      </select>
+                    </div>
+
+                    <!-- Estilos B, I, U, S, X2, X1 -->
+                    <div class="word-tool-group">
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('bold')" title="Negrita (Ctrl+B)"><b>B</b></button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('italic')" title="Cursiva (Ctrl+I)"><i>I</i></button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('underline')" title="Subrayado (Ctrl+U)"><u>U</u></button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('strikeThrough')" title="Tachado"><s>S</s></button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('superscript')" title="Superíndice (x²)">x²</button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('subscript')" title="Subíndice (x₂)">x₂</button>
+                    </div>
+
+                    <!-- Cambiar Mayúsculas / Minúsculas (Aa) -->
+                    <div class="word-tool-group">
+                      <select class="word-select" onchange="if(this.value){ cambiarMayusculasMinusculas(this.value); this.value=''; }" title="Cambiar mayúsculas y minúsculas (Aa)">
+                        <option value="">Aa ▾</option>
+                        <option value="mayusculas">MAYÚSCULAS</option>
+                        <option value="minusculas">minúsculas</option>
+                        <option value="oracion">Tipo oración</option>
+                        <option value="capitalizar">Capitalizar Cada Palabra</option>
+                      </select>
+                    </div>
+
+                    <!-- Colores -->
+                    <div class="word-tool-group">
+                      <label class="word-btn" title="Color de Fuente" style="position:relative; cursor:pointer;">
+                        <span style="font-weight:900; border-bottom:3px solid #dc2626;">A</span>
+                        <input type="color" onchange="ejecutarFormatoWord('foreColor', this.value)" style="opacity:0; position:absolute; width:100%; height:100%; cursor:pointer;">
+                      </label>
+                      <label class="word-btn" title="Color de Resaltado" style="position:relative; cursor:pointer;">
+                        <span style="background:#fef08a; padding:1px 4px; border-radius:3px; font-weight:800;">ab</span>
+                        <input type="color" value="#fef08a" onchange="ejecutarFormatoWord('hiliteColor', this.value)" style="opacity:0; position:absolute; width:100%; height:100%; cursor:pointer;">
+                      </label>
+                    </div>
+
+                    <!-- Párrafo & Alineación -->
+                    <div class="word-tool-group">
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('justifyLeft')" title="Alinear a la izquierda">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
+                      </button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('justifyCenter')" title="Centrar">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>
+                      </button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('justifyRight')" title="Alinear a la derecha">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
+                      </button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('justifyFull')" title="Justificar">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line></svg>
+                      </button>
+                    </div>
+
+                    <!-- Listas -->
+                    <div class="word-tool-group">
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('insertUnorderedList')" title="Viñetas">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                      </button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('insertOrderedList')" title="Numeración">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line><path d="M4 6h1v4"></path><path d="M4 10h2"></path><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg>
+                      </button>
+                    </div>
+
+                    <!-- Deshacer, Rehacer, Buscar y Reemplazar -->
+                    <div class="word-tool-group">
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('undo')" title="Deshacer (Ctrl+Z)">↶</button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('redo')" title="Rehacer (Ctrl+Y)">↷</button>
+                      <button type="button" class="word-btn" onclick="ejecutarFormatoWord('removeFormat')" title="Limpiar Formato">🧹</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="abrirBuscarYReemplazar()" title="Buscar y Reemplazar texto (Ctrl+F / Ctrl+H)" style="font-weight:700;">
+                        🔍 Buscar & Reemplazar
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- Formato APA 7 Preset & Interlineado -->
-                <div class="word-tool-group">
-                  <button class="btn btn-outline btn-sm apa7-active-btn" id="btn-toggle-apa7" onclick="toggleFormatoApa7()" title="Activar/desactivar estándar oficial APA 7 (Times New Roman 12pt, Márgenes 2.54cm, Doble Espacio 2.0, Núm. Superior Derecho)">
-                    📐 APA 7 Activo
-                  </button>
-                  <select id="word-line-height" class="word-select" onchange="cambiarInterlineado(this.value)" title="Espaciado de línea (Interlineado)">
-                    <option value="2.0" selected>Doble (2.0 APA 7)</option>
-                    <option value="1.5">Espacio 1.5 (Legal)</option>
-                    <option value="1.15">Espacio 1.15</option>
-                    <option value="1.0">Simple (1.0)</option>
-                  </select>
-                  <select id="word-margins" class="word-select" onchange="cambiarMargenes(this.value)" title="Márgenes de hoja A4">
-                    <option value="apa7" selected>Márgenes APA 7 (2.54 cm / 1")</option>
-                    <option value="normal">Márgenes Estándar (2.5 cm)</option>
-                    <option value="estrecho">Márgenes Estrechos (1.27 cm)</option>
-                  </select>
+                <!-- PANEL 2: INSERTAR -->
+                <div class="word-tab-panel" id="ribbon-tab-insertar">
+                  <div class="word-toolbar" style="border-bottom:none; flex-wrap:wrap; gap:8px;">
+                    <!-- Páginas & Tablas -->
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarSaltoDePagina()" title="Insertar nueva hoja A4 (Atajo: Ctrl + Enter)">📄 Salto de Página</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarTablaWord()" title="Insertar Tabla">📊 Tabla</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="abrirModalInsertarImagen()" title="Insertar Imagen / Logo">🖼️ Imagen / Logo</button>
+                    </div>
+
+                    <!-- Encabezado y Pie directo -->
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-outline btn-sm" onclick="activarModoEncabezado()" title="Editar Encabezado de Hoja">📝 Encabezado</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="activarModoPie()" title="Editar Pie de Página">📝 Pie de Página</button>
+                    </div>
+
+                    <!-- Elementos Legales -->
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarMembreteQubira()">🏛️ Membrete QUBIRA</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarCuadroFirmas()">✍️ Cuadro de Firmas</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarClausulaLegal()">📜 Nueva Cláusula</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarFechaLugar()">📅 Fecha & Lugar</button>
+                    </div>
+
+                    <!-- Paleta de Símbolos Legales Rápidos -->
+                    <div class="word-tool-group" style="align-items:center;">
+                      <span style="font-size:11px; font-weight:700; color:#475569; margin-right:2px;">Símbolos:</span>
+                      <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('§')" title="Sección (§)">§</button>
+                      <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('¶')" title="Párrafo / Cláusula (¶)">¶</button>
+                      <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('©')" title="Copyright (©)">©</button>
+                      <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('®')" title="Marca Registrada (®)">®</button>
+                      <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('™')" title="Trademark (™)">™</button>
+                      <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('°')" title="Grado (°)">°</button>
+                      <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('•')" title="Viñeta (•)">•</button>
+                      <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('—')" title="Raya Em-Dash (—)">—</button>
+                      <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('«»')" title="Comillas Latinas («»)">«»</button>
+                      <button type="button" class="symbols-palette-btn" onclick="insertarSimboloLegal('⚖️')" title="Balanza de la Justicia">⚖️</button>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- Fuente y Tamaño -->
-                <div class="word-tool-group">
-                  <select id="word-font-family" class="word-select" onchange="ejecutarFormatoWord('fontName', this.value)">
-                    <option value="Times New Roman" selected>Times New Roman (APA 7)</option>
-                    <option value="Arial">Arial (APA 7)</option>
-                    <option value="Georgia">Georgia (APA 7)</option>
-                    <option value="Inter">Inter</option>
-                    <option value="Courier New">Courier New</option>
-                  </select>
+                <!-- PANEL 3: DISPOSICIÓN & APA 7 -->
+                <div class="word-tab-panel" id="ribbon-tab-disposicion">
+                  <div class="word-toolbar" style="border-bottom:none; flex-wrap:wrap; gap:8px;">
+                    <!-- Estándar APA 7 -->
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-outline btn-sm apa7-active-btn" id="btn-toggle-apa7" onclick="toggleFormatoApa7()" title="Activar/desactivar estándar oficial APA 7 (Times New Roman 12pt, Márgenes 2.54cm, Doble Espacio 2.0, Núm. Superior Derecho)">
+                        📐 APA 7 Activo
+                      </button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="aplicarSangriaApa()" title="Sangría de primera línea APA 7 (1.27 cm / 0.5 pulg)">
+                        ⇥ Sangría 1.27 cm
+                      </button>
+                    </div>
 
-                  <select id="word-font-size" class="word-select" onchange="cambiarTamanoFuente(this.value)">
-                    <option value="2">10 pt</option>
-                    <option value="3" selected>12 pt (APA 7)</option>
-                    <option value="4">14 pt</option>
-                    <option value="5">18 pt</option>
-                    <option value="6">24 pt</option>
-                    <option value="7">32 pt</option>
-                  </select>
+                    <!-- Interlineado y Márgenes -->
+                    <div class="word-tool-group">
+                      <span style="font-size:11px; font-weight:700; color:#64748b;">Interlineado:</span>
+                      <select id="word-line-height" class="word-select" onchange="cambiarInterlineado(this.value)" title="Espaciado de línea (Interlineado)">
+                        <option value="2.0" selected>Doble (2.0 APA 7)</option>
+                        <option value="1.5">Espacio 1.5 (Legal)</option>
+                        <option value="1.15">Espacio 1.15</option>
+                        <option value="1.0">Simple (1.0)</option>
+                      </select>
+
+                      <span style="font-size:11px; font-weight:700; color:#64748b; margin-left:4px;">Márgenes:</span>
+                      <select id="word-margins" class="word-select" onchange="cambiarMargenes(this.value)" title="Márgenes de hoja A4">
+                        <option value="apa7" selected>Márgenes APA 7 (2.54 cm / 1")</option>
+                        <option value="normal">Márgenes Estándar (2.5 cm)</option>
+                        <option value="estrecho">Márgenes Estrechos (1.27 cm)</option>
+                      </select>
+                    </div>
+
+                    <!-- Marca de Agua (Watermark) -->
+                    <div class="word-tool-group">
+                      <span style="font-size:11px; font-weight:700; color:#64748b;">Marca de Agua:</span>
+                      <select id="word-watermark-select" class="word-select" onchange="aplicarMarcaDeAgua(this.value)" title="Marca de agua diagonal en hojas A4">
+                        <option value="ninguna">Sin marca de agua</option>
+                        <option value="CONFIDENCIAL">CONFIDENCIAL</option>
+                        <option value="BORRADOR">BORRADOR</option>
+                        <option value="COPIA NO CONTROLADA">COPIA NO CONTROLADA</option>
+                        <option value="QUBIRA S.A.C.">QUBIRA S.A.C.</option>
+                        <option value="URGENTE">URGENTE</option>
+                        <option value="DOCUMENTO PRIVADO">DOCUMENTO PRIVADO</option>
+                      </select>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <span class="apa7-specs-badge">
+                        📏 <strong>A4:</strong> 210 × 297 mm &bull; <strong>Márgenes:</strong> 2.54 cm &bull; <strong>APA 7:</strong> Times New Roman 12pt
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- B, I, U, S -->
-                <div class="word-tool-group">
-                  <button class="word-btn" onclick="ejecutarFormatoWord('bold')" title="Negrita (Ctrl+B)"><b>B</b></button>
-                  <button class="word-btn" onclick="ejecutarFormatoWord('italic')" title="Cursiva (Ctrl+I)"><i>I</i></button>
-                  <button class="word-btn" onclick="ejecutarFormatoWord('underline')" title="Subrayado (Ctrl+U)"><u>U</u></button>
-                  <button class="word-btn" onclick="ejecutarFormatoWord('strikeThrough')" title="Tachado"><s>S</s></button>
+                <!-- PANEL 4: ENCABEZADO & PIE -->
+                <div class="word-tab-panel" id="ribbon-tab-encabezado-pie">
+                  <div class="word-toolbar" style="background:#eff6ff; border-bottom:none; flex-wrap:wrap; gap:10px;">
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-gold btn-sm" onclick="activarModoEncabezado()" style="font-weight:700;">
+                        ✏️ Ir a Encabezado
+                      </button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="activarModoPie()" style="font-weight:700;">
+                        ✏️ Ir a Pie de Página
+                      </button>
+                    </div>
+
+                    <!-- Sincronización y Configuración -->
+                    <div class="word-tool-group" style="gap:14px;">
+                      <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#1e3a8a; cursor:pointer;">
+                        <input type="checkbox" id="chk-sync-header" checked onchange="headerSyncEnabled=this.checked; footerSyncEnabled=this.checked;">
+                        <span>🔁 Sincronizar en todas las páginas</span>
+                      </label>
+                      <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#1e3a8a; cursor:pointer;">
+                        <input type="checkbox" id="chk-diff-first" onchange="differentFirstPage=this.checked; actualizarNumerosDePagina();">
+                        <span>📄 Primera página diferente</span>
+                      </label>
+                    </div>
+
+                    <!-- Inserciones de Encabezado/Pie -->
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarFechaHoraEncabezado()" title="Insertar fecha en el encabezado activo">
+                        📅 Insertar Fecha
+                      </button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="restaurarEncabezadoApa7()" title="Restaurar formato APA 7 estándar">
+                        🔄 Restaurar APA 7
+                      </button>
+                    </div>
+
+                    <!-- Salir del modo edición de Encabezado/Pie -->
+                    <div style="margin-left:auto;">
+                      <button type="button" class="btn btn-dark btn-sm" onclick="desactivarModoEncabezadoPie()" style="background:#dc2626; border-color:#dc2626; color:#ffffff; font-weight:700;">
+                        ✖️ Cerrar Encabezado y Pie (Esc)
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- Color de texto y resaltador -->
-                <div class="word-tool-group">
-                  <label class="word-btn" title="Color de Fuente" style="position:relative; cursor:pointer;">
-                    <span style="font-weight:900; border-bottom:3px solid #dc2626;">A</span>
-                    <input type="color" onchange="ejecutarFormatoWord('foreColor', this.value)" style="opacity:0; position:absolute; width:100%; height:100%; cursor:pointer;">
-                  </label>
-                  <label class="word-btn" title="Color de Resaltado" style="position:relative; cursor:pointer;">
-                    <span style="background:#fef08a; padding:1px 4px; border-radius:3px; font-weight:800;">ab</span>
-                    <input type="color" value="#fef08a" onchange="ejecutarFormatoWord('hiliteColor', this.value)" style="opacity:0; position:absolute; width:100%; height:100%; cursor:pointer;">
-                  </label>
+                <!-- PANEL 5: VISTA & HERRAMIENTAS -->
+                <div class="word-tab-panel" id="ribbon-tab-vista">
+                  <div class="word-toolbar" style="border-bottom:none; flex-wrap:wrap; gap:8px;">
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-outline btn-sm" id="btn-toggle-ruler" onclick="toggleReglaWord()" title="Mostrar u ocultar la regla graduada de centímetros">
+                        📏 Alternar Regla (cm)
+                      </button>
+                    </div>
+
+                    <!-- Ajustes de Zoom -->
+                    <div class="word-tool-group" style="align-items:center; gap:6px;">
+                      <span style="font-size:11.5px; font-weight:700; color:#475569;">Zoom:</span>
+                      <button type="button" class="word-btn" onclick="zoomMenos()" title="Reducir zoom"><b>−</b></button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="cambiarZoomDocumento(100)">100%</button>
+                      <button type="button" class="word-btn" onclick="zoomMas()" title="Aumentar zoom"><b>+</b></button>
+                      <select class="word-select" onchange="cambiarZoomDocumento(this.value)" title="Zoom predefinido">
+                        <option value="75">75%</option>
+                        <option value="90">90%</option>
+                        <option value="100" selected>100% (Normal)</option>
+                        <option value="110">110%</option>
+                        <option value="125">125%</option>
+                        <option value="150">150%</option>
+                      </select>
+                    </div>
+
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-outline btn-sm" onclick="imprimirOExportarPdf()" title="Vista previa de impresión y exportar a PDF">
+                        🖨️ Imprimir / Vista Previa PDF
+                      </button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="copiarContenidoWord()" title="Copiar texto de todas las hojas">
+                        📋 Copiar Todo
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- Alineación -->
-                <div class="word-tool-group">
-                  <button class="word-btn" onclick="ejecutarFormatoWord('justifyLeft')" title="Alinear a la izquierda">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
-                  </button>
-                  <button class="word-btn" onclick="ejecutarFormatoWord('justifyCenter')" title="Centrar">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>
-                  </button>
-                  <button class="word-btn" onclick="ejecutarFormatoWord('justifyRight')" title="Alinear a la derecha">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
-                  </button>
-                  <button class="word-btn" onclick="ejecutarFormatoWord('justifyFull')" title="Justificar">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line></svg>
-                  </button>
-                </div>
+              </div>
 
-                <!-- Listas -->
-                <div class="word-tool-group">
-                  <button class="word-btn" onclick="ejecutarFormatoWord('insertUnorderedList')" title="Viñetas">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                  </button>
-                  <button class="word-btn" onclick="ejecutarFormatoWord('insertOrderedList')" title="Numeración">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line><path d="M4 6h1v4"></path><path d="M4 10h2"></path><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg>
-                  </button>
-                </div>
-
-                <!-- Deshacer / Rehacer -->
-                <div class="word-tool-group">
-                  <button class="word-btn" onclick="ejecutarFormatoWord('undo')" title="Deshacer (Ctrl+Z)">↶</button>
-                  <button class="word-btn" onclick="ejecutarFormatoWord('redo')" title="Rehacer (Ctrl+Y)">↷</button>
-                  <button class="word-btn" onclick="ejecutarFormatoWord('removeFormat')" title="Limpiar Formato">🧹</button>
+              <!-- Regla Graduada Estilo Word (Centímetros) -->
+              <div style="background:#f1f5f9; padding:6px 0 2px 0; display:flex; justify-content:center;">
+                <div class="word-ruler-wrapper" id="word-ruler-wrapper">
+                  <div class="ruler-margin-l" title="Margen izquierdo APA 7: 2.54 cm (1 pulgada)"></div>
+                  <div class="ruler-body">
+                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                    <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+                    <span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span>
+                  </div>
+                  <div class="ruler-margin-r" title="Margen derecho APA 7: 2.54 cm (1 pulgada)"></div>
                 </div>
               </div>
 
-              <!-- Toolbar Row 2: Inserciones Legales & Controles A4 APA 7 -->
-              <div class="word-toolbar" style="background:#f8fafc; border-bottom:none; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                  <span style="font-size:11.5px; font-weight:700; color:#475569;">Insertar elemento:</span>
-                  <button class="btn btn-outline btn-sm" onclick="insertarSaltoDePagina()" title="Insertar nueva hoja A4 (Atajo: Ctrl + Enter)">📄 Salto de Página</button>
-                  <button class="btn btn-outline btn-sm" onclick="aplicarSangriaApa()" title="Sangría de primera línea APA 7 (1.27 cm / 0.5 pulg)">⇥ Sangría 1.27 cm</button>
-                  <button class="btn btn-outline btn-sm" onclick="insertarMembreteQubira()">🏛️ Membrete QUBIRA</button>
-                  <button class="btn btn-outline btn-sm" onclick="insertarCuadroFirmas()">✍️ Cuadro de Firmas</button>
-                  <button class="btn btn-outline btn-sm" onclick="insertarClausulaLegal()">📜 Nueva Cláusula</button>
-                  <button class="btn btn-outline btn-sm" onclick="insertarFechaLugar()">📅 Fecha & Lugar</button>
-                  <button class="btn btn-outline btn-sm" onclick="insertarTablaWord()">📊 Tabla</button>
+              <!-- Canvas Hojas A4 Multi-página con Salto Automático -->
+              <div class="word-workspace" id="word-workspace">
+                <div class="a4-pages-container" id="a4-pages-container">
+                  <!-- Se generan dinámicamente las hojas A4 -->
                 </div>
+              </div>
 
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <span class="apa7-specs-badge">
-                    📏 <strong>A4:</strong> 210 × 297 mm &bull; <strong>Márgenes:</strong> 2.54 cm &bull; <strong>APA 7:</strong> Times New Roman 12pt
+              <!-- Status Bar -->
+              <div class="word-statusbar">
+                <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                  <span id="word-stats-words">Palabras: 0</span>
+                  <span id="word-stats-chars">Caracteres: 0</span>
+                  <span id="word-stats-pages" style="color:#fbbf24; font-weight:700;">Páginas: 1 A4 (APA 7)</span>
+                  <span style="font-size:11px; color:#94a3b8; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:4px;">
+                    ⌨️ Salto automático al exceder margen &bull; Doble clic en Encabezado/Pie para editar
                   </span>
                 </div>
+                <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                  <span id="word-cloud-status" style="display:inline-flex; align-items:center; gap:5px; color:#6ee7b7; font-weight:600;">
+                    ☁️ Sincronizado en Cloudinary
+                  </span>
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="zoomMenos()" style="padding:1px 6px; font-size:11px; height:22px; color:#ffffff; border-color:rgba(255,255,255,0.3);">−</button>
+                    <input type="range" id="word-zoom-range" min="50" max="150" value="100" oninput="cambiarZoomDocumento(this.value)" style="width:70px; height:4px; cursor:pointer;">
+                    <span id="word-zoom-val" style="font-size:11.5px; font-weight:700; color:#fbbf24; min-width:38px;">100%</span>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="zoomMas()" style="padding:1px 6px; font-size:11px; height:22px; color:#ffffff; border-color:rgba(255,255,255,0.3);">+</button>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <!-- Canvas Hojas A4 Multi-página con Salto Automático -->
-            <div class="word-workspace" id="word-workspace">
-              <div class="a4-pages-container" id="a4-pages-container">
-                <!-- Se generan dinámicamente las hojas A4 -->
-              </div>
-            </div>
-
-            <!-- Status Bar -->
-            <div class="word-statusbar">
-              <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-                <span id="word-stats-words">Palabras: 0</span>
-                <span id="word-stats-chars">Caracteres: 0</span>
-                <span id="word-stats-pages" style="color:#fbbf24; font-weight:700;">Páginas: 1 A4 (APA 7)</span>
-                <span style="font-size:11px; color:#94a3b8; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:4px;">
-                  ⌨️ Salto automático al exceder margen &bull; Ctrl+Enter manual
-                </span>
-              </div>
-              <div style="display:flex; align-items:center; gap:14px;">
-                <span id="word-cloud-status" style="display:inline-flex; align-items:center; gap:5px; color:#6ee7b7; font-weight:600;">
-                  ☁️ Sincronizado en Cloudinary
-                </span>
-                <span style="font-size:11px; color:#94a3b8;">QUBIRA S.A.C. &bull; RUC 10764275981</span>
-              </div>
-            </div>
           </div>
 
           <!-- SUBVIEW 2: DOCUMENTOS EN LA NUBE (CLOUDINARY) -->
@@ -1754,6 +2234,89 @@
             <button type="submit" class="btn btn-gold">Registrar en Inventario</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL BUSCAR Y REEMPLAZAR (ESTILO WORD) -->
+  <div class="modal-overlay" id="modal-buscar-reemplazar">
+    <div class="modal-card" style="max-width:480px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>Buscar y Reemplazar en Documento</span>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modal-buscar-reemplazar')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:18px;">
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-weight:700; font-size:12px; color:#475569;">Buscar palabra o frase:</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="find-text-input" placeholder="Término o palabra a buscar…" style="flex:1;" onkeydown="if(event.key==='Enter') buscarSiguientePalabra()">
+            <button type="button" class="btn btn-outline btn-sm" onclick="buscarSiguientePalabra()">Buscar siguiente</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-weight:700; font-size:12px; color:#475569;">Reemplazar con:</label>
+          <input type="text" id="replace-text-input" placeholder="Nuevo texto de reemplazo…">
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
+          <span id="find-results-count" style="font-size:12px; color:#64748b; font-weight:600;">0 coincidencias encontradas</span>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="reemplazarCoincidenciaActual()">Reemplazar</button>
+            <button type="button" class="btn btn-gold btn-sm" onclick="reemplazarTodasLasCoincidencias()">Reemplazar todo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL INSERTAR IMAGEN / LOGO (ESTILO WORD) -->
+  <div class="modal-overlay" id="modal-insertar-imagen">
+    <div class="modal-card" style="max-width:520px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          <span>Insertar Imagen / Logotipo en Documento</span>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modal-insertar-imagen')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding:18px;">
+        <div class="form-group" style="margin-bottom:14px;">
+          <label style="font-weight:700; font-size:12px; color:#475569;">Opción 1: Subir imagen desde su computadora</label>
+          <input type="file" id="word-img-file" accept="image/*" onchange="cargarImagenLocalWord(this)">
+        </div>
+        <div class="form-group" style="margin-bottom:14px;">
+          <label style="font-weight:700; font-size:12px; color:#475569;">Opción 2: URL de Imagen en línea</label>
+          <input type="url" id="word-img-url" placeholder="https://ejemplo.com/logo.png">
+        </div>
+        <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+          <div class="form-group">
+            <label style="font-weight:700; font-size:12px; color:#475569;">Tamaño / Ancho:</label>
+            <select id="word-img-width" class="word-select" style="width:100%;">
+              <option value="25%">Pequeño (25% ancho)</option>
+              <option value="50%" selected>Medio (50% ancho)</option>
+              <option value="75%">Grande (75% ancho)</option>
+              <option value="100%">Ancho Completo (100%)</option>
+              <option value="180px">Logo Sello (180 px)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label style="font-weight:700; font-size:12px; color:#475569;">Alineación:</label>
+            <select id="word-img-align" class="word-select" style="width:100%;">
+              <option value="center" selected>Centrado</option>
+              <option value="left">Alinear a la Izquierda</option>
+              <option value="right">Alinear a la Derecha</option>
+            </select>
+          </div>
+        </div>
+        <div id="word-img-preview-box" style="text-align:center; padding:10px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; min-height:60px; display:flex; align-items:center; justify-content:center;">
+          <span style="font-size:12px; color:#94a3b8;">Vista previa de la imagen seleccionada</span>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding:14px 18px; display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="cerrarModal('modal-insertar-imagen')">Cancelar</button>
+        <button type="button" class="btn btn-gold btn-sm" onclick="confirmarInsertarImagenWord()">Insertar en Documento</button>
       </div>
     </div>
   </div>
@@ -2884,26 +3447,47 @@ function switchDocSubView(subview) {
   if (subview === 'templates') renderCatalogoPlantillas();
 }
 
-// ── ESTADO Y CONFIGURACIÓN DEL MOTOR A4 APA 7 ──
+// ── ESTADO Y CONFIGURACIÓN DEL MOTOR A4 APA 7 & WORD OFFICE ──
 let apa7ModeActivo = true;
 let interlineadoActual = '2.0'; // APA 7 Doble espacio
 let margenActual = 'apa7'; // 25.4 mm (1 pulgada)
+let headerSyncEnabled = true;
+let footerSyncEnabled = true;
+let differentFirstPage = false;
+let runningHeadTextGlobal = '';
+let footerLeftTextoGlobal = 'QUBIRA S.A.C. • RUC 10764275981 • Área Legal';
+let watermarkActual = '';
+let zoomActual = 100;
+let rulerVisible = true;
+let imagenCargadaBase64 = '';
 
-// Crear elemento visual de Hoja A4 estándar (210mm x 297mm) con encabezado APA 7
+// Crear elemento visual de Hoja A4 estándar (210mm x 297mm) con encabezado y pie interactivo
 function crearElementoHojaA4(pageNumber, runningHead = '') {
-  const title = (runningHead || document.getElementById('word-doc-title')?.value || 'DOCUMENTO LEGAL').toUpperCase();
+  const defaultHead = (runningHead || document.getElementById('word-doc-title')?.value || 'DOCUMENTO LEGAL').toUpperCase();
   const sheet = document.createElement('div');
   sheet.className = 'a4-page-sheet';
   sheet.dataset.page = pageNumber;
+
+  let headText = defaultHead;
+  if (differentFirstPage && pageNumber === 1) {
+    headText = defaultHead;
+  } else {
+    headText = runningHeadTextGlobal || defaultHead;
+  }
+  let footLeft = footerLeftTextoGlobal || 'QUBIRA S.A.C. • RUC 10764275981 • Área Legal';
+
   sheet.innerHTML = `
-    <div class="a4-page-header" contenteditable="false">
-      <span class="a4-running-head">${title}</span>
-      <span class="a4-page-number">${pageNumber}</span>
+    <div class="a4-watermark ${watermarkActual ? 'active' : ''}">${watermarkActual}</div>
+    <div class="a4-page-header" contenteditable="false" title="Doble clic para editar el Encabezado">
+      <div class="a4-running-head" contenteditable="true" spellcheck="false" title="Haga clic para editar el encabezado">${headText}</div>
+      <div class="a4-page-number-box">
+        <span class="a4-page-number">${pageNumber}</span>
+      </div>
     </div>
     <div class="a4-page-content" contenteditable="true" spellcheck="true" data-page-index="${pageNumber}"></div>
-    <div class="a4-page-footer" contenteditable="false">
-      <span>QUBIRA S.A.C. &bull; RUC 10764275981</span>
-      <span class="a4-page-counter-footer">Página ${pageNumber}</span>
+    <div class="a4-page-footer" contenteditable="false" title="Doble clic para editar el Pie de página">
+      <div class="a4-footer-left" contenteditable="true" spellcheck="false" title="Haga clic para editar el pie de página">${footLeft}</div>
+      <div class="a4-footer-right a4-page-counter-footer" contenteditable="false">Página ${pageNumber}</div>
     </div>
   `;
   conectarEventosHoja(sheet);
@@ -2913,6 +3497,11 @@ function crearElementoHojaA4(pageNumber, runningHead = '') {
 // Conectar eventos a cada hoja A4
 function conectarEventosHoja(sheetEl) {
   const content = sheetEl.querySelector('.a4-page-content');
+  const header = sheetEl.querySelector('.a4-page-header');
+  const runningHead = sheetEl.querySelector('.a4-running-head');
+  const footer = sheetEl.querySelector('.a4-page-footer');
+  const footerLeft = sheetEl.querySelector('.a4-footer-left');
+
   if (!content) return;
 
   // Aplicar formato activo
@@ -2923,6 +3512,61 @@ function conectarEventosHoja(sheetEl) {
     manejarInputEnPagina(content);
     actualizarEstadisticasWord();
   });
+
+  // Doble clic en encabezado o pie activa modo de edición
+  if (header) {
+    header.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      activarModoEncabezado(sheetEl);
+    });
+  }
+  if (footer) {
+    footer.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      activarModoPie(sheetEl);
+    });
+  }
+
+  // Doble clic en contenido sale del modo edición de Encabezado/Pie
+  content.addEventListener('dblclick', () => {
+    const ws = document.getElementById('word-workspace');
+    if (ws && ws.classList.contains('hf-editing')) {
+      desactivarModoEncabezadoPie();
+    }
+  });
+
+  // Eventos de edición de Encabezado y Pie con sincronización
+  if (runningHead) {
+    runningHead.addEventListener('focus', () => {
+      document.getElementById('word-workspace')?.classList.add('hf-editing');
+      cambiarPestanaRibbon('encabezado-pie');
+    });
+    runningHead.addEventListener('input', () => {
+      manejarInputEncabezado(runningHead);
+    });
+    runningHead.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        content.focus();
+      }
+    });
+  }
+
+  if (footerLeft) {
+    footerLeft.addEventListener('focus', () => {
+      document.getElementById('word-workspace')?.classList.add('hf-editing');
+      cambiarPestanaRibbon('encabezado-pie');
+    });
+    footerLeft.addEventListener('input', () => {
+      manejarInputPie(footerLeft);
+    });
+    footerLeft.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        content.focus();
+      }
+    });
+  }
 
   content.addEventListener('keydown', (e) => {
     // Atajo manual: Ctrl + Enter o Cmd + Enter -> Salto de Página
@@ -2955,6 +3599,145 @@ function conectarEventosHoja(sheetEl) {
       repaginarDocumentoCompleto();
     }, 40);
   });
+}
+
+// ── GESTIÓN Y SINCRONIZACIÓN DE ENCABEZADO Y PIE DE PÁGINA ──
+function activarModoEncabezado(sheetTarget = null) {
+  const ws = document.getElementById('word-workspace');
+  if (ws) ws.classList.add('hf-editing');
+  cambiarPestanaRibbon('encabezado-pie');
+
+  const container = document.getElementById('a4-pages-container');
+  const sheet = sheetTarget || container?.querySelector('.a4-page-sheet') || null;
+  if (sheet) {
+    const rh = sheet.querySelector('.a4-running-head');
+    if (rh) {
+      rh.focus();
+      const sel = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(rh);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
+}
+
+function activarModoPie(sheetTarget = null) {
+  const ws = document.getElementById('word-workspace');
+  if (ws) ws.classList.add('hf-editing');
+  cambiarPestanaRibbon('encabezado-pie');
+
+  const container = document.getElementById('a4-pages-container');
+  const sheet = sheetTarget || container?.querySelector('.a4-page-sheet') || null;
+  if (sheet) {
+    const fl = sheet.querySelector('.a4-footer-left');
+    if (fl) {
+      fl.focus();
+      const sel = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(fl);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
+}
+
+function desactivarModoEncabezadoPie() {
+  const ws = document.getElementById('word-workspace');
+  if (ws) ws.classList.remove('hf-editing');
+  cambiarPestanaRibbon('inicio');
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) activeContent.focus();
+}
+
+function manejarInputEncabezado(headEl) {
+  const sheet = headEl.closest('.a4-page-sheet');
+  const pageNum = parseInt(sheet?.dataset?.page || '1', 10);
+  const newText = headEl.innerText;
+
+  if (differentFirstPage && pageNum === 1) {
+    return;
+  }
+
+  runningHeadTextGlobal = newText;
+
+  if (headerSyncEnabled) {
+    const container = document.getElementById('a4-pages-container');
+    if (!container) return;
+    const allSheets = container.querySelectorAll('.a4-page-sheet');
+    allSheets.forEach(s => {
+      const p = parseInt(s.dataset.page || '1', 10);
+      if (differentFirstPage && p === 1) return;
+      const rh = s.querySelector('.a4-running-head');
+      if (rh && rh !== headEl && rh.innerText !== newText) {
+        rh.innerText = newText;
+      }
+    });
+  }
+
+  const cloudStatus = document.getElementById('word-cloud-status');
+  if (cloudStatus) {
+    cloudStatus.innerHTML = '● Encabezado actualizado';
+    cloudStatus.style.color = '#fbbf24';
+  }
+}
+
+function manejarInputPie(footEl) {
+  const sheet = footEl.closest('.a4-page-sheet');
+  const pageNum = parseInt(sheet?.dataset?.page || '1', 10);
+  const newText = footEl.innerText;
+
+  if (differentFirstPage && pageNum === 1) {
+    return;
+  }
+
+  footerLeftTextoGlobal = newText;
+
+  if (footerSyncEnabled) {
+    const container = document.getElementById('a4-pages-container');
+    if (!container) return;
+    const allSheets = container.querySelectorAll('.a4-page-sheet');
+    allSheets.forEach(s => {
+      const p = parseInt(s.dataset.page || '1', 10);
+      if (differentFirstPage && p === 1) return;
+      const fl = s.querySelector('.a4-footer-left');
+      if (fl && fl !== footEl && fl.innerText !== newText) {
+        fl.innerText = newText;
+      }
+    });
+  }
+
+  const cloudStatus = document.getElementById('word-cloud-status');
+  if (cloudStatus) {
+    cloudStatus.innerHTML = '● Pie de página actualizado';
+    cloudStatus.style.color = '#fbbf24';
+  }
+}
+
+function insertarFechaHoraEncabezado() {
+  const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const hoy = new Date();
+  const fechaStr = `${hoy.getDate()} de ${meses[hoy.getMonth()]} de ${hoy.getFullYear()}`;
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+  const activeHead = document.activeElement?.classList?.contains('a4-running-head')
+    ? document.activeElement
+    : container.querySelector('.a4-running-head');
+  if (activeHead) {
+    activeHead.innerText = activeHead.innerText + ` • ${fechaStr}`;
+    manejarInputEncabezado(activeHead);
+  }
+}
+
+function restaurarEncabezadoApa7() {
+  const docTitle = (document.getElementById('word-doc-title')?.value || 'DOCUMENTO LEGAL').toUpperCase();
+  runningHeadTextGlobal = docTitle;
+  footerLeftTextoGlobal = 'QUBIRA S.A.C. • RUC 10764275981 • Área Legal';
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+  container.querySelectorAll('.a4-running-head').forEach(rh => rh.innerText = docTitle);
+  container.querySelectorAll('.a4-footer-left').forEach(fl => fl.innerText = footerLeftTextoGlobal);
+  actualizarNumerosDePagina();
 }
 
 // Detección de posición del cursor
@@ -3324,11 +4107,19 @@ function actualizarNumerosDePagina() {
 
     // Encabezado APA 7 (Header a 12.7 mm con running head y número a la derecha)
     const runningHead = sheet.querySelector('.a4-running-head');
-    if (runningHead) runningHead.textContent = docTitle;
+    if (runningHead) {
+      if (!runningHead.innerText.trim()) {
+        runningHead.innerText = (differentFirstPage && pageNum === 1) ? docTitle : (runningHeadTextGlobal || docTitle);
+      }
+    }
     const pageNumEl = sheet.querySelector('.a4-page-number');
     if (pageNumEl) pageNumEl.textContent = pageNum;
 
     // Pie de página
+    const footLeft = sheet.querySelector('.a4-footer-left');
+    if (footLeft && !footLeft.innerText.trim()) {
+      footLeft.innerText = footerLeftTextoGlobal;
+    }
     const pageCounterFooter = sheet.querySelector('.a4-page-counter-footer');
     if (pageCounterFooter) pageCounterFooter.textContent = `Página ${pageNum} de ${totalPages}`;
   });
@@ -3338,6 +4129,284 @@ function actualizarNumerosDePagina() {
     pEl.textContent = `Páginas: ${totalPages} A4 (APA 7)`;
   }
 }
+
+// ── PESTAÑAS DE LA CINTA DE OPCIONES WORD (RIBBON TABS) ──
+function cambiarPestanaRibbon(tabId) {
+  const tabBtns = document.querySelectorAll('.word-ribbon-tab-btn');
+  tabBtns.forEach(btn => {
+    if (btn.dataset.tab === tabId) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  const panels = document.querySelectorAll('.word-tab-panel');
+  panels.forEach(panel => {
+    if (panel.id === `ribbon-tab-${tabId}`) {
+      panel.classList.add('active');
+    } else {
+      panel.classList.remove('active');
+    }
+  });
+}
+
+// ── CAMBIO DE MAYÚSCULAS / MINÚSCULAS (Aa) ──
+function cambiarMayusculasMinusculas(modo) {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  const text = range.toString();
+  if (!text) {
+    alert('Seleccione primero el texto que desea cambiar a mayúsculas/minúsculas.');
+    return;
+  }
+
+  let converted = text;
+  if (modo === 'mayusculas') {
+    converted = text.toUpperCase();
+  } else if (modo === 'minusculas') {
+    converted = text.toLowerCase();
+  } else if (modo === 'oracion') {
+    converted = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  } else if (modo === 'capitalizar') {
+    converted = text.replace(/\b\w/g, l => l.toUpperCase());
+  }
+
+  document.execCommand('insertText', false, converted);
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) manejarInputEnPagina(activeContent);
+}
+
+// ── SÍMBOLOS LEGALES RÁPIDOS ──
+function insertarSimboloLegal(simbolo) {
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) activeContent.focus();
+  document.execCommand('insertText', false, simbolo + ' ');
+  if (activeContent) manejarInputEnPagina(activeContent);
+}
+
+// ── MARCA DE AGUA (WATERMARK) ──
+function aplicarMarcaDeAgua(tipo) {
+  watermarkActual = (tipo === 'ninguna' || !tipo) ? '' : tipo;
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+  const sheets = container.querySelectorAll('.a4-page-sheet');
+  sheets.forEach(s => {
+    let wm = s.querySelector('.a4-watermark');
+    if (!wm) {
+      wm = document.createElement('div');
+      wm.className = 'a4-watermark';
+      s.insertBefore(wm, s.firstChild);
+    }
+    if (watermarkActual) {
+      wm.textContent = watermarkActual;
+      wm.classList.add('active');
+    } else {
+      wm.textContent = '';
+      wm.classList.remove('active');
+    }
+  });
+
+  const selectEl = document.getElementById('word-watermark-select');
+  if (selectEl && selectEl.value !== (watermarkActual || 'ninguna')) {
+    selectEl.value = watermarkActual || 'ninguna';
+  }
+}
+
+// ── REGLA GRADUADA EN CENTÍMETROS ──
+function toggleReglaWord() {
+  const ruler = document.getElementById('word-ruler-wrapper');
+  if (!ruler) return;
+  rulerVisible = !rulerVisible;
+  ruler.style.display = rulerVisible ? 'flex' : 'none';
+  const btn = document.getElementById('btn-toggle-ruler');
+  if (btn) btn.classList.toggle('active', rulerVisible);
+}
+
+// ── CONTROLES DE ZOOM ──
+function cambiarZoomDocumento(porcentaje) {
+  zoomActual = parseInt(porcentaje, 10);
+  const container = document.getElementById('a4-pages-container');
+  const ruler = document.getElementById('word-ruler-wrapper');
+  const zoomDisplay = document.getElementById('word-zoom-val');
+  const zoomRange = document.getElementById('word-zoom-range');
+
+  if (zoomDisplay) zoomDisplay.textContent = `${zoomActual}%`;
+  if (zoomRange) zoomRange.value = zoomActual;
+
+  const scale = zoomActual / 100;
+  if (container) {
+    container.style.transform = `scale(${scale})`;
+    container.style.transformOrigin = 'top center';
+    container.style.marginBottom = scale > 1 ? `${(scale - 1) * 350}px` : '20px';
+  }
+  if (ruler) {
+    ruler.style.transform = `scale(${scale})`;
+    ruler.style.transformOrigin = 'top center';
+  }
+}
+
+function zoomMas() {
+  if (zoomActual < 160) cambiarZoomDocumento(zoomActual + 10);
+}
+
+function zoomMenos() {
+  if (zoomActual > 50) cambiarZoomDocumento(zoomActual - 10);
+}
+
+// ── MOTOR DE BÚSQUEDA Y REEMPLAZO (FIND & REPLACE) ──
+function abrirBuscarYReemplazar() {
+  abrirModal('modal-buscar-reemplazar');
+  const input = document.getElementById('find-text-input');
+  if (input) {
+    setTimeout(() => {
+      input.focus();
+      input.select();
+    }, 120);
+  }
+}
+
+function buscarSiguientePalabra() {
+  const query = document.getElementById('find-text-input')?.value.trim();
+  const countEl = document.getElementById('find-results-count');
+  if (!query) {
+    if (countEl) countEl.textContent = 'Ingrese un término a buscar';
+    return;
+  }
+
+  const found = window.find(query, false, false, true, false, false, false);
+  if (!found) {
+    window.getSelection()?.collapse(document.getElementById('a4-pages-container'), 0);
+    const retry = window.find(query, false, false, true, false, false, false);
+    if (!retry) {
+      if (countEl) countEl.textContent = 'No se encontraron más coincidencias';
+      return;
+    }
+  }
+
+  const container = document.getElementById('a4-pages-container');
+  const totalText = container ? container.innerText : '';
+  const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+  const matches = totalText.match(regex) || [];
+  if (countEl) countEl.textContent = `${matches.length} coincidencia(s) encontrada(s)`;
+}
+
+function reemplazarCoincidenciaActual() {
+  const replacement = document.getElementById('replace-text-input')?.value ?? '';
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount && !sel.isCollapsed) {
+    document.execCommand('insertText', false, replacement);
+    const activeContent = obtenerPaginaActiva();
+    if (activeContent) manejarInputEnPagina(activeContent);
+  }
+  buscarSiguientePalabra();
+}
+
+function reemplazarTodasLasCoincidencias() {
+  const query = document.getElementById('find-text-input')?.value.trim();
+  const replacement = document.getElementById('replace-text-input')?.value ?? '';
+  const countEl = document.getElementById('find-results-count');
+  if (!query) return;
+
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+
+  let totalReplaced = 0;
+  const contents = container.querySelectorAll('.a4-page-content');
+  const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(escapedQuery, 'gi');
+
+  contents.forEach(content => {
+    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(node => {
+      if (regex.test(node.nodeValue)) {
+        node.nodeValue = node.nodeValue.replace(regex, replacement);
+        totalReplaced++;
+      }
+    });
+  });
+
+  if (countEl) countEl.textContent = `${totalReplaced} reemplazos realizados con éxito`;
+  repaginarDocumentoCompleto();
+}
+
+// ── INSERCIÓN DE IMAGEN / LOGO EN EL DOCUMENTO ──
+function abrirModalInsertarImagen() {
+  imagenCargadaBase64 = '';
+  const urlInp = document.getElementById('word-img-url');
+  const fileInp = document.getElementById('word-img-file');
+  const prevBox = document.getElementById('word-img-preview-box');
+  if (urlInp) urlInp.value = '';
+  if (fileInp) fileInp.value = '';
+  if (prevBox) prevBox.innerHTML = '<span style="font-size:12px; color:#94a3b8;">Vista previa de la imagen seleccionada</span>';
+  abrirModal('modal-insertar-imagen');
+}
+
+function cargarImagenLocalWord(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    imagenCargadaBase64 = e.target.result;
+    const prevBox = document.getElementById('word-img-preview-box');
+    if (prevBox) {
+      prevBox.innerHTML = `<img src="${imagenCargadaBase64}" style="max-height:120px; max-width:100%; border-radius:4px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">`;
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function confirmarInsertarImagenWord() {
+  const urlVal = document.getElementById('word-img-url')?.value.trim() || '';
+  const src = imagenCargadaBase64 || urlVal;
+  if (!src) {
+    alert('Por favor seleccione una imagen desde su equipo o ingrese una URL válida.');
+    return;
+  }
+  const widthVal = document.getElementById('word-img-width')?.value || '50%';
+  const alignVal = document.getElementById('word-img-align')?.value || 'center';
+
+  let textAlign = 'center';
+  if (alignVal === 'left') textAlign = 'left';
+  if (alignVal === 'right') textAlign = 'right';
+
+  const imgHtml = `
+    <div style="text-align:${textAlign}; margin:14px 0;" contenteditable="false">
+      <img src="${src}" alt="Imagen documento" style="width:${widthVal}; max-width:100%; height:auto; border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    </div>
+    <p><br></p>
+  `;
+
+  cerrarModal('modal-insertar-imagen');
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) {
+    activeContent.focus();
+    document.execCommand('insertHTML', false, imgHtml);
+    repaginarDocumentoCompleto();
+  }
+}
+
+// Atajos globales de teclado estilo Microsoft Office
+document.addEventListener('keydown', (e) => {
+  // Escape: salir de modo encabezado / pie
+  if (e.key === 'Escape') {
+    const ws = document.getElementById('word-workspace');
+    if (ws && ws.classList.contains('hf-editing')) {
+      desactivarModoEncabezadoPie();
+    }
+  }
+  // Ctrl + F / Ctrl + H: Buscar y Reemplazar
+  if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'f' || e.key.toLowerCase() === 'h')) {
+    const activeSubview = document.getElementById('subview-editor');
+    if (activeSubview && activeSubview.classList.contains('active')) {
+      e.preventDefault();
+      abrirBuscarYReemplazar();
+    }
+  }
+});
 
 // Cargar plantilla seleccionada
 function cargarPlantillaSeleccionada(key) {
@@ -3681,22 +4750,31 @@ function descargarDocumentoWord() {
   const title = document.getElementById('word-doc-title').value.trim() || 'Documento_Legal_QUBIRA';
   const container = document.getElementById('a4-pages-container');
   const sheets = container ? container.querySelectorAll('.a4-page-sheet') : [];
-  const runningHead = title.toUpperCase();
+  const defaultHead = (runningHeadTextGlobal || title).toUpperCase();
+  const footerLeft = footerLeftTextoGlobal || 'QUBIRA S.A.C. • RUC 10764275981 • Área Legal';
 
   let bodyPagesHtml = '';
   sheets.forEach((sheet, idx) => {
     const pageNum = idx + 1;
     const content = sheet.querySelector('.a4-page-content')?.innerHTML || '';
+    const runningHeadText = sheet.querySelector('.a4-running-head')?.innerText.trim() || defaultHead;
+    const footerText = sheet.querySelector('.a4-footer-left')?.innerText.trim() || footerLeft;
+
     if (idx > 0) {
       bodyPagesHtml += `<br clear=all style='mso-special-character:line-break;page-break-before:always'>\n`;
     }
     bodyPagesHtml += `
-      <div class="word-a4-page" style="page-break-after:always;">
-        <div style="text-align:right; font-size:10pt; font-family:'Times New Roman', serif; margin-bottom:20pt; border-bottom:1px solid #e2e8f0; padding-bottom:4pt;">
-          <span style="float:left; text-transform:uppercase; font-size:9pt; color:#64748b;">${runningHead}</span>
+      <div class="word-a4-page" style="page-break-after:always; position:relative;">
+        <div style="text-align:right; font-size:10pt; font-family:'Times New Roman', serif; margin-bottom:18pt; border-bottom:1px solid #cbd5e1; padding-bottom:4pt;">
+          <span style="float:left; text-transform:uppercase; font-size:9pt; color:#475569; font-weight:600;">${runningHeadText}</span>
           <strong style="font-size:11pt; color:#0f172a;">${pageNum}</strong>
         </div>
+        ${watermarkActual ? `<div style="text-align:center; font-size:28pt; font-weight:900; color:#cbd5e1; margin-bottom:14pt; letter-spacing:4px; text-transform:uppercase;">${watermarkActual}</div>` : ''}
         ${content}
+        <div style="margin-top:28pt; border-top:1px solid #cbd5e1; padding-top:4pt; font-size:8.5pt; color:#64748b; font-family:'Arial',sans-serif; display:flex; justify-content:space-between;">
+          <span>${footerText}</span>
+          <span style="float:right;">Página ${pageNum} de ${sheets.length}</span>
+        </div>
       </div>
     `;
   });
