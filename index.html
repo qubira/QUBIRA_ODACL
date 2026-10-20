@@ -1061,6 +1061,10 @@
       margin: 0 0 10pt 0;
       text-align: justify;
     }
+    /* El margen inferior del último bloque de una hoja no ocupa espacio
+       imprimible: sin esto, al partir un párrafo justo en la última línea
+       ese margen "desbordaba" y el párrafo entero saltaba de hoja. */
+    .a4-page-content > :last-child { margin-bottom: 0 !important; }
     .a4-page-content.apa-indent p {
       text-indent: 1.27cm; /* Sangría de primera línea APA 7 (0.5 in) */
     }
@@ -4189,6 +4193,7 @@ function conectarEventosHoja(sheetEl) {
 
   let inputTimer = null;
   content.addEventListener('input', () => {
+    if (content._pegando) return; // el pegado repagina por su cuenta
     // Si no sobrepasa la altura imprimible, no interrumpir la escritura en absoluto
     if (content.scrollHeight <= content.clientHeight + 2) {
       actualizarEstadisticasWord();
@@ -4313,13 +4318,26 @@ function conectarEventosHoja(sheetEl) {
     }
   });
 
-  content.addEventListener('paste', () => {
-    setTimeout(() => {
-      const caret = guardarCaret();
+  content.addEventListener('paste', (e) => {
+    const cd = e.clipboardData;
+    const html = cd ? cd.getData('text/html') : '';
+    const text = cd ? cd.getData('text/plain') : '';
+    const limpio = html ? limpiarHtmlPegado(html) : textoPlanoAParrafos(text);
+    if (limpio) {
+      e.preventDefault();
+      content._pegando = true;
+      document.execCommand('insertHTML', false, limpio);
+    }
+    // Repaginar todo tras el pegado: los párrafos largos se parten por línea
+    requestAnimationFrame(() => {
       repaginarDocumentoCompleto();
-      restaurarCaret(caret);
+      content._pegando = false;
+      const sel = window.getSelection();
+      const nodo = sel && sel.rangeCount ? sel.getRangeAt(0).startContainer : null;
+      const el = nodo && (nodo.nodeType === 1 ? nodo : nodo.parentElement);
+      if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest' });
       actualizarEstadisticasWord();
-    }, 35);
+    });
   });
 }
 
@@ -4860,6 +4878,24 @@ function resetearScrollHojas() {
   });
 }
 
+// Envolver texto suelto / elementos en línea del nivel superior de una hoja
+// en <p>, para que el motor de paginación pueda partirlos por línea.
+const BLOQUES_PAGINABLES = new Set(['P','DIV','H1','H2','H3','H4','H5','H6','UL','OL','TABLE','BLOCKQUOTE','PRE','HR','IMG','FIGURE','SECTION','ARTICLE']);
+function normalizarBloquesContenido(content) {
+  let grupo = null;
+  Array.from(content.childNodes).forEach(node => {
+    const esBloque = node.nodeType === Node.ELEMENT_NODE && (BLOQUES_PAGINABLES.has(node.tagName) || node.classList.contains('word-signature-block'));
+    const esVacio = node.nodeType === Node.TEXT_NODE && !node.nodeValue.trim();
+    if (esBloque || node.nodeType === Node.COMMENT_NODE) { grupo = null; return; }
+    if (esVacio && !grupo) return;
+    if (!grupo) {
+      grupo = document.createElement('p');
+      content.insertBefore(grupo, node);
+    }
+    grupo.appendChild(node);
+  });
+}
+
 function desbordarPagina(pageIndex, allowFallback = true) {
   const container = document.getElementById('a4-pages-container');
   if (!container) return;
@@ -4888,6 +4924,8 @@ function desbordarPagina(pageIndex, allowFallback = true) {
   }
   const nextContent = nextSheet.querySelector('.a4-page-content');
   if (!nextContent) return;
+
+  normalizarBloquesContenido(content);
 
   // Analizar los hijos de content para encontrar el elemento que cruza targetH
   const children = Array.from(content.children);
@@ -4932,6 +4970,12 @@ function desbordarPagina(pageIndex, allowFallback = true) {
     loopCount++;
     const last = content.lastChild;
     if (!last) break;
+    // Si el último bloque empieza dentro de la hoja, partirlo por línea en vez de moverlo entero
+    if (last.nodeType === Node.ELEMENT_NODE && last.offsetTop < targetH - 10 &&
+        last.offsetTop + last.offsetHeight > targetH + 2 &&
+        dividirElementoDesbordante(last, content, nextContent, targetH, true)) {
+      continue;
+    }
     nextContent.insertBefore(last, nextContent.firstChild);
   }
 
@@ -5092,7 +5136,7 @@ function repaginarDocumentoCompleto() {
 
   let i = 0;
   let safety = 0;
-  while (i < container.querySelectorAll('.a4-page-sheet').length && safety < 80) {
+  while (i < container.querySelectorAll('.a4-page-sheet').length && safety < 500) {
     safety++;
     const sheets = container.querySelectorAll('.a4-page-sheet');
     const sheet = sheets[i];
@@ -5120,6 +5164,74 @@ function repaginarDocumentoCompleto() {
   resetearScrollHojas();
   actualizarNumerosDePagina();
   actualizarEstadisticasWord();
+}
+
+// ── PEGADO: convertir el portapapeles en párrafos limpios y paginables ──
+function escaparHtmlPegado(t) {
+  return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function textoPlanoAParrafos(text) {
+  if (!text) return '';
+  return text.replace(/\r\n?/g, '\n').split('\n')
+    .map(l => l.trim())
+    .filter(l => l.length)
+    .map(l => `<p>${escaparHtmlPegado(l)}</p>`)
+    .join('');
+}
+
+function limpiarHtmlPegado(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  doc.querySelectorAll('script, style, meta, link, title, xml, iframe, object, embed').forEach(n => n.remove());
+
+  const INLINE_OK = new Set(['B','STRONG','I','EM','U','S','STRIKE','SUB','SUP','A','BR']);
+  const BLOQUE_OK = new Set(['P','H1','H2','H3','H4','UL','OL','LI','TABLE','THEAD','TBODY','TR','TD','TH','BLOCKQUOTE']);
+  const BLOQUE_A_P = new Set(['DIV','SECTION','ARTICLE','HEADER','FOOTER','MAIN','ASIDE','NAV','H5','H6','PRE','ADDRESS','FIGCAPTION','DT','DD']);
+
+  function limpiar(nodo) {
+    Array.from(nodo.childNodes).forEach(hijo => {
+      if (hijo.nodeType === Node.COMMENT_NODE) { hijo.remove(); return; }
+      if (hijo.nodeType !== Node.ELEMENT_NODE) return;
+      limpiar(hijo);
+      const tag = hijo.tagName;
+      if (INLINE_OK.has(tag) || BLOQUE_OK.has(tag)) {
+        // Quitar estilos/clases externos (fuentes, tamaños, interlineado, saltos de página)
+        Array.from(hijo.attributes).forEach(a => {
+          const keep = (tag === 'A' && a.name === 'href') || ((tag === 'TD' || tag === 'TH') && (a.name === 'colspan' || a.name === 'rowspan'));
+          if (!keep) hijo.removeAttribute(a.name);
+        });
+        return;
+      }
+      if (BLOQUE_A_P.has(tag)) {
+        const tieneBloques = Array.from(hijo.children).some(c => BLOQUE_OK.has(c.tagName));
+        if (tieneBloques) {
+          hijo.replaceWith(...Array.from(hijo.childNodes));
+        } else {
+          const pEl = doc.createElement('p');
+          pEl.append(...Array.from(hijo.childNodes));
+          hijo.replaceWith(pEl);
+        }
+        return;
+      }
+      // span, font, o:p, etc.: conservar solo su contenido
+      hijo.replaceWith(...Array.from(hijo.childNodes));
+    });
+  }
+  limpiar(doc.body);
+
+  // Agrupar texto / elementos en línea sueltos del nivel superior en <p>
+  const out = doc.createElement('div');
+  let grupo = null;
+  Array.from(doc.body.childNodes).forEach(n => {
+    if (n.nodeType === Node.ELEMENT_NODE && BLOQUE_OK.has(n.tagName)) { grupo = null; out.appendChild(n); return; }
+    if (n.nodeType === Node.TEXT_NODE && !n.nodeValue.trim() && !grupo) return;
+    if (!grupo) { grupo = doc.createElement('p'); out.appendChild(grupo); }
+    grupo.appendChild(n);
+  });
+  out.querySelectorAll('p').forEach(pEl => {
+    if (!pEl.textContent.trim() && !pEl.querySelector('img')) pEl.remove();
+  });
+  return out.innerHTML.trim();
 }
 
 // Cargar contenido HTML distribuido en hojas A4
