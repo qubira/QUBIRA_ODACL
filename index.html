@@ -5415,8 +5415,18 @@ function obtenerRangoDesdePunto(x, y) {
 }
 
 // ── ARRASTRE DE RATÓN CONTINUO ENTRE HOJAS A4 ──
+/* Cada hoja es su propio contenteditable, y ningún navegador deja arrastrar
+   una selección nativa de un contenteditable a otro: el navegador la recorta
+   de vuelta al límite de la hoja donde empezó el arrastre en cuanto procesa
+   su propio manejo por defecto del mousemove. Por eso, mientras el arrastre
+   se mantiene DENTRO de la misma hoja dejamos la selección nativa intacta
+   (comportamiento normal, sin sorpresas); en cuanto el mouse cruza a otra
+   hoja, tomamos el control con un Range manual Y llamamos preventDefault()
+   para que el navegador no siga peleando por recortarla de vuelta. */
 let dragSeleccionActiva = false;
 let dragInicioRango = null;
+let dragInicioContent = null;
+let dragUltimoRangoCruzado = null; // último Range manual válido mientras el arrastre cruza hojas
 
 function inicializarSeleccionContinua() {
   const container = document.getElementById('a4-pages-container');
@@ -5429,15 +5439,22 @@ function inicializarSeleccionContinua() {
     if (content) {
       dragSeleccionActiva = true;
       dragInicioRango = obtenerRangoDesdePunto(e.clientX, e.clientY);
+      dragInicioContent = content;
+      dragUltimoRangoCruzado = null;
     }
   });
 
   document.addEventListener('mousemove', (e) => {
     if (!dragSeleccionActiva || !dragInicioRango || e.buttons !== 1) return;
 
-    const hoverSheet = e.target.closest('.a4-page-sheet');
     const hoverContent = e.target.closest('.a4-page-content');
-    if (!hoverSheet && !hoverContent) return;
+    if (!hoverContent) return;
+
+    // Dentro de la misma hoja: que el navegador siga manejando la selección.
+    if (hoverContent === dragInicioContent) return;
+
+    // Cruzó a otra hoja: tomamos el control manual de la selección.
+    e.preventDefault();
 
     const currentRange = obtenerRangoDesdePunto(e.clientX, e.clientY);
     if (!currentRange || !currentRange.startContainer) return;
@@ -5447,7 +5464,7 @@ function inicializarSeleccionContinua() {
       const newRange = document.createRange();
       const pos = dragInicioRango.startContainer.compareDocumentPosition(currentRange.startContainer);
 
-      if (pos & Node.DOCUMENT_POSITION_FOLLOWING || 
+      if (pos & Node.DOCUMENT_POSITION_FOLLOWING ||
          (dragInicioRango.startContainer === currentRange.startContainer && dragInicioRango.startOffset <= currentRange.startOffset)) {
         newRange.setStart(dragInicioRango.startContainer, dragInicioRango.startOffset);
         newRange.setEnd(currentRange.startContainer, currentRange.startOffset);
@@ -5458,10 +5475,30 @@ function inicializarSeleccionContinua() {
 
       sel.removeAllRanges();
       sel.addRange(newRange);
+      dragUltimoRangoCruzado = newRange;
     } catch (err) {}
   });
 
   document.addEventListener('mouseup', () => {
+    /* Al soltar el mouse sobre una hoja distinta de donde empezó el
+       arrastre, el navegador mueve el foco a ese contenteditable — y ese
+       cambio de foco colapsa cualquier selección a un solo punto dentro de
+       él (cada contenteditable gestiona su propia selección). Si veníamos
+       de cruzar hojas, reaplicamos el último Range válido justo DESPUÉS de
+       que ese foco/clic nativo termine de procesarse, para que gane la
+       selección continua en vez de quedar colapsada. */
+    if (dragUltimoRangoCruzado) {
+      const rangoFinal = dragUltimoRangoCruzado;
+      setTimeout(() => {
+        try {
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(rangoFinal);
+        } catch (err) {}
+      }, 0);
+    }
+    dragInicioContent = null;
+    dragUltimoRangoCruzado = null;
     dragSeleccionActiva = false;
   });
 }
