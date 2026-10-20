@@ -459,37 +459,218 @@
       padding: 0 8px; background: #fff; color: #0f172a; cursor: pointer; font-family: inherit; outline: none;
     }
 
-    /* Canvas / Workspace A4 Paper */
+    /* ═══════════════════════════════════════════════════════════
+       A4 PAPER & FORMATO APA 7 (7ma Edición)
+       Medidas Oficiales A4: 210mm x 297mm (8.27" x 11.69")
+       Márgenes APA 7: 25.4mm (1 pulgada = 2.54 cm) en los 4 costados
+       Encabezado APA 7: a 12.7mm (0.5 pulgada) del borde superior
+       ═══════════════════════════════════════════════════════════ */
+    :root {
+      --a4-w: 210mm;
+      --a4-h: 297mm;
+      --apa7-margin: 25.4mm;
+      --apa7-header-top: 12.7mm;
+      --a4-content-h: 246.2mm; /* 297mm - (25.4mm * 2) */
+    }
+
+    /* Espacio de trabajo gris profesional estilo Microsoft Word / Google Docs */
     .word-workspace {
-      background: #e2e8f0; border-radius: 14px; padding: 40px 20px;
-      min-height: 850px; display: flex; flex-direction: column; align-items: center;
-      overflow-x: auto; box-shadow: inset 0 2px 8px rgba(0,0,0,.06);
+      background: #525659;
+      border-radius: 14px;
+      padding: 40px 15px 70px 15px;
+      min-height: 950px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: auto;
+      box-shadow: inset 0 3px 12px rgba(0,0,0,.25);
     }
-    .word-page {
-      background: #ffffff; width: 840px; min-height: 1188px; padding: 60px 75px;
-      border-radius: 2px; box-shadow: 0 10px 30px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.08);
-      color: #0f172a; font-family: 'Times New Roman', 'Georgia', serif; font-size: 13.5px; line-height: 1.65;
-      position: relative; box-sizing: border-box; text-align: justify;
+
+    .a4-pages-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 26px; /* Separación física visual entre hojas A4 */
+      width: 100%;
     }
-    .word-page:focus { outline: none; }
-    .word-page h1, .word-page h2, .word-page h3, .word-page h4 { font-family: 'Arial', sans-serif; }
+
+    /* Hoja física A4 con medidas y márgenes exactos APA 7 */
+    .a4-page-sheet {
+      background: #ffffff;
+      width: 210mm;
+      min-width: 210mm;
+      max-width: 210mm;
+      height: 297mm;
+      min-height: 297mm;
+      max-height: 297mm;
+      padding: 25.4mm; /* Margen APA 7 estricto: 2.54 cm en los 4 lados */
+      box-sizing: border-box;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.15);
+      border-radius: 2px;
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: box-shadow .15s ease;
+      page-break-after: always;
+      break-after: page;
+    }
+    .a4-page-sheet:hover {
+      box-shadow: 0 14px 36px rgba(0,0,0,.45), 0 3px 8px rgba(0,0,0,.2);
+    }
+    .a4-page-sheet:focus-within {
+      box-shadow: 0 0 0 2px #3b82f6, 0 14px 40px rgba(0,0,0,.5);
+    }
+
+    /* Guía sutil de margen APA 7 (1 pulgada en los 4 lados) */
+    .a4-page-sheet::before {
+      content: '';
+      position: absolute;
+      top: 25.4mm;
+      bottom: 25.4mm;
+      left: 25.4mm;
+      right: 25.4mm;
+      border: 1px dashed rgba(203, 213, 225, 0.45);
+      pointer-events: none;
+      border-radius: 1px;
+    }
+
+    /* Encabezado APA 7 (Header): situado a 12.7 mm (0.5 in) del borde superior */
+    .a4-page-header {
+      position: absolute;
+      top: 12.7mm;
+      left: 25.4mm;
+      right: 25.4mm;
+      height: 8mm;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'Times New Roman', Georgia, serif;
+      font-size: 10pt;
+      color: #475569;
+      user-select: none;
+      pointer-events: none;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 2px;
+      box-sizing: border-box;
+    }
+    .a4-running-head {
+      text-transform: uppercase;
+      font-size: 8.5pt;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: #64748b;
+      max-width: 75%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .a4-page-number {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin-left: auto;
+    }
+
+    /* Contenido editable enmarcado en el espacio imprimible A4 */
+    .a4-page-content {
+      width: 100%;
+      height: 246.2mm; /* 297mm - (25.4mm x 2) */
+      min-height: 246.2mm;
+      max-height: 246.2mm;
+      box-sizing: border-box;
+      overflow: hidden;
+      outline: none;
+      font-family: 'Times New Roman', Georgia, serif;
+      font-size: 12pt; /* APA 7 Standard */
+      line-height: 2.0; /* Doble espacio APA 7 */
+      color: #0f172a;
+      text-align: justify;
+      word-break: break-word;
+      position: relative;
+      z-index: 2;
+    }
+    .a4-page-content p {
+      margin: 0 0 10pt 0;
+      text-align: justify;
+    }
+    .a4-page-content.apa-indent p {
+      text-indent: 1.27cm; /* Sangría de primera línea APA 7 (0.5 in) */
+    }
+    .a4-page-content h1, .a4-page-content h2, .a4-page-content h3 {
+      font-family: 'Times New Roman', serif;
+      font-weight: 700;
+      margin: 8pt 0;
+      color: #0f172a;
+    }
+    .a4-page-content table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 10pt 0;
+    }
+    .a4-page-content th, .a4-page-content td {
+      border: 1px solid #475569;
+      padding: 5pt 8pt;
+      font-size: 10pt;
+    }
+
+    /* Pie de página A4 a 12.7 mm del fondo */
+    .a4-page-footer {
+      position: absolute;
+      bottom: 10mm;
+      left: 25.4mm;
+      right: 25.4mm;
+      height: 7mm;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'Arial', sans-serif;
+      font-size: 8pt;
+      color: #94a3b8;
+      user-select: none;
+      pointer-events: none;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 2px;
+      box-sizing: border-box;
+    }
+
+    /* Insignias de la barra de herramientas Word */
+    .apa7-specs-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+      padding: 4px 10px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .apa7-active-btn {
+      background: #059669 !important;
+      color: #fff !important;
+      border-color: #059669 !important;
+      box-shadow: 0 2px 6px rgba(5,150,105,0.3) !important;
+    }
 
     /* Quick legal inserts inside page */
     .qubira-official-header {
-      border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 24px;
+      border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 18px;
       display: flex; align-items: center; justify-content: space-between;
     }
     .qubira-official-header .header-brand { display: flex; align-items: center; gap: 12px; }
-    .qubira-official-header img { width: 44px; height: 44px; object-fit: contain; border-radius: 8px; }
+    .qubira-official-header img { width: 42px; height: 42px; object-fit: contain; border-radius: 8px; }
     .qubira-official-header .header-info {
-      font-size: 11px; color: #475569; text-align: right; line-height: 1.4; font-family: 'Inter', sans-serif;
+      font-size: 10.5px; color: #475569; text-align: right; line-height: 1.4; font-family: 'Inter', sans-serif;
     }
 
     .word-signature-block {
-      margin-top: 50px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; text-align: center;
-      font-family: 'Inter', sans-serif; font-size: 11.5px; page-break-inside: avoid;
+      margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 36px; text-align: center;
+      font-family: 'Inter', sans-serif; font-size: 11px; page-break-inside: avoid;
     }
-    .signature-line { border-top: 1px solid #334155; padding-top: 8px; margin-top: 55px; }
+    .signature-line { border-top: 1px solid #334155; padding-top: 6px; margin-top: 48px; }
 
     /* Status Bar */
     .word-statusbar {
@@ -517,17 +698,72 @@
       padding: 3px 10px; border-radius: 999px; background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe;
     }
 
-    /* ── PRINT VIEW STYLES ── */
+    /* ── ESTILOS DE IMPRESIÓN Y EXPORTACIÓN A PDF A4 APA 7 ── */
     @media print {
-      body { background: #fff !important; color: #000 !important; }
-      .sidebar, .topbar, .modal-footer, .no-print, .word-ribbon, .word-statusbar, .doc-nav-tabs { display: none !important; }
-      .main { margin-left: 0 !important; width: 100% !important; }
-      .content { padding: 0 !important; max-width: 100% !important; }
-      .word-workspace { background: none !important; padding: 0 !important; box-shadow: none !important; }
-      .word-page { box-shadow: none !important; width: 100% !important; padding: 0 !important; min-height: auto !important; }
-      .card { box-shadow: none !important; border: 1px solid #ccc !important; }
-      .modal-overlay { position: static !important; background: none !important; display: block !important; padding: 0 !important; }
-      .modal-box { width: 100% !important; max-height: none !important; box-shadow: none !important; border: none !important; }
+      @page {
+        size: 210mm 297mm; /* Hoja A4 exacta */
+        margin: 0; /* Margen 0 porque el margen APA 7 de 25.4mm está en el padding del elemento */
+      }
+      html, body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 210mm !important;
+        color: #000000 !important;
+      }
+      .sidebar, .top-header, .doc-nav-tabs, .word-ribbon, .word-statusbar, .btn, .modal-overlay,
+      #subview-cloud, #subview-templates, .no-print, .cloud-badge-ok {
+        display: none !important;
+      }
+      .main-content, .doc-legal-container, #subview-editor, .word-workspace {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        display: block !important;
+        width: 210mm !important;
+      }
+      .a4-pages-container {
+        gap: 0 !important;
+        width: 210mm !important;
+      }
+      .a4-page-sheet {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        width: 210mm !important;
+        min-width: 210mm !important;
+        max-width: 210mm !important;
+        height: 297mm !important;
+        min-height: 297mm !important;
+        max-height: 297mm !important;
+        padding: 25.4mm !important; /* Margen APA 7 exacto */
+        box-sizing: border-box !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        position: relative !important;
+      }
+      .a4-page-sheet::before {
+        display: none !important; /* Ocultar guías de margen en impresión */
+      }
+      .a4-page-header {
+        top: 12.7mm !important;
+        left: 25.4mm !important;
+        right: 25.4mm !important;
+        display: flex !important;
+      }
+      .a4-page-footer {
+        bottom: 10mm !important;
+        left: 25.4mm !important;
+        right: 25.4mm !important;
+        display: flex !important;
+      }
+      .a4-page-content {
+        height: 246.2mm !important;
+        max-height: 246.2mm !important;
+        line-height: 2.0 !important; /* APA 7 */
+      }
     }
   </style>
 </head>
@@ -1122,7 +1358,7 @@
               <div class="word-ribbon-head">
                 <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                   <span style="font-size:18px;">📄</span>
-                  <input type="text" id="word-doc-title" class="word-doc-title-input" value="Contrato de Desarrollo de Software - THE TWENTIES" title="Haga clic para renombrar el documento">
+                  <input type="text" id="word-doc-title" class="word-doc-title-input" value="Contrato de Desarrollo de Software - THE TWENTIES" title="Haga clic para renombrar el documento" oninput="actualizarNumerosDePagina()">
                   <select id="word-doc-type" class="word-select" style="font-weight:600; color:#1e3a8a; border-color:#93c5fd;">
                     <option value="Contrato de Desarrollo de Software">Contrato de Desarrollo de Software (14 Cláusulas)</option>
                     <option value="Contrato Laboral (D.L. 728)">Contrato Laboral (Régimen Privado D.L. 728)</option>
@@ -1183,19 +1419,37 @@
                   </select>
                 </div>
 
+                <!-- Formato APA 7 Preset & Interlineado -->
+                <div class="word-tool-group">
+                  <button class="btn btn-outline btn-sm apa7-active-btn" id="btn-toggle-apa7" onclick="toggleFormatoApa7()" title="Activar/desactivar estándar oficial APA 7 (Times New Roman 12pt, Márgenes 2.54cm, Doble Espacio 2.0, Núm. Superior Derecho)">
+                    📐 APA 7 Activo
+                  </button>
+                  <select id="word-line-height" class="word-select" onchange="cambiarInterlineado(this.value)" title="Espaciado de línea (Interlineado)">
+                    <option value="2.0" selected>Doble (2.0 APA 7)</option>
+                    <option value="1.5">Espacio 1.5 (Legal)</option>
+                    <option value="1.15">Espacio 1.15</option>
+                    <option value="1.0">Simple (1.0)</option>
+                  </select>
+                  <select id="word-margins" class="word-select" onchange="cambiarMargenes(this.value)" title="Márgenes de hoja A4">
+                    <option value="apa7" selected>Márgenes APA 7 (2.54 cm / 1")</option>
+                    <option value="normal">Márgenes Estándar (2.5 cm)</option>
+                    <option value="estrecho">Márgenes Estrechos (1.27 cm)</option>
+                  </select>
+                </div>
+
                 <!-- Fuente y Tamaño -->
                 <div class="word-tool-group">
                   <select id="word-font-family" class="word-select" onchange="ejecutarFormatoWord('fontName', this.value)">
-                    <option value="Times New Roman">Times New Roman</option>
-                    <option value="Arial">Arial</option>
+                    <option value="Times New Roman" selected>Times New Roman (APA 7)</option>
+                    <option value="Arial">Arial (APA 7)</option>
+                    <option value="Georgia">Georgia (APA 7)</option>
                     <option value="Inter">Inter</option>
-                    <option value="Georgia">Georgia</option>
                     <option value="Courier New">Courier New</option>
                   </select>
 
                   <select id="word-font-size" class="word-select" onchange="cambiarTamanoFuente(this.value)">
                     <option value="2">10 pt</option>
-                    <option value="3" selected>12 pt</option>
+                    <option value="3" selected>12 pt (APA 7)</option>
                     <option value="4">14 pt</option>
                     <option value="5">18 pt</option>
                     <option value="6">24 pt</option>
@@ -1257,30 +1511,43 @@
                 </div>
               </div>
 
-              <!-- Toolbar Row 2: Inserciones Legales Rápidas -->
-              <div class="word-toolbar" style="background:#f8fafc; border-bottom:none;">
-                <span style="font-size:11.5px; font-weight:700; color:#475569;">Insertar elemento legal:</span>
-                <button class="btn btn-outline btn-sm" onclick="insertarMembreteQubira()">🏛️ Membrete QUBIRA</button>
-                <button class="btn btn-outline btn-sm" onclick="insertarCuadroFirmas()">✍️ Cuadro de Firmas</button>
-                <button class="btn btn-outline btn-sm" onclick="insertarClausulaLegal()">📜 Nueva Cláusula</button>
-                <button class="btn btn-outline btn-sm" onclick="insertarFechaLugar()">📅 Fecha & Lugar</button>
-                <button class="btn btn-outline btn-sm" onclick="insertarTablaWord()">📊 Tabla</button>
+              <!-- Toolbar Row 2: Inserciones Legales & Controles A4 APA 7 -->
+              <div class="word-toolbar" style="background:#f8fafc; border-bottom:none; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                  <span style="font-size:11.5px; font-weight:700; color:#475569;">Insertar elemento:</span>
+                  <button class="btn btn-outline btn-sm" onclick="insertarSaltoDePagina()" title="Insertar nueva hoja A4 (Atajo: Ctrl + Enter)">📄 Salto de Página</button>
+                  <button class="btn btn-outline btn-sm" onclick="aplicarSangriaApa()" title="Sangría de primera línea APA 7 (1.27 cm / 0.5 pulg)">⇥ Sangría 1.27 cm</button>
+                  <button class="btn btn-outline btn-sm" onclick="insertarMembreteQubira()">🏛️ Membrete QUBIRA</button>
+                  <button class="btn btn-outline btn-sm" onclick="insertarCuadroFirmas()">✍️ Cuadro de Firmas</button>
+                  <button class="btn btn-outline btn-sm" onclick="insertarClausulaLegal()">📜 Nueva Cláusula</button>
+                  <button class="btn btn-outline btn-sm" onclick="insertarFechaLugar()">📅 Fecha & Lugar</button>
+                  <button class="btn btn-outline btn-sm" onclick="insertarTablaWord()">📊 Tabla</button>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="apa7-specs-badge">
+                    📏 <strong>A4:</strong> 210 × 297 mm &bull; <strong>Márgenes:</strong> 2.54 cm &bull; <strong>APA 7:</strong> Times New Roman 12pt
+                  </span>
+                </div>
               </div>
             </div>
 
-            <!-- Canvas Hoja A4 -->
+            <!-- Canvas Hojas A4 Multi-página con Salto Automático -->
             <div class="word-workspace" id="word-workspace">
-              <div class="word-page" id="word-content" contenteditable="true" spellcheck="true" oninput="actualizarEstadisticasWord()">
-                <!-- Contenido inicial dinámico cargado al inicio -->
+              <div class="a4-pages-container" id="a4-pages-container">
+                <!-- Se generan dinámicamente las hojas A4 -->
               </div>
             </div>
 
             <!-- Status Bar -->
             <div class="word-statusbar">
-              <div style="display:flex; align-items:center; gap:16px;">
+              <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
                 <span id="word-stats-words">Palabras: 0</span>
                 <span id="word-stats-chars">Caracteres: 0</span>
-                <span id="word-stats-pages">Páginas estimadas: 1 A4</span>
+                <span id="word-stats-pages" style="color:#fbbf24; font-weight:700;">Páginas: 1 A4 (APA 7)</span>
+                <span style="font-size:11px; color:#94a3b8; background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:4px;">
+                  ⌨️ Salto automático al exceder margen &bull; Ctrl+Enter manual
+                </span>
               </div>
               <div style="display:flex; align-items:center; gap:14px;">
                 <span id="word-cloud-status" style="display:inline-flex; align-items:center; gap:5px; color:#6ee7b7; font-weight:600;">
@@ -2617,15 +2884,471 @@ function switchDocSubView(subview) {
   if (subview === 'templates') renderCatalogoPlantillas();
 }
 
-// Cargar plantilla en el editor Word
+// ── ESTADO Y CONFIGURACIÓN DEL MOTOR A4 APA 7 ──
+let apa7ModeActivo = true;
+let interlineadoActual = '2.0'; // APA 7 Doble espacio
+let margenActual = 'apa7'; // 25.4 mm (1 pulgada)
+
+// Crear elemento visual de Hoja A4 estándar (210mm x 297mm) con encabezado APA 7
+function crearElementoHojaA4(pageNumber, runningHead = '') {
+  const title = (runningHead || document.getElementById('word-doc-title')?.value || 'DOCUMENTO LEGAL').toUpperCase();
+  const sheet = document.createElement('div');
+  sheet.className = 'a4-page-sheet';
+  sheet.dataset.page = pageNumber;
+  sheet.innerHTML = `
+    <div class="a4-page-header" contenteditable="false">
+      <span class="a4-running-head">${title}</span>
+      <span class="a4-page-number">${pageNumber}</span>
+    </div>
+    <div class="a4-page-content" contenteditable="true" spellcheck="true" data-page-index="${pageNumber}"></div>
+    <div class="a4-page-footer" contenteditable="false">
+      <span>QUBIRA S.A.C. &bull; RUC 10764275981</span>
+      <span class="a4-page-counter-footer">Página ${pageNumber}</span>
+    </div>
+  `;
+  conectarEventosHoja(sheet);
+  return sheet;
+}
+
+// Conectar eventos a cada hoja A4
+function conectarEventosHoja(sheetEl) {
+  const content = sheetEl.querySelector('.a4-page-content');
+  if (!content) return;
+
+  // Aplicar formato activo
+  content.style.lineHeight = interlineadoActual;
+  content.style.fontFamily = document.getElementById('word-font-family')?.value || "'Times New Roman', Georgia, serif";
+
+  content.addEventListener('input', () => {
+    manejarInputEnPagina(content);
+    actualizarEstadisticasWord();
+  });
+
+  content.addEventListener('keydown', (e) => {
+    // Atajo manual: Ctrl + Enter o Cmd + Enter -> Salto de Página
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      insertarSaltoDePagina();
+      return;
+    }
+
+    // Al presionar Backspace al principio de una hoja > 1, merge con la anterior
+    if (e.key === 'Backspace') {
+      const pageIndex = parseInt(sheetEl.dataset.page, 10);
+      if (pageIndex > 1 && esCaretAlInicio(content)) {
+        e.preventDefault();
+        retrocederPagina(sheetEl);
+        return;
+      }
+    }
+  });
+
+  content.addEventListener('keyup', (e) => {
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      const pageIndex = parseInt(sheetEl.dataset.page, 10);
+      absorberContenidoSiguiente(pageIndex - 1);
+    }
+  });
+
+  content.addEventListener('paste', () => {
+    setTimeout(() => {
+      repaginarDocumentoCompleto();
+    }, 40);
+  });
+}
+
+// Detección de posición del cursor
+function esCaretAlInicio(element) {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return false;
+  const range = sel.getRangeAt(0);
+  if (!element.contains(range.startContainer)) return false;
+  const preRange = range.cloneRange();
+  preRange.selectNodeContents(element);
+  preRange.setEnd(range.startContainer, range.startOffset);
+  return preRange.toString().length === 0;
+}
+
+function colocarCursorAlInicio(element) {
+  if (!element) return;
+  element.focus();
+  const range = document.createRange();
+  const sel = window.getSelection();
+  range.selectNodeContents(element);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+function colocarCursorAlFinal(element) {
+  if (!element) return;
+  element.focus();
+  const range = document.createRange();
+  const sel = window.getSelection();
+  range.selectNodeContents(element);
+  range.collapse(false);
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// Obtener la página que tiene el cursor activo o la última
+function obtenerPaginaActiva() {
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return null;
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount) {
+    let node = sel.anchorNode;
+    while (node && node !== container) {
+      if (node.classList && node.classList.contains('a4-page-content')) {
+        return node;
+      }
+      node = node.parentNode;
+    }
+  }
+  const contents = container.querySelectorAll('.a4-page-content');
+  return contents[contents.length - 1] || null;
+}
+
+// ── MOTOR DE SALTO AUTOMÁTICO DE HOJA A4 AL EXCEDER LÍMITE INFERIOR ──
+function manejarInputEnPagina(contentEl) {
+  const sheet = contentEl.closest('.a4-page-sheet');
+  if (!sheet) return;
+  const pageIndex = parseInt(sheet.dataset.page, 10) - 1;
+
+  // Si el contenido excede la altura imprimible A4 (246.2 mm = clientHeight)
+  if (contentEl.scrollHeight > contentEl.clientHeight + 2) {
+    desbordarPagina(pageIndex);
+  }
+
+  // Notificar estado
+  const cloudStatus = document.getElementById('word-cloud-status');
+  if (cloudStatus) {
+    cloudStatus.innerHTML = '● Cambios sin guardar en Cloudinary';
+    cloudStatus.style.color = '#fbbf24';
+  }
+}
+
+function desbordarPagina(pageIndex) {
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+  const sheets = container.querySelectorAll('.a4-page-sheet');
+  const sheet = sheets[pageIndex];
+  if (!sheet) return;
+  const content = sheet.querySelector('.a4-page-content');
+  if (!content) return;
+
+  if (content.scrollHeight <= content.clientHeight + 2) {
+    return;
+  }
+
+  // Obtener o crear la hoja siguiente
+  let nextSheet = sheets[pageIndex + 1];
+  if (!nextSheet) {
+    nextSheet = crearElementoHojaA4(pageIndex + 2);
+    if (sheet.nextSibling) {
+      container.insertBefore(nextSheet, sheet.nextSibling);
+    } else {
+      container.appendChild(nextSheet);
+    }
+  }
+  const nextContent = nextSheet.querySelector('.a4-page-content');
+
+  const sel = window.getSelection();
+  let caretInsideMoved = false;
+
+  // Mover elementos que sobrepasan el límite inferior
+  let loopCount = 0;
+  while (content.scrollHeight > content.clientHeight + 2 && content.childNodes.length > 0 && loopCount < 150) {
+    loopCount++;
+    const lastChild = content.lastChild;
+    if (!lastChild) break;
+
+    // ¿El usuario estaba escribiendo dentro de este elemento que va a pasar a la siguiente hoja?
+    if (sel && sel.anchorNode && lastChild.contains(sel.anchorNode)) {
+      caretInsideMoved = true;
+    }
+
+    if (content.childNodes.length > 1) {
+      nextContent.insertBefore(lastChild, nextContent.firstChild);
+    } else {
+      // Es un único elemento largo (párrafo extenso): dividirlo proporcionalmente
+      const dividio = dividirParrafoDesbordante(lastChild, content, nextContent);
+      if (!dividio) {
+        nextContent.insertBefore(lastChild, nextContent.firstChild);
+      }
+      break;
+    }
+  }
+
+  // Si el cursor estaba en el elemento transferido, mantener el foco en la nueva hoja
+  if (caretInsideMoved) {
+    colocarCursorAlFinal(nextContent);
+  }
+
+  actualizarNumerosDePagina();
+
+  // Si nextContent ahora también desborda, propagar en cascada a la siguiente hoja
+  if (nextContent.scrollHeight > nextContent.clientHeight + 2) {
+    desbordarPagina(pageIndex + 1);
+  }
+}
+
+// Dividir un párrafo que excede el límite para que una parte quede en Sheet N y la otra en Sheet N+1
+function dividirParrafoDesbordante(node, sourceContent, targetContent) {
+  if (!node || node.nodeType !== Node.ELEMENT_NODE) return false;
+  const fullText = node.innerText || '';
+  const words = fullText.trim().split(/\s+/);
+  if (words.length <= 4) return false;
+
+  const twin = document.createElement(node.tagName || 'p');
+  twin.className = node.className || '';
+  if (node.style.cssText) twin.style.cssText = node.style.cssText;
+  targetContent.insertBefore(twin, targetContent.firstChild);
+
+  const movedWords = [];
+  let safety = 0;
+  while (sourceContent.scrollHeight > sourceContent.clientHeight + 2 && words.length > 2 && safety < 300) {
+    safety++;
+    movedWords.unshift(words.pop());
+    node.innerText = words.join(' ');
+  }
+
+  twin.innerText = movedWords.join(' ');
+  if (!twin.innerText.trim()) twin.remove();
+  if (!node.innerText.trim()) node.remove();
+  return true;
+}
+
+// Absorber contenido de la hoja siguiente al borrar texto (Backspace/Delete)
+function absorberContenidoSiguiente(pageIndex) {
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+  const sheets = container.querySelectorAll('.a4-page-sheet');
+  const sheet = sheets[pageIndex];
+  const nextSheet = sheets[pageIndex + 1];
+  if (!sheet || !nextSheet) return;
+
+  const content = sheet.querySelector('.a4-page-content');
+  const nextContent = nextSheet.querySelector('.a4-page-content');
+  if (!content || !nextContent) return;
+
+  if (nextContent.innerHTML.trim() === '' || nextContent.children.length === 0) {
+    nextSheet.remove();
+    actualizarNumerosDePagina();
+    actualizarEstadisticasWord();
+    return;
+  }
+
+  let count = 0;
+  while (nextContent.firstChild && count < 60) {
+    const first = nextContent.firstChild;
+    content.appendChild(first);
+    if (content.scrollHeight > content.clientHeight + 2) {
+      // Excedió el límite de la hoja A4, devolver a la siguiente
+      nextContent.insertBefore(first, nextContent.firstChild);
+      break;
+    }
+    count++;
+  }
+
+  if (nextContent.innerHTML.trim() === '' || nextContent.children.length === 0) {
+    nextSheet.remove();
+  }
+
+  actualizarNumerosDePagina();
+  actualizarEstadisticasWord();
+}
+
+// Retroceder de hoja al pulsar Backspace al inicio de una página
+function retrocederPagina(sheetEl) {
+  const container = document.getElementById('a4-pages-container');
+  const sheets = Array.from(container.querySelectorAll('.a4-page-sheet'));
+  const idx = sheets.indexOf(sheetEl);
+  if (idx <= 0) return;
+
+  const prevSheet = sheets[idx - 1];
+  const prevContent = prevSheet.querySelector('.a4-page-content');
+  const currentContent = sheetEl.querySelector('.a4-page-content');
+
+  if (currentContent.innerHTML.trim() === '' || currentContent.children.length === 0) {
+    sheetEl.remove();
+    colocarCursorAlFinal(prevContent);
+    actualizarNumerosDePagina();
+    actualizarEstadisticasWord();
+    return;
+  }
+
+  while (currentContent.firstChild) {
+    const first = currentContent.firstChild;
+    prevContent.appendChild(first);
+    if (prevContent.scrollHeight > prevContent.clientHeight + 2) {
+      currentContent.insertBefore(first, currentContent.firstChild);
+      break;
+    }
+  }
+
+  colocarCursorAlFinal(prevContent);
+  if (currentContent.innerHTML.trim() === '' || currentContent.children.length === 0) {
+    sheetEl.remove();
+  }
+  actualizarNumerosDePagina();
+  actualizarEstadisticasWord();
+}
+
+// Inserción manual de Salto de Página (Ctrl + Enter o botón)
+function insertarSaltoDePagina() {
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+
+  const sel = window.getSelection();
+  let currentSheet = null;
+  if (sel && sel.rangeCount) {
+    let node = sel.anchorNode;
+    while (node && node !== container) {
+      if (node.classList && node.classList.contains('a4-page-sheet')) {
+        currentSheet = node;
+        break;
+      }
+      node = node.parentNode;
+    }
+  }
+
+  if (!currentSheet) {
+    const sheets = container.querySelectorAll('.a4-page-sheet');
+    currentSheet = sheets[sheets.length - 1];
+  }
+
+  const pageNum = parseInt(currentSheet.dataset.page, 10);
+  const nextSheet = crearElementoHojaA4(pageNum + 1);
+
+  if (currentSheet.nextSibling) {
+    container.insertBefore(nextSheet, currentSheet.nextSibling);
+  } else {
+    container.appendChild(nextSheet);
+  }
+
+  const currentContent = currentSheet.querySelector('.a4-page-content');
+  const nextContent = nextSheet.querySelector('.a4-page-content');
+
+  if (sel && sel.rangeCount && currentContent.contains(sel.anchorNode)) {
+    const range = sel.getRangeAt(0);
+    const postRange = document.createRange();
+    postRange.setStart(range.endContainer, range.endOffset);
+    postRange.setEndAfter(currentContent.lastChild);
+    const fragment = postRange.extractContents();
+    nextContent.appendChild(fragment);
+  }
+
+  if (!nextContent.innerHTML.trim()) {
+    nextContent.innerHTML = '<p><br></p>';
+  }
+
+  colocarCursorAlInicio(nextContent);
+  actualizarNumerosDePagina();
+  actualizarEstadisticasWord();
+}
+
+// Repaginar el documento completo distribuyendo entre hojas A4
+function repaginarDocumentoCompleto() {
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+
+  let i = 0;
+  let safety = 0;
+  while (i < container.querySelectorAll('.a4-page-sheet').length && safety < 80) {
+    safety++;
+    const sheets = container.querySelectorAll('.a4-page-sheet');
+    const sheet = sheets[i];
+    const content = sheet.querySelector('.a4-page-content');
+
+    if (content && content.scrollHeight > content.clientHeight + 2) {
+      desbordarPagina(i);
+    }
+    i++;
+  }
+
+  // Limpiar hojas vacías finales si son más de 1
+  const allSheets = container.querySelectorAll('.a4-page-sheet');
+  for (let s = allSheets.length - 1; s > 0; s--) {
+    const c = allSheets[s].querySelector('.a4-page-content');
+    if (c && (c.innerHTML.trim() === '' || c.children.length === 0)) {
+      allSheets[s].remove();
+    } else {
+      break;
+    }
+  }
+
+  actualizarNumerosDePagina();
+  actualizarEstadisticasWord();
+}
+
+// Cargar contenido HTML distribuido en hojas A4
+function cargarHtmlEnPaginasA4(html) {
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+
+  container.innerHTML = '';
+  const sheet1 = crearElementoHojaA4(1);
+  container.appendChild(sheet1);
+
+  const content1 = sheet1.querySelector('.a4-page-content');
+  content1.innerHTML = html;
+
+  // Repaginar automáticamente todo el contenido en hojas A4
+  repaginarDocumentoCompleto();
+}
+
+// Obtener el HTML completo de todas las hojas para guardar y respaldar
+function obtenerHtmlCompletoDocumento() {
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return '';
+  const contents = container.querySelectorAll('.a4-page-content');
+  const pages = [];
+  contents.forEach((c, idx) => {
+    pages.push(`<div class="a4-page-export" data-page="${idx+1}">${c.innerHTML}</div>`);
+  });
+  return pages.join('\n<!-- a4-page-break -->\n<div class="a4-page-break" style="page-break-after:always; break-after:page;"></div>\n');
+}
+
+// Actualizar números de página y encabezados APA 7 en cada hoja
+function actualizarNumerosDePagina() {
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+  const sheets = container.querySelectorAll('.a4-page-sheet');
+  const totalPages = sheets.length;
+  const docTitle = (document.getElementById('word-doc-title')?.value || 'DOCUMENTO LEGAL').toUpperCase();
+
+  sheets.forEach((sheet, idx) => {
+    const pageNum = idx + 1;
+    sheet.dataset.page = pageNum;
+
+    // Encabezado APA 7 (Header a 12.7 mm con running head y número a la derecha)
+    const runningHead = sheet.querySelector('.a4-running-head');
+    if (runningHead) runningHead.textContent = docTitle;
+    const pageNumEl = sheet.querySelector('.a4-page-number');
+    if (pageNumEl) pageNumEl.textContent = pageNum;
+
+    // Pie de página
+    const pageCounterFooter = sheet.querySelector('.a4-page-counter-footer');
+    if (pageCounterFooter) pageCounterFooter.textContent = `Página ${pageNum} de ${totalPages}`;
+  });
+
+  const pEl = document.getElementById('word-stats-pages');
+  if (pEl) {
+    pEl.textContent = `Páginas: ${totalPages} A4 (APA 7)`;
+  }
+}
+
+// Cargar plantilla seleccionada
 function cargarPlantillaSeleccionada(key) {
   if (!key || !PLANTILLAS_LEGALES[key]) return;
   const p = PLANTILLAS_LEGALES[key];
   document.getElementById('word-doc-title').value = p.titulo;
   document.getElementById('word-doc-type').value = p.tipo;
-  document.getElementById('word-content').innerHTML = p.contenido;
   document.getElementById('quick-template-select').value = key;
-  actualizarEstadisticasWord();
+
+  cargarHtmlEnPaginasA4(p.contenido);
+
   switchDocSubView('editor');
   document.getElementById('word-cloud-status').innerHTML = '● Cambios listos para guardar en Cloudinary';
   document.getElementById('word-cloud-status').style.color = '#fbbf24';
@@ -2633,17 +3356,124 @@ function cargarPlantillaSeleccionada(key) {
 
 // Formateo de texto estilo Microsoft Word
 function ejecutarFormatoWord(command, value = null) {
-  document.getElementById('word-content').focus();
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) activeContent.focus();
   document.execCommand(command, false, value);
   actualizarEstadisticasWord();
+  if (activeContent) manejarInputEnPagina(activeContent);
 }
 
 function cambiarTamanoFuente(val) {
   ejecutarFormatoWord('fontSize', val);
 }
 
+// ── HERRAMIENTAS Y PRESETS APA 7 ──
+function toggleFormatoApa7() {
+  apa7ModeActivo = !apa7ModeActivo;
+  aplicarConfiguracionApa7(apa7ModeActivo);
+}
+
+function aplicarPresetApa7() {
+  apa7ModeActivo = true;
+  aplicarConfiguracionApa7(true);
+}
+
+function aplicarConfiguracionApa7(activar) {
+  const btn = document.getElementById('btn-toggle-apa7');
+  const container = document.getElementById('a4-pages-container');
+  const contents = container ? container.querySelectorAll('.a4-page-content') : [];
+
+  if (activar) {
+    if (btn) {
+      btn.className = 'btn btn-outline btn-sm apa7-active-btn';
+      btn.innerHTML = '📐 APA 7 Activo';
+    }
+    interlineadoActual = '2.0';
+    document.getElementById('word-line-height').value = '2.0';
+    document.getElementById('word-font-family').value = 'Times New Roman';
+    document.getElementById('word-font-size').value = '3'; // 12pt
+    document.getElementById('word-margins').value = 'apa7';
+
+    contents.forEach(c => {
+      c.style.fontFamily = "'Times New Roman', Georgia, serif";
+      c.style.fontSize = "12pt";
+      c.style.lineHeight = "2.0";
+    });
+  } else {
+    if (btn) {
+      btn.className = 'btn btn-outline btn-sm';
+      btn.innerHTML = '📐 Activar APA 7';
+    }
+    interlineadoActual = '1.5';
+    document.getElementById('word-line-height').value = '1.5';
+    contents.forEach(c => {
+      c.style.lineHeight = "1.5";
+    });
+  }
+  repaginarDocumentoCompleto();
+}
+
+function cambiarInterlineado(val) {
+  interlineadoActual = val;
+  const container = document.getElementById('a4-pages-container');
+  if (container) {
+    container.querySelectorAll('.a4-page-content').forEach(c => {
+      c.style.lineHeight = val;
+    });
+  }
+  repaginarDocumentoCompleto();
+}
+
+function cambiarMargenes(tipo) {
+  margenActual = tipo;
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+  const sheets = container.querySelectorAll('.a4-page-sheet');
+
+  sheets.forEach(sheet => {
+    if (tipo === 'estrecho') {
+      sheet.style.padding = '12.7mm';
+      const c = sheet.querySelector('.a4-page-content');
+      if (c) { c.style.height = '271.6mm'; c.style.maxHeight = '271.6mm'; }
+    } else if (tipo === 'normal') {
+      sheet.style.padding = '25mm';
+      const c = sheet.querySelector('.a4-page-content');
+      if (c) { c.style.height = '247mm'; c.style.maxHeight = '247mm'; }
+    } else {
+      // APA 7: 25.4mm
+      sheet.style.padding = '25.4mm';
+      const c = sheet.querySelector('.a4-page-content');
+      if (c) { c.style.height = '246.2mm'; c.style.maxHeight = '246.2mm'; }
+    }
+  });
+  repaginarDocumentoCompleto();
+}
+
+function aplicarSangriaApa() {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return;
+  let p = sel.anchorNode;
+  while (p && p.nodeName !== 'P' && !p.classList?.contains('a4-page-content')) {
+    p = p.parentNode;
+  }
+  if (p && p.nodeName === 'P') {
+    p.style.textIndent = p.style.textIndent === '1.27cm' ? '0' : '1.27cm';
+  } else {
+    const container = document.getElementById('a4-pages-container');
+    container.querySelectorAll('.a4-page-content p').forEach(item => {
+      item.style.textIndent = item.style.textIndent === '1.27cm' ? '0' : '1.27cm';
+    });
+  }
+  repaginarDocumentoCompleto();
+}
+
 // Inserciones rápidas legales
 function insertarMembreteQubira() {
+  const container = document.getElementById('a4-pages-container');
+  const sheet1 = container?.querySelector('.a4-page-sheet[data-page="1"]');
+  const content1 = sheet1?.querySelector('.a4-page-content') || obtenerPaginaActiva();
+  if (!content1) return;
+
   const membrete = `
     <div class="qubira-official-header" contenteditable="false">
       <div class="header-brand">
@@ -2660,12 +3490,14 @@ function insertarMembreteQubira() {
       </div>
     </div>
   `;
-  document.getElementById('word-content').focus();
-  document.execCommand('insertHTML', false, membrete);
-  actualizarEstadisticasWord();
+  content1.insertAdjacentHTML('afterbegin', membrete);
+  repaginarDocumentoCompleto();
 }
 
 function insertarCuadroFirmas() {
+  const activeContent = obtenerPaginaActiva();
+  if (!activeContent) return;
+
   const firmas = `
     <div class="word-signature-block" contenteditable="false">
       <div>
@@ -2684,9 +3516,9 @@ function insertarCuadroFirmas() {
       </div>
     </div>
   `;
-  document.getElementById('word-content').focus();
+  activeContent.focus();
   document.execCommand('insertHTML', false, firmas);
-  actualizarEstadisticasWord();
+  repaginarDocumentoCompleto();
 }
 
 function insertarClausulaLegal() {
@@ -2696,18 +3528,24 @@ function insertarClausulaLegal() {
   const clausulaHtml = `
     <p><strong>${numClausula.toUpperCase()} — ${(tituloClausula || '').toUpperCase()}:</strong> Las partes acuerdan expresamente que...</p>
   `;
-  document.getElementById('word-content').focus();
-  document.execCommand('insertHTML', false, clausulaHtml);
-  actualizarEstadisticasWord();
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) {
+    activeContent.focus();
+    document.execCommand('insertHTML', false, clausulaHtml);
+    repaginarDocumentoCompleto();
+  }
 }
 
 function insertarFechaLugar() {
   const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   const hoy = new Date();
   const fechaTexto = `<p style="text-align:right; margin:16px 0; font-style:italic;">Lima, ${hoy.getDate()} de ${meses[hoy.getMonth()]} del ${hoy.getFullYear()}</p>`;
-  document.getElementById('word-content').focus();
-  document.execCommand('insertHTML', false, fechaTexto);
-  actualizarEstadisticasWord();
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) {
+    activeContent.focus();
+    document.execCommand('insertHTML', false, fechaTexto);
+    repaginarDocumentoCompleto();
+  }
 }
 
 function insertarTablaWord() {
@@ -2724,31 +3562,44 @@ function insertarTablaWord() {
     tablaHtml += '</tr>';
   }
   tablaHtml += '</table>';
-  document.getElementById('word-content').focus();
-  document.execCommand('insertHTML', false, tablaHtml);
-  actualizarEstadisticasWord();
+  const activeContent = obtenerPaginaActiva();
+  if (activeContent) {
+    activeContent.focus();
+    document.execCommand('insertHTML', false, tablaHtml);
+    repaginarDocumentoCompleto();
+  }
 }
 
-// Estadísticas de palabras y caracteres en vivo
+// Estadísticas de palabras y caracteres en vivo en todas las hojas A4
 function actualizarEstadisticasWord() {
-  const content = document.getElementById('word-content');
-  if (!content) return;
-  const text = content.innerText || '';
-  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-  const chars = text.length;
-  const pages = Math.max(1, Math.ceil(words / 450));
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+  const sheets = container.querySelectorAll('.a4-page-sheet');
+  let fullText = '';
+  sheets.forEach(s => {
+    const c = s.querySelector('.a4-page-content');
+    if (c) fullText += (c.innerText || '') + ' ';
+  });
 
-  document.getElementById('word-stats-words').textContent = `Palabras: ${words}`;
-  document.getElementById('word-stats-chars').textContent = `Caracteres: ${chars}`;
-  document.getElementById('word-stats-pages').textContent = `Páginas estimadas: ${pages} A4`;
+  const words = fullText.trim() ? fullText.trim().split(/\s+/).length : 0;
+  const chars = fullText.length;
+  const totalPages = sheets.length;
+
+  const wEl = document.getElementById('word-stats-words');
+  const cEl = document.getElementById('word-stats-chars');
+  const pEl = document.getElementById('word-stats-pages');
+
+  if (wEl) wEl.textContent = `Palabras: ${words}`;
+  if (cEl) cEl.textContent = `Caracteres: ${chars}`;
+  if (pEl) pEl.textContent = `Páginas: ${totalPages} A4 (APA 7)`;
 }
 
-// Guardar documento en la Nube (Cloudinary & Base de Datos)
+// Guardar documento en la Nube (Cloudinary & Base de Datos PostgreSQL Neon)
 async function guardarEnCloudinary() {
   const btn = document.getElementById('btn-save-cloudinary');
   const title = document.getElementById('word-doc-title').value.trim() || 'Documento_Legal';
   const docType = document.getElementById('word-doc-type').value;
-  const htmlContent = document.getElementById('word-content').innerHTML;
+  const htmlContent = obtenerHtmlCompletoDocumento();
   const statusElem = document.getElementById('word-cloud-status');
 
   btn.disabled = true;
@@ -2758,7 +3609,6 @@ async function guardarEnCloudinary() {
 
   const docId = 'doc_' + Date.now();
   const safeFilename = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.html`;
-  // URL canónica en Cloudinary bajo la carpeta de la empresa
   const fallbackCloudUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/raw/upload/qubira/legal/documentos/${docId}_${safeFilename}`;
 
   let savedDoc = {
@@ -2826,10 +3676,30 @@ async function guardarEnCloudinary() {
   alert(`✓ Documento respaldado exitosamente en Cloudinary:\n\nTítulo: ${savedDoc.titulo}\nTipo: ${savedDoc.tipo_documento}\nVersión: v${savedDoc.version}\nURL Cloudinary: ${savedDoc.cloudinary_url}`);
 }
 
-// Exportar a Microsoft Word (.doc)
+// Exportar a Microsoft Word (.doc) respetando las hojas A4 y saltos de página APA 7
 function descargarDocumentoWord() {
   const title = document.getElementById('word-doc-title').value.trim() || 'Documento_Legal_QUBIRA';
-  const htmlContent = document.getElementById('word-content').innerHTML;
+  const container = document.getElementById('a4-pages-container');
+  const sheets = container ? container.querySelectorAll('.a4-page-sheet') : [];
+  const runningHead = title.toUpperCase();
+
+  let bodyPagesHtml = '';
+  sheets.forEach((sheet, idx) => {
+    const pageNum = idx + 1;
+    const content = sheet.querySelector('.a4-page-content')?.innerHTML || '';
+    if (idx > 0) {
+      bodyPagesHtml += `<br clear=all style='mso-special-character:line-break;page-break-before:always'>\n`;
+    }
+    bodyPagesHtml += `
+      <div class="word-a4-page" style="page-break-after:always;">
+        <div style="text-align:right; font-size:10pt; font-family:'Times New Roman', serif; margin-bottom:20pt; border-bottom:1px solid #e2e8f0; padding-bottom:4pt;">
+          <span style="float:left; text-transform:uppercase; font-size:9pt; color:#64748b;">${runningHead}</span>
+          <strong style="font-size:11pt; color:#0f172a;">${pageNum}</strong>
+        </div>
+        ${content}
+      </div>
+    `;
+  });
 
   const wordHeader = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -2845,28 +3715,28 @@ function descargarDocumentoWord() {
     <![endif]-->
     <style>
       @page {
-        size: 21cm 29.7cm;
-        margin: 2.5cm 2.5cm 2.5cm 2.5cm;
-        mso-header-margin: 1.25cm;
-        mso-footer-margin: 1.25cm;
+        size: 21.0cm 29.7cm; /* Medidas A4 Oficiales */
+        margin: 2.54cm 2.54cm 2.54cm 2.54cm; /* Márgenes APA 7: 1 pulgada exacta */
+        mso-header-margin: 1.27cm; /* Encabezado a 0.5 pulgada */
+        mso-footer-margin: 1.27cm;
       }
       body {
         font-family: 'Times New Roman', 'Georgia', serif;
-        font-size: 12pt;
-        line-height: 1.5;
+        font-size: 12pt; /* APA 7 Standard */
+        line-height: 2.0; /* Doble espacio APA 7 */
         color: #000000;
         text-align: justify;
       }
-      h1, h2, h3, h4 { font-family: 'Arial', sans-serif; color: #111827; }
-      p { margin-bottom: 12pt; }
+      p { margin-bottom: 10pt; text-align: justify; }
+      h1, h2, h3, h4 { font-family: 'Times New Roman', serif; font-weight: bold; margin: 12pt 0; }
       table { border-collapse: collapse; width: 100%; margin: 14pt 0; }
-      th, td { border: 1px solid #475569; padding: 6pt 10pt; font-size: 10.5pt; }
+      th, td { border: 1px solid #475569; padding: 6pt 10pt; font-size: 10pt; }
       .qubira-official-header { border-bottom: 2pt solid #111827; padding-bottom: 10pt; margin-bottom: 20pt; }
       .word-signature-block { margin-top: 40pt; }
     </style>
     </head>
     <body>
-      ${htmlContent}
+      ${bodyPagesHtml}
     </body>
     </html>
   `;
@@ -2882,16 +3752,25 @@ function descargarDocumentoWord() {
   URL.revokeObjectURL(url);
 }
 
-// Imprimir o descargar como PDF
+// Imprimir o descargar como PDF (con respeto exacto de hojas A4)
 function imprimirOExportarPdf() {
   window.print();
 }
 
 function copiarContenidoWord() {
-  const content = document.getElementById('word-content');
-  if (!content) return;
-  navigator.clipboard.writeText(content.innerText)
-    .then(() => alert('✓ Contenido copiado al portapapeles con éxito.'))
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+  const sheets = container.querySelectorAll('.a4-page-sheet');
+  let fullText = '';
+  sheets.forEach((s, idx) => {
+    const c = s.querySelector('.a4-page-content');
+    if (c) {
+      fullText += `--- PÁGINA ${idx+1} (A4 APA 7) ---\n` + (c.innerText || '') + '\n\n';
+    }
+  });
+
+  navigator.clipboard.writeText(fullText.trim())
+    .then(() => alert('✓ Contenido de todas las páginas A4 copiado al portapapeles con éxito.'))
     .catch(() => alert('No se pudo copiar el contenido.'));
 }
 
@@ -2960,8 +3839,7 @@ function abrirDocumentoDesdeNube(docId) {
 
   document.getElementById('word-doc-title').value = doc.titulo;
   document.getElementById('word-doc-type').value = doc.tipo_documento;
-  document.getElementById('word-content').innerHTML = doc.contenido_html;
-  actualizarEstadisticasWord();
+  cargarHtmlEnPaginasA4(doc.contenido_html);
 
   const statusElem = document.getElementById('word-cloud-status');
   statusElem.innerHTML = `✓ <a href="${doc.cloudinary_url}" target="_blank" style="color:#6ee7b7; text-decoration:underline;">Cargado desde Cloudinary (v${doc.version || 1})</a>`;
