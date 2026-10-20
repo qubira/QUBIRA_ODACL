@@ -545,6 +545,39 @@
       background: #2563eb !important;
       color: #ffffff !important;
     }
+    /* Encabezado, pie, numeración y marca de agua NO forman parte de la
+       selección del cuerpo (Ctrl+A / arrastrar entre hojas). Solo se
+       vuelven seleccionables al editarlos (doble clic o foco). */
+    .a4-page-header, .a4-page-header *,
+    .a4-page-footer, .a4-page-footer *,
+    .a4-watermark {
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    /* Los campos editables conservan el cursor al hacer clic; su resaltado
+       se oculta abajo y el copiado los excluye (ver listener 'copy'). */
+    .a4-page-header [contenteditable="true"], .a4-page-header [contenteditable="true"] *,
+    .a4-page-footer [contenteditable="true"], .a4-page-footer [contenteditable="true"] * {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    .a4-page-header ::selection, .a4-page-header::selection,
+    .a4-page-footer ::selection, .a4-page-footer::selection {
+      background: transparent !important;
+      color: inherit !important;
+    }
+    .hf-editing .a4-page-header, .hf-editing .a4-page-header *,
+    .hf-editing .a4-page-footer, .hf-editing .a4-page-footer *,
+    .a4-page-header:focus-within, .a4-page-header:focus-within *,
+    .a4-page-footer:focus-within, .a4-page-footer:focus-within * {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    .hf-editing .a4-page-header ::selection, .hf-editing .a4-page-footer ::selection,
+    .a4-page-header:focus-within ::selection, .a4-page-footer:focus-within ::selection {
+      background: #2563eb !important;
+      color: #ffffff !important;
+    }
 
     .a4-pages-container {
       display: flex;
@@ -615,7 +648,6 @@
       cursor: text;
       z-index: 10;
       transition: all .15s ease;
-      user-select: text;
     }
     .a4-page-header:hover {
       background: rgba(239, 246, 255, 0.4);
@@ -782,7 +814,6 @@
       cursor: text;
       z-index: 10;
       transition: all .15s ease;
-      user-select: text;
     }
     .a4-page-footer:hover {
       background: rgba(239, 246, 255, 0.7);
@@ -5640,15 +5671,28 @@ document.addEventListener('copy', (e) => {
 
   const range = sel.getRangeAt(0);
   if (container.contains(range.commonAncestorContainer) || container.contains(range.startContainer) || container.contains(range.endContainer)) {
-    const selectedText = sel.toString();
-    if (selectedText) {
+    // Si se está editando el encabezado/pie, copiar normal
+    const startEl = range.startContainer.nodeType === 1 ? range.startContainer : range.startContainer.parentElement;
+    if (startEl && startEl.closest('.a4-page-header, .a4-page-footer')) return;
+
+    // Tomar solo la parte del rango que cae dentro del cuerpo de cada hoja
+    const htmlParts = [];
+    const textParts = [];
+    container.querySelectorAll('.a4-page-content').forEach(c => {
+      if (!range.intersectsNode(c)) return;
+      const sub = document.createRange();
+      sub.selectNodeContents(c);
+      if (range.compareBoundaryPoints(Range.START_TO_START, sub) > 0) sub.setStart(range.startContainer, range.startOffset);
+      if (range.compareBoundaryPoints(Range.END_TO_END, sub) < 0) sub.setEnd(range.endContainer, range.endOffset);
+      const div = document.createElement('div');
+      div.appendChild(sub.cloneContents());
+      htmlParts.push(div.innerHTML);
+      textParts.push(sub.toString());
+    });
+    const selectedText = textParts.join('\n');
+    if (selectedText.trim()) {
       e.clipboardData.setData('text/plain', selectedText);
-      try {
-        const clonedFragment = range.cloneContents();
-        const div = document.createElement('div');
-        div.appendChild(clonedFragment);
-        e.clipboardData.setData('text/html', div.innerHTML);
-      } catch (err) {}
+      e.clipboardData.setData('text/html', htmlParts.join(''));
       e.preventDefault();
       mostrarNotificacionToast('📋 Texto de las hojas copiado al portapapeles');
     }
