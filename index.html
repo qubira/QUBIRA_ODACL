@@ -2857,6 +2857,13 @@ function switchTab(tabId) {
     document.getElementById('topbar-title').textContent = titles[tabId].title;
     document.getElementById('topbar-desc').textContent = titles[tabId].desc;
   }
+  if (tabId === 'doc-legal') {
+    setTimeout(() => {
+      if (typeof repaginarDocumentoCompleto === 'function') {
+        repaginarDocumentoCompleto();
+      }
+    }, 60);
+  }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -3916,6 +3923,13 @@ function switchDocSubView(subview) {
   });
   if (subview === 'cloud') renderCloudDocuments();
   if (subview === 'templates') renderCatalogoPlantillas();
+  if (subview === 'editor') {
+    setTimeout(() => {
+      if (typeof repaginarDocumentoCompleto === 'function') {
+        repaginarDocumentoCompleto();
+      }
+    }, 60);
+  }
 }
 
 // ── ESTADO Y CONFIGURACIÓN DEL MOTOR A4 APA 7 & WORD OFFICE ──
@@ -4357,7 +4371,10 @@ function desbordarPagina(pageIndex) {
   const content = sheet.querySelector('.a4-page-content');
   if (!content) return;
 
-  if (content.scrollHeight <= content.clientHeight + 2) {
+  const targetH = content.clientHeight || (orientacionActual === 'landscape' ? 602 : 930);
+  if (targetH < 100) return; // Contenedor oculto en este instante
+
+  if (content.scrollHeight <= targetH + 2) {
     return;
   }
 
@@ -4372,13 +4389,14 @@ function desbordarPagina(pageIndex) {
     }
   }
   const nextContent = nextSheet.querySelector('.a4-page-content');
+  if (!nextContent) return;
 
   const sel = window.getSelection();
   let caretInsideMoved = false;
 
   // Mover elementos que sobrepasan el límite inferior
   let loopCount = 0;
-  while (content.scrollHeight > content.clientHeight + 2 && content.childNodes.length > 0 && loopCount < 150) {
+  while (content.scrollHeight > targetH + 2 && content.childNodes.length > 0 && loopCount < 180) {
     loopCount++;
     const lastChild = content.lastChild;
     if (!lastChild) break;
@@ -4408,7 +4426,8 @@ function desbordarPagina(pageIndex) {
   actualizarNumerosDePagina();
 
   // Si nextContent ahora también desborda, propagar en cascada a la siguiente hoja
-  if (nextContent.scrollHeight > nextContent.clientHeight + 2) {
+  const nextTargetH = nextContent.clientHeight || targetH;
+  if (nextContent.scrollHeight > nextTargetH + 2) {
     desbordarPagina(pageIndex + 1);
   }
 }
@@ -4573,15 +4592,24 @@ function repaginarDocumentoCompleto() {
   const container = document.getElementById('a4-pages-container');
   if (!container) return;
 
+  const firstSheet = container.querySelector('.a4-page-sheet');
+  const firstContent = firstSheet?.querySelector('.a4-page-content');
+  if (firstContent && firstContent.clientHeight < 100) {
+    // Si la vista está oculta en este instante (display: none), las dimensiones son 0;
+    // se repaginará automáticamente al hacerse visible.
+    return;
+  }
+
   let i = 0;
   let safety = 0;
   while (i < container.querySelectorAll('.a4-page-sheet').length && safety < 80) {
     safety++;
     const sheets = container.querySelectorAll('.a4-page-sheet');
     const sheet = sheets[i];
-    const content = sheet.querySelector('.a4-page-content');
+    const content = sheet ? sheet.querySelector('.a4-page-content') : null;
 
-    if (content && content.scrollHeight > content.clientHeight + 2) {
+    const targetH = (content && content.clientHeight) || (orientacionActual === 'landscape' ? 602 : 930);
+    if (content && content.scrollHeight > targetH + 2) {
       desbordarPagina(i);
     }
     i++;
@@ -4629,6 +4657,9 @@ function cargarHtmlEnPaginasA4(html) {
 
   // Repaginar automáticamente todo el contenido en hojas A4
   repaginarDocumentoCompleto();
+  setTimeout(() => {
+    repaginarDocumentoCompleto();
+  }, 60);
 }
 
 // Obtener el HTML completo de todas las hojas para guardar y respaldar
@@ -4982,13 +5013,22 @@ function cargarPlantillaSeleccionada(key) {
   const p = PLANTILLAS_LEGALES[key];
   document.getElementById('word-doc-title').value = p.titulo;
   document.getElementById('word-doc-type').value = p.tipo;
-  document.getElementById('quick-template-select').value = key;
+  const sel = document.getElementById('quick-template-select');
+  if (sel) sel.value = key;
 
-  cargarHtmlEnPaginasA4(p.contenido);
-
+  // Cambiar primero a la vista de editor para que esté visible en pantalla
   switchDocSubView('editor');
-  document.getElementById('word-cloud-status').innerHTML = '● Cambios listos para guardar en Cloudinary';
-  document.getElementById('word-cloud-status').style.color = '#fbbf24';
+
+  // Cargar contenido y repaginar tras el ciclo de reflow del navegador
+  setTimeout(() => {
+    cargarHtmlEnPaginasA4(p.contenido);
+  }, 40);
+
+  const cloudStatus = document.getElementById('word-cloud-status');
+  if (cloudStatus) {
+    cloudStatus.innerHTML = '● Cambios listos para guardar en Cloudinary';
+    cloudStatus.style.color = '#fbbf24';
+  }
 }
 
 // Formateo de texto estilo Microsoft Word
@@ -6148,6 +6188,28 @@ function initDocLegal() {
   renderCloudDocuments();
   renderCatalogoPlantillas();
   iniciarAutoguardadoWord();
+
+  // Observador de visibilidad para repaginar automáticamente cuando el editor pase a display: block
+  if (window.ResizeObserver) {
+    const ws = document.getElementById('word-workspace');
+    if (ws) {
+      let prevWidth = 0;
+      const ro = new ResizeObserver(entries => {
+        for (const entry of entries) {
+          const w = entry.contentRect.width;
+          if (w > 200 && prevWidth <= 200) {
+            setTimeout(() => {
+              if (typeof repaginarDocumentoCompleto === 'function') {
+                repaginarDocumentoCompleto();
+              }
+            }, 50);
+          }
+          prevWidth = w;
+        }
+      });
+      ro.observe(ws);
+    }
+  }
 }
 
 /* ============================================================
