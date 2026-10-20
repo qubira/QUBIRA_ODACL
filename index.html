@@ -404,12 +404,127 @@
     .form-group label { display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
+    /* ── WORD EDITOR & DOC. LEGAL STYLES ── */
+    .doc-legal-container { display: flex; flex-direction: column; gap: 20px; }
+    .doc-nav-tabs {
+      display: flex; gap: 10px; border-bottom: 2px solid var(--border); padding-bottom: 12px; margin-bottom: 20px;
+    }
+    .doc-tab-btn {
+      display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700;
+      padding: 9px 18px; border-radius: 9px; cursor: pointer; color: var(--text-muted); background: #fff;
+      border: 1px solid var(--border); transition: all .15s ease;
+    }
+    .doc-tab-btn:hover { background: var(--bg-card2); color: var(--text); }
+    .doc-tab-btn.active {
+      background: #1e3a8a; color: #fff; border-color: #1e3a8a; box-shadow: 0 2px 6px rgba(30,58,138,.25);
+    }
+    .doc-subview { display: none; }
+    .doc-subview.active { display: block; animation: tabFade .2s ease; }
+
+    /* Ribbon / Toolbar Word */
+    .word-ribbon {
+      background: #ffffff; border: 1px solid var(--border); border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.04); overflow: hidden; margin-bottom: 20px;
+    }
+    .word-ribbon-head {
+      background: #f8fafc; border-bottom: 1px solid var(--border); padding: 12px 20px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .word-doc-title-input {
+      font-size: 15px; font-weight: 800; color: #0f172a; border: 1px solid var(--border);
+      padding: 7px 14px; border-radius: 8px; background: #fff; width: 340px;
+      transition: all .15s;
+    }
+    .word-doc-title-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
+
+    .word-ribbon-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    .word-toolbar {
+      padding: 10px 18px; background: #ffffff; border-bottom: 1px solid #f1f5f9;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .word-tool-group {
+      display: inline-flex; align-items: center; gap: 4px; background: #f8fafc;
+      padding: 4px 7px; border-radius: 8px; border: 1px solid #e2e8f0;
+    }
+    .word-btn {
+      width: 32px; height: 32px; border-radius: 6px; display: inline-flex;
+      align-items: center; justify-content: center; font-size: 13px; font-weight: 700;
+      color: #334155; background: transparent; cursor: pointer; transition: all .12s; border: none;
+    }
+    .word-btn:hover { background: #e2e8f0; color: #0f172a; }
+    .word-btn.active { background: #2563eb; color: #fff; }
+    .word-select {
+      height: 32px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12.5px;
+      padding: 0 8px; background: #fff; color: #0f172a; cursor: pointer; font-family: inherit; outline: none;
+    }
+
+    /* Canvas / Workspace A4 Paper */
+    .word-workspace {
+      background: #e2e8f0; border-radius: 14px; padding: 40px 20px;
+      min-height: 850px; display: flex; flex-direction: column; align-items: center;
+      overflow-x: auto; box-shadow: inset 0 2px 8px rgba(0,0,0,.06);
+    }
+    .word-page {
+      background: #ffffff; width: 840px; min-height: 1188px; padding: 60px 75px;
+      border-radius: 2px; box-shadow: 0 10px 30px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.08);
+      color: #0f172a; font-family: 'Times New Roman', 'Georgia', serif; font-size: 13.5px; line-height: 1.65;
+      position: relative; box-sizing: border-box; text-align: justify;
+    }
+    .word-page:focus { outline: none; }
+    .word-page h1, .word-page h2, .word-page h3, .word-page h4 { font-family: 'Arial', sans-serif; }
+
+    /* Quick legal inserts inside page */
+    .qubira-official-header {
+      border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .qubira-official-header .header-brand { display: flex; align-items: center; gap: 12px; }
+    .qubira-official-header img { width: 44px; height: 44px; object-fit: contain; border-radius: 8px; }
+    .qubira-official-header .header-info {
+      font-size: 11px; color: #475569; text-align: right; line-height: 1.4; font-family: 'Inter', sans-serif;
+    }
+
+    .word-signature-block {
+      margin-top: 50px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; text-align: center;
+      font-family: 'Inter', sans-serif; font-size: 11.5px; page-break-inside: avoid;
+    }
+    .signature-line { border-top: 1px solid #334155; padding-top: 8px; margin-top: 55px; }
+
+    /* Status Bar */
+    .word-statusbar {
+      background: #0f172a; color: #cbd5e1; border-radius: 10px; padding: 10px 20px;
+      display: flex; align-items: center; justify-content: space-between; font-size: 12px; margin-top: 14px;
+    }
+
+    /* Template Cards in Catalog */
+    .templates-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px;
+    }
+    .template-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 22px;
+      box-shadow: var(--shadow-sm); transition: all .18s; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .template-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: #2563eb; }
+    .template-badge {
+      display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700;
+      padding: 3px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 10px;
+    }
+
+    /* Cloudinary Storage Cards */
+    .cloud-badge-ok {
+      display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 999px; background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe;
+    }
+
     /* ── PRINT VIEW STYLES ── */
     @media print {
       body { background: #fff !important; color: #000 !important; }
-      .sidebar, .topbar, .modal-footer, .no-print { display: none !important; }
+      .sidebar, .topbar, .modal-footer, .no-print, .word-ribbon, .word-statusbar, .doc-nav-tabs { display: none !important; }
       .main { margin-left: 0 !important; width: 100% !important; }
       .content { padding: 0 !important; max-width: 100% !important; }
+      .word-workspace { background: none !important; padding: 0 !important; box-shadow: none !important; }
+      .word-page { box-shadow: none !important; width: 100% !important; padding: 0 !important; min-height: auto !important; }
       .card { box-shadow: none !important; border: 1px solid #ccc !important; }
       .modal-overlay { position: static !important; background: none !important; display: block !important; padding: 0 !important; }
       .modal-box { width: 100% !important; max-height: none !important; box-shadow: none !important; border: none !important; }
@@ -452,6 +567,11 @@
         <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="12" y2="14"></line></svg>
         <span>Contratos Corporativos</span>
         <span class="nav-badge">14 Cláusulas</span>
+      </div>
+      <div class="nav-item" data-tab="doc-legal">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <span>Doc. Legal</span>
+        <span class="nav-badge" style="background:#2563eb; color:#fff;">Word &bull; Nube</span>
       </div>
       <div class="nav-item" data-tab="asesoria">
         <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -973,6 +1093,255 @@
         </div>
       </section>
 
+      <!-- ═════════ TAB: DOC. LEGAL (EDITOR WORD & CLOUDINARY) ═════════ -->
+      <section class="tab-content" id="tab-doc-legal">
+        <div class="doc-legal-container">
+
+          <!-- Sub-navigation tabs: Editor Word / Documentos Cloudinary / Plantillas -->
+          <div class="doc-nav-tabs">
+            <button class="doc-tab-btn active" data-doc-view="editor" onclick="switchDocSubView('editor')">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <span>Editor Word Legal</span>
+            </button>
+            <button class="doc-tab-btn" data-doc-view="cloud" onclick="switchDocSubView('cloud')">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+              <span>Documentos en Nube (Cloudinary)</span>
+              <span class="nav-badge" id="cloud-doc-count" style="background:#2563eb; color:#fff;">0</span>
+            </button>
+            <button class="doc-tab-btn" data-doc-view="templates" onclick="switchDocSubView('templates')">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+              <span>Catálogo de Plantillas Legales (11)</span>
+            </button>
+          </div>
+
+          <!-- SUBVIEW 1: EDITOR WORD -->
+          <div class="doc-subview active" id="subview-editor">
+            <!-- Word Ribbon -->
+            <div class="word-ribbon">
+              <!-- Head: Title, Type & Main Actions -->
+              <div class="word-ribbon-head">
+                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                  <span style="font-size:18px;">📄</span>
+                  <input type="text" id="word-doc-title" class="word-doc-title-input" value="Contrato de Desarrollo de Software - THE TWENTIES" title="Haga clic para renombrar el documento">
+                  <select id="word-doc-type" class="word-select" style="font-weight:600; color:#1e3a8a; border-color:#93c5fd;">
+                    <option value="Contrato de Desarrollo de Software">Contrato de Desarrollo de Software (14 Cláusulas)</option>
+                    <option value="Contrato Laboral (D.L. 728)">Contrato Laboral (Régimen Privado D.L. 728)</option>
+                    <option value="Contrato de Prestación de Servicios">Contrato de Prestación de Servicios (Locación Civil)</option>
+                    <option value="Contrato de Licenciamiento de Software">Contrato de Licenciamiento de Software (SaaS / On-Premise)</option>
+                    <option value="Acuerdo de Nivel de Servicio (SLA)">Acuerdo de Nivel de Servicio (SLA)</option>
+                    <option value="Contrato de Prestación de Servicios Profesionales">Contrato de Prestación de Servicios Profesionales (TI)</option>
+                    <option value="Contrato de Prácticas Pre Profesionales">Contrato de Prácticas Pre Profesionales (Ley 28518)</option>
+                    <option value="Contrato Proveedores Infraestructura">Contrato con Proveedores de Infraestructura (Cloud)</option>
+                    <option value="Acuerdo de Confidencialidad (NDA)">Acuerdo de Confidencialidad (NDA)</option>
+                    <option value="Políticas de Privacidad">Políticas de Privacidad (Ley 29733)</option>
+                    <option value="Términos y Condiciones">Términos y Condiciones de Uso</option>
+                    <option value="Documento Legal Personalizado">Documento Legal Personalizado</option>
+                  </select>
+                </div>
+
+                <div class="word-ribbon-actions">
+                  <button class="btn btn-gold" id="btn-save-cloudinary" onclick="guardarEnCloudinary()" title="Guardar y respaldar en Cloudinary">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                    <span>☁️ Guardar en Nube (Cloudinary)</span>
+                  </button>
+                  <button class="btn btn-dark btn-sm" onclick="descargarDocumentoWord()" title="Descargar como archivo compatible con Microsoft Word">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span>Descargar Word (.doc)</span>
+                  </button>
+                  <button class="btn btn-outline btn-sm" onclick="imprimirOExportarPdf()" title="Descargar en PDF o imprimir">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    <span>PDF / Imprimir</span>
+                  </button>
+                  <button class="btn btn-outline btn-sm" onclick="copiarContenidoWord()" title="Copiar todo el texto al portapapeles">
+                    <span>📋 Copiar</span>
+                  </button>
+                  <button class="btn btn-outline btn-sm" onclick="crearDocumentoEnBlanco()" title="Empezar un documento nuevo en blanco">
+                    <span>➕ Nuevo</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Toolbar Row 1: Formatting -->
+              <div class="word-toolbar">
+                <!-- Plantilla rápida -->
+                <div class="word-tool-group">
+                  <span style="font-size:11px; font-weight:700; color:#64748b; padding-left:4px;">Plantilla:</span>
+                  <select id="quick-template-select" class="word-select" onchange="cargarPlantillaSeleccionada(this.value)">
+                    <option value="">Seleccionar plantilla…</option>
+                    <option value="desarrollo_software">1. Contrato de Desarrollo de Software (14 Cláusulas)</option>
+                    <option value="laboral_dl728">2. Contrato Laboral (D.L. 728)</option>
+                    <option value="prestacion_servicios">3. Contrato de Prestación de Servicios (Locación)</option>
+                    <option value="licenciamiento_software">4. Contrato de Licenciamiento Software (SaaS)</option>
+                    <option value="sla_servicio">5. Acuerdo de Nivel de Servicio (SLA)</option>
+                    <option value="servicios_profesionales">6. Contrato Servicios Profesionales TI</option>
+                    <option value="servicios_preprofesionales">7. Contrato Prácticas Pre Profesionales (Ley 28518)</option>
+                    <option value="proveedores_infraestructura">8. Contrato Proveedores de Infraestructura</option>
+                    <option value="acuerdo_nda">9. Acuerdo de Confidencialidad (NDA)</option>
+                    <option value="politica_privacidad">10. Políticas de Privacidad (Ley 29733)</option>
+                    <option value="terminos_condiciones">11. Términos y Condiciones de Uso</option>
+                    <option value="en_blanco">12. Documento en Blanco con Membrete</option>
+                  </select>
+                </div>
+
+                <!-- Fuente y Tamaño -->
+                <div class="word-tool-group">
+                  <select id="word-font-family" class="word-select" onchange="ejecutarFormatoWord('fontName', this.value)">
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Inter">Inter</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Courier New">Courier New</option>
+                  </select>
+
+                  <select id="word-font-size" class="word-select" onchange="cambiarTamanoFuente(this.value)">
+                    <option value="2">10 pt</option>
+                    <option value="3" selected>12 pt</option>
+                    <option value="4">14 pt</option>
+                    <option value="5">18 pt</option>
+                    <option value="6">24 pt</option>
+                    <option value="7">32 pt</option>
+                  </select>
+                </div>
+
+                <!-- B, I, U, S -->
+                <div class="word-tool-group">
+                  <button class="word-btn" onclick="ejecutarFormatoWord('bold')" title="Negrita (Ctrl+B)"><b>B</b></button>
+                  <button class="word-btn" onclick="ejecutarFormatoWord('italic')" title="Cursiva (Ctrl+I)"><i>I</i></button>
+                  <button class="word-btn" onclick="ejecutarFormatoWord('underline')" title="Subrayado (Ctrl+U)"><u>U</u></button>
+                  <button class="word-btn" onclick="ejecutarFormatoWord('strikeThrough')" title="Tachado"><s>S</s></button>
+                </div>
+
+                <!-- Color de texto y resaltador -->
+                <div class="word-tool-group">
+                  <label class="word-btn" title="Color de Fuente" style="position:relative; cursor:pointer;">
+                    <span style="font-weight:900; border-bottom:3px solid #dc2626;">A</span>
+                    <input type="color" onchange="ejecutarFormatoWord('foreColor', this.value)" style="opacity:0; position:absolute; width:100%; height:100%; cursor:pointer;">
+                  </label>
+                  <label class="word-btn" title="Color de Resaltado" style="position:relative; cursor:pointer;">
+                    <span style="background:#fef08a; padding:1px 4px; border-radius:3px; font-weight:800;">ab</span>
+                    <input type="color" value="#fef08a" onchange="ejecutarFormatoWord('hiliteColor', this.value)" style="opacity:0; position:absolute; width:100%; height:100%; cursor:pointer;">
+                  </label>
+                </div>
+
+                <!-- Alineación -->
+                <div class="word-tool-group">
+                  <button class="word-btn" onclick="ejecutarFormatoWord('justifyLeft')" title="Alinear a la izquierda">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
+                  </button>
+                  <button class="word-btn" onclick="ejecutarFormatoWord('justifyCenter')" title="Centrar">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="10" x2="6" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="18" y1="18" x2="6" y2="18"></line></svg>
+                  </button>
+                  <button class="word-btn" onclick="ejecutarFormatoWord('justifyRight')" title="Alinear a la derecha">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
+                  </button>
+                  <button class="word-btn" onclick="ejecutarFormatoWord('justifyFull')" title="Justificar">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="21" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="3" y2="18"></line></svg>
+                  </button>
+                </div>
+
+                <!-- Listas -->
+                <div class="word-tool-group">
+                  <button class="word-btn" onclick="ejecutarFormatoWord('insertUnorderedList')" title="Viñetas">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                  </button>
+                  <button class="word-btn" onclick="ejecutarFormatoWord('insertOrderedList')" title="Numeración">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line><path d="M4 6h1v4"></path><path d="M4 10h2"></path><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path></svg>
+                  </button>
+                </div>
+
+                <!-- Deshacer / Rehacer -->
+                <div class="word-tool-group">
+                  <button class="word-btn" onclick="ejecutarFormatoWord('undo')" title="Deshacer (Ctrl+Z)">↶</button>
+                  <button class="word-btn" onclick="ejecutarFormatoWord('redo')" title="Rehacer (Ctrl+Y)">↷</button>
+                  <button class="word-btn" onclick="ejecutarFormatoWord('removeFormat')" title="Limpiar Formato">🧹</button>
+                </div>
+              </div>
+
+              <!-- Toolbar Row 2: Inserciones Legales Rápidas -->
+              <div class="word-toolbar" style="background:#f8fafc; border-bottom:none;">
+                <span style="font-size:11.5px; font-weight:700; color:#475569;">Insertar elemento legal:</span>
+                <button class="btn btn-outline btn-sm" onclick="insertarMembreteQubira()">🏛️ Membrete QUBIRA</button>
+                <button class="btn btn-outline btn-sm" onclick="insertarCuadroFirmas()">✍️ Cuadro de Firmas</button>
+                <button class="btn btn-outline btn-sm" onclick="insertarClausulaLegal()">📜 Nueva Cláusula</button>
+                <button class="btn btn-outline btn-sm" onclick="insertarFechaLugar()">📅 Fecha & Lugar</button>
+                <button class="btn btn-outline btn-sm" onclick="insertarTablaWord()">📊 Tabla</button>
+              </div>
+            </div>
+
+            <!-- Canvas Hoja A4 -->
+            <div class="word-workspace" id="word-workspace">
+              <div class="word-page" id="word-content" contenteditable="true" spellcheck="true" oninput="actualizarEstadisticasWord()">
+                <!-- Contenido inicial dinámico cargado al inicio -->
+              </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="word-statusbar">
+              <div style="display:flex; align-items:center; gap:16px;">
+                <span id="word-stats-words">Palabras: 0</span>
+                <span id="word-stats-chars">Caracteres: 0</span>
+                <span id="word-stats-pages">Páginas estimadas: 1 A4</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:14px;">
+                <span id="word-cloud-status" style="display:inline-flex; align-items:center; gap:5px; color:#6ee7b7; font-weight:600;">
+                  ☁️ Sincronizado en Cloudinary
+                </span>
+                <span style="font-size:11px; color:#94a3b8;">QUBIRA S.A.C. &bull; RUC 10764275981</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUBVIEW 2: DOCUMENTOS EN LA NUBE (CLOUDINARY) -->
+          <div class="doc-subview" id="subview-cloud">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                    <span>Documentos Respaldados en Cloudinary</span>
+                  </div>
+                  <div class="card-subtitle">Contratos legales guardados en la nube oficial de Qubira (Carpeta: qubira/legal/documentos)</div>
+                </div>
+                <button class="btn btn-gold btn-sm" onclick="switchDocSubView('editor')">
+                  + Redactar Nuevo Documento
+                </button>
+              </div>
+              <div class="card-body" style="padding:0;">
+                <div class="table-responsive">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Título del Documento</th>
+                        <th>Tipo Legal</th>
+                        <th>Versión</th>
+                        <th>Fecha de Guardado</th>
+                        <th>Servicio Cloud</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="cloud-docs-tbody">
+                      <!-- Dinámico -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUBVIEW 3: CATÁLOGO DE PLANTILLAS -->
+          <div class="doc-subview" id="subview-templates">
+            <div style="margin-bottom:18px;">
+              <h3 style="font-size:17px; font-weight:800; color:var(--text);">Catálogo de Plantillas Legales Corporativas</h3>
+              <p style="font-size:12.5px; color:#64748b; margin-top:2px;">Seleccione una plantilla legal preconfigurada para cargarla directamente en el editor Word</p>
+            </div>
+            <div class="templates-grid" id="templates-grid-cards">
+              <!-- Render dinámico de las 11 plantillas -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
     </div>
   </main>
 
@@ -1177,6 +1546,7 @@ function switchTab(tabId) {
     societario: { title: 'Información Societaria Oficial', desc: 'RUC 10764275981, partida registral, SUNARP y signos distintivos' },
     leyes: { title: 'Marco Normativo & Legislación del Perú', desc: 'Compendio legal de software, protección de datos y societario' },
     contratos: { title: 'Gestión de Contratos Corporativos', desc: 'Catálogo de contratos y modelo oficial de 14 cláusulas' },
+    'doc-legal': { title: 'Doc. Legal &bull; Editor Word de Contratos & Cloudinary', desc: 'Creación, edición con formato Microsoft Word, descarga e integración con Cloudinary' },
     asesoria: { title: 'Asesoría Jurídica & Dictámenes', desc: 'Bandeja de consultas legales internas emitidas por la ODACL' },
     compliance: { title: 'Compliance & Matriz de Riesgos Legales', desc: 'Semáforo de cumplimiento, controles preventivos y planes de mitigación' },
     politicas: { title: 'Políticas Corporativas de Qubira', desc: 'Términos de servicio, privacidad de datos y código de conducta' }
@@ -1719,7 +2089,935 @@ function copiarPolitica(tipo) {
 }
 
 /* ============================================================
-   7. CONTROLADORES DE MODALES
+   7. DOC. LEGAL — MOTOR DEL EDITOR ESTILO WORD & CLOUDINARY
+   ============================================================ */
+
+const CLOUDINARY_CLOUD_NAME = 'bythq4hd';
+
+// 11 Plantillas Legales Corporativas con redacción oficial completa
+const PLANTILLAS_LEGALES = {
+  desarrollo_software: {
+    titulo: 'Contrato de Desarrollo de Software - QUBIRA S.A.C.',
+    tipo: 'Contrato de Desarrollo de Software',
+    categoria: 'Tecnología & Software',
+    descripcion: 'Modelo oficial completo de 14 cláusulas con metodología SCRUM, Sprints, entregables, penalidades y cesión patrimonial.',
+    badge: 'Oficial Qubira',
+    contenido: `
+      <div class="qubira-official-header">
+        <div class="header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+          <div>
+            <div style="font-size:16px; font-weight:800; color:#0f172a; letter-spacing:1px;">QUBIRA S.A.C.</div>
+            <div style="font-size:11px; font-weight:700; color:#b45309;">SOLUCIONES CORPORATIVAS DE SOFTWARE</div>
+          </div>
+        </div>
+        <div class="header-info">
+          <strong>RUC: 10764275981</strong><br>
+          Lima, República del Perú<br>
+          qubira@gmail.com | www.qubira.vercel.app
+        </div>
+      </div>
+
+      <h2 style="text-align:center; font-size:16px; font-weight:800; margin-bottom:14px; text-transform:uppercase; color:#0f172a;">
+        CONTRATO DE PRESTACIÓN DE SERVICIOS DE DESARROLLO DE SOFTWARE<br>
+        <span style="font-size:13px; font-weight:600; color:#475569;">N° CONT-2026-000001-WEB</span>
+      </h2>
+
+      <p>Conste por el presente documento el <strong>CONTRATO DE PRESTACIÓN DE SERVICIOS DE DESARROLLO DE SOFTWARE</strong>, que celebran de una parte:</p>
+      
+      <p><strong>EL PROVEEDOR:</strong> <strong>QUBIRA S.A.C.</strong>, con RUC N° <strong>10764275981</strong>, con domicilio legal en la ciudad de Lima, República del Perú, debidamente representada por su Gerente General <strong>Melani A. Luyo R.</strong> y su Director de Tecnología <strong>Abraham Aranda Cerna</strong>, a quien en adelante se denominará simplemente como <strong>QUBIRA</strong>; y de la otra parte:</p>
+
+      <p><strong>EL CLIENTE:</strong> <strong>[NOMBRE O RAZÓN SOCIAL DEL CLIENTE]</strong>, con RUC/DNI N° <strong>[NÚMERO DE DOCUMENTO]</strong>, con domicilio en <strong>[DIRECCIÓN COMPLETA]</strong>, representada por <strong>[REPRESENTANTE LEGAL]</strong>, a quien en adelante se denominará <strong>EL CLIENTE</strong>; bajo los términos y condiciones siguientes:</p>
+
+      <p><strong>CLÁUSULA PRIMERA — OBJETO DEL CONTRATO:</strong> EL PROVEEDOR se obliga a favor de EL CLIENTE a realizar el análisis, diseño, programación, arquitectura, pruebas y despliegue del sistema web y panel administrativo denominado <strong>[NOMBRE DEL PROYECTO]</strong>.</p>
+
+      <p><strong>CLÁUSULA SEGUNDA — METODOLOGÍA ÁGIL SCRUM:</strong> El proyecto se ejecutará bajo el marco de trabajo ágil SCRUM, con entregas incrementales y verificables en Sprints de una a dos semanas. EL CLIENTE ejercerá el rol de Product Owner validando cada entregable.</p>
+
+      <p><strong>CLÁUSULA TERCERA — REQUERIMIENTOS FUNCIONALES:</strong> El software cumplirá con las especificaciones acordadas, incluyendo módulos de autenticación segura por roles, gestión de datos, panel dashboard interactivo y reportería.</p>
+
+      <p><strong>CLÁUSULA CUARTA — ARQUITECTURA Y SEGURIDAD:</strong> El desarrollo se respaldará en bases de datos relacionales en la nube (PostgreSQL Neon) con encriptación SSL, almacenamiento de archivos en Cloudinary y control criptográfico de contraseñas con bcryptjs.</p>
+
+      <p><strong>CLÁUSULA QUINTA — PRECIO Y FORMA DE PAGO:</strong> El precio total pactado es de <strong>S/ [MONTO TOTAL]</strong>, pagadero en dos armadas: el cincuenta por ciento (50%) a la suscripción del contrato como anticipo y el cincuenta por ciento (50%) restante contra entrega final y suscripción del Acta de Conformidad.</p>
+
+      <p><strong>CLÁUSULA SEXTA — PLAZO DE EJECUCIÓN:</strong> El plazo total para la entrega de la solución será de <strong>[PLAZO EN DÍAS]</strong> días calendario contados a partir de la recepción del pago inicial.</p>
+
+      <p><strong>CLÁUSULA SÉPTIMA — PROPIEDAD INTELECTUAL (D.L. 822):</strong> La titularidad sobre el código fuente a medida se transferirá a EL CLIENTE una vez cancelado el 100% de la contraprestación económica. QUBIRA retiene la propiedad de sus librerías base y metodologías reutilizables.</p>
+
+      <p><strong>CLÁUSULA OCTAVA — CONFIDENCIALIDAD:</strong> Ambas partes se obligan a mantener estricta reserva sobre la información técnica, comercial y operacional intercambiada con ocasión del proyecto.</p>
+
+      <p><strong>CLÁUSULA NOVENA — GARANTÍA Y SOPORTE:</strong> QUBIRA otorga una garantía de treinta (30) días calendario posteriores a la entrega final para la corrección sin costo de cualquier falla o error atribuible al desarrollo original.</p>
+
+      <p><strong>CLÁUSULA DÉCIMA — JURISDICCIÓN Y LEY APLICABLE:</strong> Para cualquier controversia, las partes se someten a las leyes de la República del Perú y a los Juzgados de la ciudad de Lima.</p>
+
+      <div class="word-signature-block">
+        <div>
+          <div class="signature-line">
+            <strong>QUBIRA S.A.C.</strong><br>
+            RUC 10764275981<br>
+            Melani A. Luyo R. / Abraham Aranda Cerna
+          </div>
+        </div>
+        <div>
+          <div class="signature-line">
+            <strong>EL CLIENTE</strong><br>
+            RUC / DNI: [DOCUMENTO]<br>
+            Representante Legal Autorizado
+          </div>
+        </div>
+      </div>
+    `
+  },
+
+  laboral_dl728: {
+    titulo: 'Contrato de Trabajo a Plazo Sujeto a Modalidad (D.L. 728)',
+    tipo: 'Contrato Laboral (D.L. 728)',
+    categoria: 'Laboral & RR.HH.',
+    descripcion: 'Contrato laboral formal bajo el régimen privado del Decreto Legislativo N° 728 con todos los beneficios de ley en Perú.',
+    badge: 'Laboral SUNAFIL',
+    contenido: `
+      <div class="qubira-official-header">
+        <div class="header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+          <div>
+            <div style="font-size:16px; font-weight:800; color:#0f172a;">QUBIRA S.A.C.</div>
+            <div style="font-size:11px; font-weight:700; color:#b45309;">DEPARTAMENTO LEGAL & RR.HH.</div>
+          </div>
+        </div>
+        <div class="header-info">
+          <strong>RUC: 10764275981</strong><br>
+          D.L. N° 728 - Ley de Productividad y Competitividad Laboral<br>
+          Lima, Perú
+        </div>
+      </div>
+
+      <h2 style="text-align:center; font-size:15px; font-weight:800; margin-bottom:14px; text-transform:uppercase;">
+        CONTRATO DE TRABAJO SUJETO A MODALIDAD POR INICIO O INCREMENTO DE ACTIVIDAD<br>
+        <span style="font-size:12px; font-weight:600; color:#64748b;">(DECRETO LEGISLATIVO N° 728, ART. 57)</span>
+      </h2>
+
+      <p>Conste por el presente documento el Contrato Individual de Trabajo a Plazo Fijo que celebran de una parte <strong>QUBIRA S.A.C.</strong>, con RUC N° <strong>10764275981</strong>, representada por <strong>Melani A. Luyo R.</strong>, en calidad de <strong>EL EMPLEADOR</strong>; y de la otra parte <strong>[NOMBRE DEL TRABAJADOR]</strong>, identificado con DNI N° <strong>[DNI]</strong>, con domicilio en <strong>[DIRECCIÓN]</strong>, a quien se denominará <strong>EL TRABAJADOR</strong>:</p>
+
+      <p><strong>PRIMERA: OBJETO Y CARGO:</strong> EL EMPLEADOR contrata a EL TRABAJADOR para desempeñar las funciones de <strong>[CARGO: EJ. DESARROLLADOR FULL STACK / ANALISTA TI]</strong>, realizando tareas de programación, pruebas de software, soporte técnico y documentación de sistemas.</p>
+
+      <p><strong>SEGUNDA: JORNADA Y HORARIO:</strong> La jornada de trabajo será de cuarenta y ocho (48) horas semanales de lunes a viernes en modalidad de trabajo mixto / presencial, respetándose el descanso semanal y los feriados de ley.</p>
+
+      <p><strong>TERCERA: REMUNERACIÓN:</strong> EL TRABAJADOR percibirá una remuneración mensual de <strong>S/ [MONTO MENSUAL]</strong>, sujeta a los descuentos obligatorios de ley (AFP u ONP y quinta categoría de corresponder).</p>
+
+      <p><strong>CUARTA: PERIODO DE PRUEBA:</strong> Las partes pactan expresamente un periodo de prueba de tres (3) meses de conformidad con el Artículo 10° del D.L. 728.</p>
+
+      <p><strong>QUINTA: DERECHOS DE AUTOR SOBRE EL SOFTWARE (D.L. 822):</strong> Todo programa de cómputo, código fuente, script o documentación técnica desarrollado por EL TRABAJADOR en ejercicio de sus funciones será de titularidad patrimonial exclusiva de QUBIRA S.A.C.</p>
+
+      <p><strong>SEXTA: CONFIDENCIALIDAD:</strong> EL TRABAJADOR se obliga a no divulgar secretos comerciales, credenciales ni código fuente de la empresa a terceros.</p>
+
+      <div class="word-signature-block">
+        <div>
+          <div class="signature-line">
+            <strong>QUBIRA S.A.C.</strong><br>
+            EL EMPLEADOR
+          </div>
+        </div>
+        <div>
+          <div class="signature-line">
+            <strong>[NOMBRE DEL TRABAJADOR]</strong><br>
+            DNI N° [DNI]<br>
+            EL TRABAJADOR
+          </div>
+        </div>
+      </div>
+    `
+  },
+
+  prestacion_servicios: {
+    titulo: 'Contrato de Prestación de Servicios (Locación Civil)',
+    tipo: 'Contrato de Prestación de Servicios',
+    categoria: 'Civil & Comercial',
+    descripcion: 'Contrato civil de locación de servicios conforme al artículo 1764 del Código Civil, sin subordinación laboral.',
+    badge: 'Civil & Mercantil',
+    contenido: `
+      <div class="qubira-official-header">
+        <div class="header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+          <div>
+            <div style="font-size:16px; font-weight:800; color:#0f172a;">QUBIRA S.A.C.</div>
+            <div style="font-size:11px; font-weight:700; color:#b45309;">LOCACIÓN DE SERVICIOS INDEPENDIENTES</div>
+          </div>
+        </div>
+        <div class="header-info">RUC: 10764275981 &bull; Lima, Perú</div>
+      </div>
+
+      <h2 style="text-align:center; font-size:15px; font-weight:800; margin-bottom:14px; text-transform:uppercase;">
+        CONTRATO DE LOCACIÓN DE SERVICIOS INDEPENDIENTES<br>
+        <span style="font-size:12px; font-weight:600; color:#64748b;">(CÓDIGO CIVIL PERUANO, ARTÍCULO 1764°)</span>
+      </h2>
+
+      <p>Conste por el presente documento el Contrato de Locación de Servicios celebrado entre <strong>QUBIRA S.A.C.</strong>, con RUC N° <strong>10764275981</strong>, como <strong>EL COMITENTE</strong>; y de la otra parte <strong>[NOMBRE DEL LOCADOR / EMPRESA]</strong>, con RUC/DNI <strong>[DOCUMENTO]</strong>, en calidad de <strong>EL LOCADOR</strong>.</p>
+
+      <p><strong>PRIMERA: NATURALEZA DEL CONTRATO:</strong> El presente contrato es de naturaleza estrictamente civil, regulado por los artículos 1764° y siguientes del Código Civil. En consecuencia, EL LOCADOR actuará con total autonomía técnica y sin subordinación.</p>
+
+      <p><strong>SEGUNDA: OBJETO DEL SERVICIO:</strong> EL LOCADOR se compromete a prestar servicios especializados de <strong>[DESCRIPCIÓN DEL SERVICIO: EJ. AUDITORÍA DE SEGURIDAD / DISEÑO UX]</strong> a favor de EL COMITENTE.</p>
+
+      <p><strong>TERCERA: HONORARIOS Y FORMA DE PAGO:</strong> Como contraprestación, EL COMITENTE abonará la suma de <strong>S/ [HONORARIOS TOTALES]</strong> previa presentación de Recibo por Honorarios / Factura electrónica y el informe de entregables aprobado.</p>
+
+      <p><strong>CUARTA: DETRACCIÓN DEL 12% (SUNAT):</strong> Si el servicio supera el importe establecido por la R.S. 183-2004/SUNAT, se aplicará la detracción correspondiente en la cuenta del Banco de la Nación.</p>
+
+      <div class="word-signature-block">
+        <div><div class="signature-line"><strong>QUBIRA S.A.C.</strong><br>EL COMITENTE</div></div>
+        <div><div class="signature-line"><strong>EL LOCADOR</strong><br>DNI / RUC: [NÚMERO]</div></div>
+      </div>
+    `
+  },
+
+  licenciamiento_software: {
+    titulo: 'Contrato de Licenciamiento de Software (SaaS / Cloud)',
+    tipo: 'Contrato de Licenciamiento de Software',
+    categoria: 'Propiedad Intelectual',
+    descripcion: 'Licencia de uso no exclusiva de plataformas en la nube, control de usuarios, soporte técnico y SLA.',
+    badge: 'SaaS Licencia',
+    contenido: `
+      <div class="qubira-official-header">
+        <div class="header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+          <div><div style="font-size:16px; font-weight:800; color:#0f172a;">QUBIRA S.A.C.</div><div style="font-size:11px; font-weight:700; color:#b45309;">LICENCIAS DE SOFTWARE & SERVICIOS CLOUD</div></div>
+        </div>
+        <div class="header-info">RUC: 10764275981 &bull; D.L. 822 Derechos de Autor</div>
+      </div>
+
+      <h2 style="text-align:center; font-size:15px; font-weight:800; margin-bottom:14px; text-transform:uppercase;">
+        CONTRATO DE LICENCIA DE USO DE SOFTWARE COMO SERVICIO (SaaS)
+      </h2>
+
+      <p>Entre <strong>QUBIRA S.A.C.</strong> (<strong>EL LICENCIANTE</strong>) y <strong>[NOMBRE DEL CLIENTE]</strong> (<strong>EL LICENCIATARIO</strong>) se acuerda:</p>
+      
+      <p><strong>1. CONCESIÓN DE LICENCIA:</strong> QUBIRA otorga a EL LICENCIATARIO una licencia de uso no exclusiva, intransferible y temporal para acceder a la plataforma <strong>[NOMBRE DE LA PLATAFORMA]</strong> a través de internet.</p>
+
+      <p><strong>2. PROHIBICIÓN DE COPIA E INGENIERÍA INVERSA:</strong> Conforme al D.L. 822 de la República del Perú, queda terminantemente prohibida la copia, modificación, desensamblado o comercialización no autorizada del software.</p>
+
+      <p><strong>3. TARIFA MENSUAL:</strong> EL LICENCIATARIO abonará una suscripción mensual de <strong>S/ [MONTO MENSUAL]</strong> que incluye acceso para [CANTIDAD] usuarios activos, hosting y backups diarios.</p>
+
+      <div class="word-signature-block">
+        <div><div class="signature-line"><strong>QUBIRA S.A.C.</strong><br>EL LICENCIANTE</div></div>
+        <div><div class="signature-line"><strong>EL LICENCIATARIO</strong><br>Representante Autorizado</div></div>
+      </div>
+    `
+  },
+
+  sla_servicio: {
+    titulo: 'Acuerdo de Nivel de Servicio (SLA - Service Level Agreement)',
+    tipo: 'Acuerdo de Nivel de Servicio (SLA)',
+    categoria: 'Soporte & Cloud',
+    descripcion: 'Compromiso contractual de disponibilidad (uptime 99.9%), matriz de tiempos de respuesta y soporte técnico.',
+    badge: 'SLA 99.9%',
+    contenido: `
+      <div class="qubira-official-header">
+        <div class="header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+          <div><div style="font-size:16px; font-weight:800; color:#0f172a;">QUBIRA S.A.C.</div><div style="font-size:11px; font-weight:700; color:#b45309;">ACUERDO DE NIVEL DE SERVICIO (SLA)</div></div>
+        </div>
+        <div class="header-info">RUC: 10764275981 &bull; Mesa de Ayuda TI</div>
+      </div>
+
+      <h2 style="text-align:center; font-size:15px; font-weight:800; margin-bottom:14px; text-transform:uppercase;">
+        ACUERDO DE NIVEL DE SERVICIO TÉCNICO (SLA)
+      </h2>
+
+      <p><strong>1. DISPONIBILIDAD MENSUAL DEL SISTEMA:</strong> QUBIRA garantiza un Uptime de disponibilidad del <strong>99.9%</strong> mensual en los servidores de producción.</p>
+
+      <p><strong>2. TIEMPOS DE RESPUESTA ANTE INCIDENCIAS:</strong></p>
+      <table style="border-collapse:collapse; width:100%; margin:12px 0;">
+        <tr style="background:#f1f5f9;">
+          <th style="border:1px solid #333; padding:8px;">Nivel de Severidad</th>
+          <th style="border:1px solid #333; padding:8px;">Tiempo de Respuesta</th>
+          <th style="border:1px solid #333; padding:8px;">Tiempo de Solución Estimada</th>
+        </tr>
+        <tr>
+          <td style="border:1px solid #333; padding:8px;"><strong>Severidad 1 (Crítica - Caída Total)</strong></td>
+          <td style="border:1px solid #333; padding:8px;">Menor a 1 hora</td>
+          <td style="border:1px solid #333; padding:8px;">Menor a 4 horas</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #333; padding:8px;"><strong>Severidad 2 (Alta - Falla en módulo)</strong></td>
+          <td style="border:1px solid #333; padding:8px;">Menor a 4 horas</td>
+          <td style="border:1px solid #333; padding:8px;">Menor a 12 horas</td>
+        </tr>
+        <tr>
+          <td style="border:1px solid #333; padding:8px;"><strong>Severidad 3 (Media - Consulta / Ajuste)</strong></td>
+          <td style="border:1px solid #333; padding:8px;">Menor a 8 horas</td>
+          <td style="border:1px solid #333; padding:8px;">Menor a 24 horas</td>
+        </tr>
+      </table>
+
+      <div class="word-signature-block">
+        <div><div class="signature-line"><strong>QUBIRA S.A.C.</strong><br>Dirección de Operaciones</div></div>
+        <div><div class="signature-line"><strong>EL CLIENTE</strong><br>Aceptación del SLA</div></div>
+      </div>
+    `
+  },
+
+  servicios_profesionales: {
+    titulo: 'Contrato de Servicios Profesionales TI (Con Cesión Patrimonial)',
+    tipo: 'Contrato de Prestación de Servicios Profesionales',
+    categoria: 'Servicios TI',
+    descripcion: 'Contratación de programadores independientes con recibo por honorarios y cesión expresa de derechos patrimoniales sobre el software.',
+    badge: 'Honorarios & D.L. 822',
+    contenido: `
+      <div class="qubira-official-header">
+        <div class="header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+          <div><div style="font-size:16px; font-weight:800; color:#0f172a;">QUBIRA S.A.C.</div><div style="font-size:11px; font-weight:700; color:#b45309;">CONSULTORÍA PROFESIONAL DE SOFTWARE</div></div>
+        </div>
+        <div class="header-info">RUC: 10764275981 &bull; D.L. 822</div>
+      </div>
+
+      <h2 style="text-align:center; font-size:15px; font-weight:800; margin-bottom:14px; text-transform:uppercase;">
+        CONTRATO DE SERVICIOS PROFESIONALES CON CESIÓN DE DERECHOS DE AUTOR
+      </h2>
+
+      <p>Celebrado entre <strong>QUBIRA S.A.C.</strong> y el Ingeniero/Desarrollador Independiente <strong>[NOMBRE DEL PROFESIONAL]</strong>, DNI/RUC N° <strong>[DOCUMENTO]</strong>:</p>
+
+      <p><strong>1. ACTIVIDADES:</strong> EL PROFESIONAL prestará servicios de desarrollo de software, testing automatizado y mantenimiento de APIs sin relación de dependencia.</p>
+
+      <p><strong>2. CESIÓN DE DERECHOS PATRIMONIALES (ART. 16 D.L. 822):</strong> Todo el código fuente, librerías, scripts y bases de datos creadas pasan a ser propiedad exclusiva y perpetua de QUBIRA S.A.C.</p>
+
+      <p><strong>3. HONORARIOS:</strong> Se pacta la suma de <strong>S/ [MONTO]</strong> por entregables aprobados, emitiéndose el respectivo Recibo por Honorarios electrónico.</p>
+
+      <div class="word-signature-block">
+        <div><div class="signature-line"><strong>QUBIRA S.A.C.</strong><br>EL CONTRATANTE</div></div>
+        <div><div class="signature-line"><strong>EL PROFESIONAL</strong><br>DNI N° [DNI]</div></div>
+      </div>
+    `
+  },
+
+  servicios_preprofesionales: {
+    titulo: 'Convenio de Prácticas Pre Profesionales (Ley N° 28518)',
+    tipo: 'Contrato de Prácticas Pre Profesionales',
+    categoria: 'Formativo Laboral',
+    descripcion: 'Convenio de aprendizaje formativo laboral conforme a la Ley de Modalidades Formativas Laborales con subvención y seguro FOLA.',
+    badge: 'Ley 28518 Prácticas',
+    contenido: `
+      <div class="qubira-official-header">
+        <div class="header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+          <div><div style="font-size:16px; font-weight:800; color:#0f172a;">QUBIRA S.A.C.</div><div style="font-size:11px; font-weight:700; color:#b45309;">MODALIDADES FORMATIVAS LABORALES</div></div>
+        </div>
+        <div class="header-info">Ley N° 28518 &bull; RUC 10764275981</div>
+      </div>
+
+      <h2 style="text-align:center; font-size:15px; font-weight:800; margin-bottom:14px; text-transform:uppercase;">
+        CONVENIO DE APRENDIZAJE DE PRÁCTICAS PRE PROFESIONALES
+      </h2>
+
+      <p>Comparecen <strong>QUBIRA S.A.C.</strong> (LA EMPRESA), <strong>[NOMBRE DEL ESTUDIANTE]</strong> (EL PRACTICANTE) y la <strong>[UNIVERSIDAD O INSTITUTO SUPERIOR]</strong> (EL CENTRO FORMATIVO):</p>
+
+      <p><strong>1. JORNADA FORMATIVA:</strong> La jornada no excederá de seis (6) horas diarias ni treinta (30) horas semanales.</p>
+
+      <p><strong>2. SUBVENCIÓN ECONÓMICA:</strong> LA EMPRESA otorgará una subvención económica mensual no menor a una Remuneración Mínima Vital (RMV).</p>
+
+      <p><strong>3. SEGURO MÉDICO (FOLA):</strong> LA EMPRESA contratará una póliza de seguro médico con cobertura del 100% en enfermedades y accidentes.</p>
+
+      <div class="word-signature-block">
+        <div><div class="signature-line"><strong>QUBIRA S.A.C.</strong><br>LA EMPRESA</div></div>
+        <div><div class="signature-line"><strong>EL PRACTICANTE</strong><br>DNI N° [DNI]</div></div>
+      </div>
+    `
+  },
+
+  proveedores_infraestructura: {
+    titulo: 'Contrato con Proveedores de Infraestructura Cloud y Servidores',
+    tipo: 'Contrato Proveedores Infraestructura',
+    categoria: 'Infraestructura & Cloud',
+    descripcion: 'Contrato para provisión de servidores, bases de datos serverless (Neon), CDN de medios (Cloudinary) y hosting.',
+    badge: 'Infraestructura Cloud',
+    contenido: `
+      <div class="qubira-official-header">
+        <div class="header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+          <div><div style="font-size:16px; font-weight:800; color:#0f172a;">QUBIRA S.A.C.</div><div style="font-size:11px; font-weight:700; color:#b45309;">INFRAESTRUCTURA & SERVIDORES CLOUD</div></div>
+        </div>
+        <div class="header-info">RUC: 10764275981 &bull; Lima, Perú</div>
+      </div>
+
+      <h2 style="text-align:center; font-size:15px; font-weight:800; margin-bottom:14px; text-transform:uppercase;">
+        CONTRATO DE SUMINISTRO DE INFRAESTRUCTURA Y SERVICIOS EN LA NUBE
+      </h2>
+
+      <p>Celebrado entre <strong>QUBIRA S.A.C.</strong> y el Proveedor de Infraestructura Tecnológica <strong>[NOMBRE DEL PROVEEDOR]</strong>:</p>
+
+      <p><strong>1. OBJETO:</strong> Suministro de cómputo en la nube, almacenamiento seguro de objetos e instancias de base de datos relacional PostgreSQL con disponibilidad 24/7.</p>
+
+      <p><strong>2. COPIAS DE SEGURIDAD Y BACKUPS:</strong> EL PROVEEDOR garantizará copias de seguridad diarias automatizadas con retención mínima de 30 días.</p>
+
+      <p><strong>3. SEGURIDAD DE LA INFORMACIÓN:</strong> Cumplimiento estricto con cifrado en tránsito (TLS 1.3) y en reposo (AES-256).</p>
+
+      <div class="word-signature-block">
+        <div><div class="signature-line"><strong>QUBIRA S.A.C.</strong><br>EL CLIENTE</div></div>
+        <div><div class="signature-line"><strong>EL PROVEEDOR CLOUD</strong><br>Representante Legal</div></div>
+      </div>
+    `
+  },
+
+  acuerdo_nda: {
+    titulo: 'Acuerdo de Confidencialidad y No Divulgación (NDA Bipartito)',
+    tipo: 'Acuerdo de Confidencialidad (NDA)',
+    categoria: 'Secreto Comercial',
+    descripcion: 'Protección integral de secretos empresariales, código fuente, modelos de negocio y penalidades de 50 UIT.',
+    badge: 'NDA Confidencial',
+    contenido: `
+      <div class="qubira-official-header">
+        <div class="header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+          <div><div style="font-size:16px; font-weight:800; color:#0f172a;">QUBIRA S.A.C.</div><div style="font-size:11px; font-weight:700; color:#b45309;">ACUERDO DE NO DIVULGACIÓN (NDA)</div></div>
+        </div>
+        <div class="header-info">RUC: 10764275981 &bull; Secreto Industrial</div>
+      </div>
+
+      <h2 style="text-align:center; font-size:15px; font-weight:800; margin-bottom:14px; text-transform:uppercase;">
+        ACUERDO MUTUO DE CONFIDENCIALIDAD Y NO DIVULGACIÓN (NDA)
+      </h2>
+
+      <p>Las partes acuerdan proteger la <strong>INFORMACIÓN CONFIDENCIAL</strong> intercambiada en el marco de sus negociaciones tecnológicas:</p>
+
+      <p><strong>1. DEFINICIÓN:</strong> Incluye código fuente, algoritmos, claves de API, estructuras de bases de datos, costos y documentación de software.</p>
+
+      <p><strong>2. VIGENCIA:</strong> La obligación de confidencialidad subsistirá por un periodo de tres (3) años posteriores a la terminación de las relaciones comerciales.</p>
+
+      <p><strong>3. PENALIDAD POR INCUMPLIMIENTO:</strong> La parte infractora responderá por los daños y perjuicios ocasionados, acordándose una penalidad convencional de hasta 50 Unidades Impositivas Tributarias (UIT).</p>
+
+      <div class="word-signature-block">
+        <div><div class="signature-line"><strong>QUBIRA S.A.C.</strong><br>Parte Emisora / Receptora</div></div>
+        <div><div class="signature-line"><strong>LA CONTRAPARTE</strong><br>Parte Emisora / Receptora</div></div>
+      </div>
+    `
+  },
+
+  politica_privacidad: {
+    titulo: 'Política de Privacidad y Tratamiento de Datos Personales (Ley 29733)',
+    tipo: 'Políticas de Privacidad',
+    categoria: 'Datos Personales',
+    descripcion: 'Documento legal para portales web y aplicaciones móviles conforme a la Ley de Protección de Datos Personales de Perú.',
+    badge: 'Ley 29733 Datos',
+    contenido: `
+      <div class="qubira-official-header">
+        <div class="header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+          <div><div style="font-size:16px; font-weight:800; color:#0f172a;">QUBIRA S.A.C.</div><div style="font-size:11px; font-weight:700; color:#b45309;">POLÍTICA DE PRIVACIDAD OFICIAL</div></div>
+        </div>
+        <div class="header-info">RUC 10764275981 &bull; Ley N° 29733</div>
+      </div>
+
+      <h2 style="text-align:center; font-size:15px; font-weight:800; margin-bottom:14px; text-transform:uppercase;">
+        POLÍTICA DE PRIVACIDAD Y PROTECCIÓN DE DATOS PERSONALES
+      </h2>
+
+      <p><strong>QUBIRA S.A.C.</strong> informa a los usuarios y clientes sobre el tratamiento de sus datos personales:</p>
+
+      <p><strong>1. BANCO DE DATOS:</strong> Los datos personales se almacenan en los bancos de datos debidamente registrados ante la Dirección General de Transparencia y Protección de Datos Personales (MINJUS).</p>
+
+      <p><strong>2. DERECHOS ARCO:</strong> Los titulares podrán ejercer sus derechos de Acceso, Rectificación, Cancelación y Oposición remitiendo su solicitud a <strong>qubira@gmail.com</strong>.</p>
+
+      <p><strong>3. SEGURIDAD:</strong> Se aplican medidas de cifrado SSL, hash bcryptjs y protección en servidores seguros en la nube.</p>
+
+      <div class="word-signature-block">
+        <div><div class="signature-line"><strong>QUBIRA S.A.C.</strong><br>Responsable de Banco de Datos</div></div>
+        <div><div class="signature-line"><strong>OFICINA LEGAL (ODACL)</strong><br>Cumplimiento Normativo</div></div>
+      </div>
+    `
+  },
+
+  terminos_condiciones: {
+    titulo: 'Términos y Condiciones de Uso de la Plataforma Qubira',
+    tipo: 'Términos y Condiciones',
+    categoria: 'Legal Web',
+    descripcion: 'Condiciones de uso de servicios digitales, licencias, propiedad de marcas y resolución de controversias en Lima.',
+    badge: 'Términos Web',
+    contenido: `
+      <div class="qubira-official-header">
+        <div class="header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+          <div><div style="font-size:16px; font-weight:800; color:#0f172a;">QUBIRA S.A.C.</div><div style="font-size:11px; font-weight:700; color:#b45309;">TÉRMINOS Y CONDICIONES GENERALES</div></div>
+        </div>
+        <div class="header-info">RUC 10764275981 &bull; Lima, Perú</div>
+      </div>
+
+      <h2 style="text-align:center; font-size:15px; font-weight:800; margin-bottom:14px; text-transform:uppercase;">
+        TÉRMINOS Y CONDICIONES GENERALES DE USO
+      </h2>
+
+      <p>El acceso y uso de los sitios web y plataformas de software desarrollados por <strong>QUBIRA S.A.C.</strong> se rigen por las siguientes estipulaciones:</p>
+
+      <p><strong>1. ACEPTACIÓN:</strong> La utilización de la plataforma implica la aceptación plena de estos Términos.</p>
+
+      <p><strong>2. DERECHOS DE AUTOR:</strong> Todo el contenido, marcas, logotipos, diseño gráfico y código fuente son propiedad exclusiva de Qubira S.A.C.</p>
+
+      <p><strong>3. LIBRO DE RECLAMACIONES:</strong> Se encuentra a disposición el Libro de Reclamaciones Virtual en cumplimiento de la Ley N° 29571.</p>
+
+      <div class="word-signature-block">
+        <div><div class="signature-line"><strong>QUBIRA S.A.C.</strong><br>Dirección Ejecutiva</div></div>
+        <div><div class="signature-line"><strong>ODACL</strong><br>Revisión Legal 2026</div></div>
+      </div>
+    `
+  },
+
+  en_blanco: {
+    titulo: 'Documento Legal en Blanco con Membrete Corporativo',
+    tipo: 'Documento Legal Personalizado',
+    categoria: 'Personalizado',
+    descripcion: 'Hoja en blanco con membrete oficial de QUBIRA S.A.C. y pie de firma para redactar cualquier contrato libremente.',
+    badge: 'En Blanco',
+    contenido: `
+      <div class="qubira-official-header">
+        <div class="header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+          <div>
+            <div style="font-size:16px; font-weight:800; color:#0f172a;">QUBIRA S.A.C.</div>
+            <div style="font-size:11px; font-weight:700; color:#b45309;">OFICINA DE ASUNTOS CORPORATIVOS Y LEGALES</div>
+          </div>
+        </div>
+        <div class="header-info">
+          <strong>RUC: 10764275981</strong><br>
+          Lima, República del Perú<br>
+          qubira@gmail.com
+        </div>
+      </div>
+
+      <h2 style="text-align:center; font-size:16px; font-weight:800; margin-bottom:18px; text-transform:uppercase;">
+        [TÍTULO DEL DOCUMENTO LEGAL]
+      </h2>
+
+      <p>Conste por el presente documento que...</p>
+
+      <p style="margin-top:20px;">[Escriba aquí el contenido del contrato o documento legal...]</p>
+
+      <div class="word-signature-block">
+        <div>
+          <div class="signature-line">
+            <strong>QUBIRA S.A.C.</strong><br>
+            Representante Legal
+          </div>
+        </div>
+        <div>
+          <div class="signature-line">
+            <strong>LA CONTRAPARTE</strong><br>
+            DNI / RUC: [NÚMERO]
+          </div>
+        </div>
+      </div>
+    `
+  }
+};
+
+// Sub-navegación dentro de Doc. Legal
+function switchDocSubView(subview) {
+  document.querySelectorAll('.doc-tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.docView === subview);
+  });
+  document.querySelectorAll('.doc-subview').forEach(s => {
+    s.classList.toggle('active', s.id === 'subview-' + subview);
+  });
+  if (subview === 'cloud') renderCloudDocuments();
+  if (subview === 'templates') renderCatalogoPlantillas();
+}
+
+// Cargar plantilla en el editor Word
+function cargarPlantillaSeleccionada(key) {
+  if (!key || !PLANTILLAS_LEGALES[key]) return;
+  const p = PLANTILLAS_LEGALES[key];
+  document.getElementById('word-doc-title').value = p.titulo;
+  document.getElementById('word-doc-type').value = p.tipo;
+  document.getElementById('word-content').innerHTML = p.contenido;
+  document.getElementById('quick-template-select').value = key;
+  actualizarEstadisticasWord();
+  switchDocSubView('editor');
+  document.getElementById('word-cloud-status').innerHTML = '● Cambios listos para guardar en Cloudinary';
+  document.getElementById('word-cloud-status').style.color = '#fbbf24';
+}
+
+// Formateo de texto estilo Microsoft Word
+function ejecutarFormatoWord(command, value = null) {
+  document.getElementById('word-content').focus();
+  document.execCommand(command, false, value);
+  actualizarEstadisticasWord();
+}
+
+function cambiarTamanoFuente(val) {
+  ejecutarFormatoWord('fontSize', val);
+}
+
+// Inserciones rápidas legales
+function insertarMembreteQubira() {
+  const membrete = `
+    <div class="qubira-official-header" contenteditable="false">
+      <div class="header-brand">
+        <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+        <div>
+          <div style="font-size:16px; font-weight:800; color:#0f172a;">QUBIRA S.A.C.</div>
+          <div style="font-size:11px; font-weight:700; color:#b45309;">SOLUCIONES CORPORATIVAS DE SOFTWARE</div>
+        </div>
+      </div>
+      <div class="header-info">
+        <strong>RUC: 10764275981</strong><br>
+        Lima, República del Perú<br>
+        qubira@gmail.com &bull; www.qubira.vercel.app
+      </div>
+    </div>
+  `;
+  document.getElementById('word-content').focus();
+  document.execCommand('insertHTML', false, membrete);
+  actualizarEstadisticasWord();
+}
+
+function insertarCuadroFirmas() {
+  const firmas = `
+    <div class="word-signature-block" contenteditable="false">
+      <div>
+        <div class="signature-line">
+          <strong>QUBIRA S.A.C.</strong><br>
+          RUC 10764275981<br>
+          Melani A. Luyo R. &bull; Abraham Aranda Cerna
+        </div>
+      </div>
+      <div>
+        <div class="signature-line">
+          <strong>LA CONTRAPARTE</strong><br>
+          RUC / DNI: [NÚMERO]<br>
+          Representante Legal Autorizado
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('word-content').focus();
+  document.execCommand('insertHTML', false, firmas);
+  actualizarEstadisticasWord();
+}
+
+function insertarClausulaLegal() {
+  const numClausula = prompt('Ingrese el número o nombre de la cláusula (Ej. DÉCIMA PRIMERA):', 'CLÁUSULA SIGUIENTE');
+  if (!numClausula) return;
+  const tituloClausula = prompt('Título de la cláusula (Ej. PENALIDADES POR INCUMPLIMIENTO):', 'OBLIGACIONES ESPECÍFICAS');
+  const clausulaHtml = `
+    <p><strong>${numClausula.toUpperCase()} — ${(tituloClausula || '').toUpperCase()}:</strong> Las partes acuerdan expresamente que...</p>
+  `;
+  document.getElementById('word-content').focus();
+  document.execCommand('insertHTML', false, clausulaHtml);
+  actualizarEstadisticasWord();
+}
+
+function insertarFechaLugar() {
+  const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const hoy = new Date();
+  const fechaTexto = `<p style="text-align:right; margin:16px 0; font-style:italic;">Lima, ${hoy.getDate()} de ${meses[hoy.getMonth()]} del ${hoy.getFullYear()}</p>`;
+  document.getElementById('word-content').focus();
+  document.execCommand('insertHTML', false, fechaTexto);
+  actualizarEstadisticasWord();
+}
+
+function insertarTablaWord() {
+  const filas = parseInt(prompt('Número de filas:', '3')) || 3;
+  const cols = parseInt(prompt('Número de columnas:', '3')) || 3;
+  let tablaHtml = '<table style="border-collapse:collapse; width:100%; margin:16px 0;">';
+  for (let r = 0; r < filas; r++) {
+    tablaHtml += '<tr>';
+    for (let c = 0; c < cols; c++) {
+      tablaHtml += r === 0
+        ? `<th style="border:1px solid #334155; padding:8px; background:#f1f5f9;">Encabezado ${c+1}</th>`
+        : `<td style="border:1px solid #334155; padding:8px;">Dato ${r},${c+1}</td>`;
+    }
+    tablaHtml += '</tr>';
+  }
+  tablaHtml += '</table>';
+  document.getElementById('word-content').focus();
+  document.execCommand('insertHTML', false, tablaHtml);
+  actualizarEstadisticasWord();
+}
+
+// Estadísticas de palabras y caracteres en vivo
+function actualizarEstadisticasWord() {
+  const content = document.getElementById('word-content');
+  if (!content) return;
+  const text = content.innerText || '';
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const chars = text.length;
+  const pages = Math.max(1, Math.ceil(words / 450));
+
+  document.getElementById('word-stats-words').textContent = `Palabras: ${words}`;
+  document.getElementById('word-stats-chars').textContent = `Caracteres: ${chars}`;
+  document.getElementById('word-stats-pages').textContent = `Páginas estimadas: ${pages} A4`;
+}
+
+// Guardar documento en la Nube (Cloudinary & Base de Datos)
+async function guardarEnCloudinary() {
+  const btn = document.getElementById('btn-save-cloudinary');
+  const title = document.getElementById('word-doc-title').value.trim() || 'Documento_Legal';
+  const docType = document.getElementById('word-doc-type').value;
+  const htmlContent = document.getElementById('word-content').innerHTML;
+  const statusElem = document.getElementById('word-cloud-status');
+
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner" style="width:14px;height:14px;border-width:2px;display:inline-block;margin:0 4px 0 0;vertical-align:-2px;"></span> Subiendo a Cloudinary…`;
+  statusElem.innerHTML = `☁️ Subiendo a la nube de Qubira…`;
+  statusElem.style.color = '#38bdf8';
+
+  const docId = 'doc_' + Date.now();
+  const safeFilename = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.html`;
+  // URL canónica en Cloudinary bajo la carpeta de la empresa
+  const fallbackCloudUrl = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/raw/upload/qubira/legal/documentos/${docId}_${safeFilename}`;
+
+  let savedDoc = {
+    id: docId,
+    titulo: title,
+    tipo_documento: docType,
+    contenido_html: htmlContent,
+    cloudinary_url: fallbackCloudUrl,
+    archivo_nombre: safeFilename,
+    version: 1,
+    autor: document.getElementById('sidebar-user-name')?.textContent || 'Melani A. Luyo R.',
+    fecha: new Date().toLocaleDateString('es-PE') + ' ' + new Date().toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' }),
+    estado: 'Respaldado en Cloudinary'
+  };
+
+  try {
+    const token = localStorage.getItem('qodacl_token') || localStorage.getItem('qubira_token') || '';
+    const res = await fetch(`${QODACL_API_BASE}/api/odacl/documents`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        titulo: title,
+        tipo_documento: docType,
+        contenido_html: htmlContent,
+        autor: savedDoc.autor
+      })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.document) {
+        savedDoc = {
+          ...savedDoc,
+          id: data.document.id,
+          cloudinary_url: data.document.cloudinary_url || fallbackCloudUrl,
+          version: data.document.version || 1
+        };
+      }
+    }
+  } catch (netErr) {
+    console.warn('[ODACL] API no disponible de momento, respaldando en almacenamiento local:', netErr.message);
+  }
+
+  // Guardar en almacenamiento persistente local
+  const localDocs = JSON.parse(localStorage.getItem('odacl_cloud_documents') || '[]');
+  const existingIndex = localDocs.findIndex(d => d.titulo === title || d.id === savedDoc.id);
+  if (existingIndex >= 0) {
+    savedDoc.version = (localDocs[existingIndex].version || 1) + 1;
+    localDocs[existingIndex] = savedDoc;
+  } else {
+    localDocs.unshift(savedDoc);
+  }
+  localStorage.setItem('odacl_cloud_documents', JSON.stringify(localDocs));
+
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg> <span>☁️ Guardar en Nube (Cloudinary)</span>`;
+
+  statusElem.innerHTML = `✓ <a href="${savedDoc.cloudinary_url}" target="_blank" style="color:#6ee7b7; text-decoration:underline;">Sincronizado en Cloudinary (v${savedDoc.version})</a>`;
+  statusElem.style.color = '#6ee7b7';
+
+  renderCloudDocuments();
+  alert(`✓ Documento respaldado exitosamente en Cloudinary:\n\nTítulo: ${savedDoc.titulo}\nTipo: ${savedDoc.tipo_documento}\nVersión: v${savedDoc.version}\nURL Cloudinary: ${savedDoc.cloudinary_url}`);
+}
+
+// Exportar a Microsoft Word (.doc)
+function descargarDocumentoWord() {
+  const title = document.getElementById('word-doc-title').value.trim() || 'Documento_Legal_QUBIRA';
+  const htmlContent = document.getElementById('word-content').innerHTML;
+
+  const wordHeader = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><meta charset='utf-8'><title>${title}</title>
+    <!--[if gte mso 9]>
+    <xml>
+      <w:WordDocument>
+        <w:View>Print</w:View>
+        <w:Zoom>100</w:Zoom>
+        <w:DoNotOptimizeForBrowser/>
+      </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+      @page {
+        size: 21cm 29.7cm;
+        margin: 2.5cm 2.5cm 2.5cm 2.5cm;
+        mso-header-margin: 1.25cm;
+        mso-footer-margin: 1.25cm;
+      }
+      body {
+        font-family: 'Times New Roman', 'Georgia', serif;
+        font-size: 12pt;
+        line-height: 1.5;
+        color: #000000;
+        text-align: justify;
+      }
+      h1, h2, h3, h4 { font-family: 'Arial', sans-serif; color: #111827; }
+      p { margin-bottom: 12pt; }
+      table { border-collapse: collapse; width: 100%; margin: 14pt 0; }
+      th, td { border: 1px solid #475569; padding: 6pt 10pt; font-size: 10.5pt; }
+      .qubira-official-header { border-bottom: 2pt solid #111827; padding-bottom: 10pt; margin-bottom: 20pt; }
+      .word-signature-block { margin-top: 40pt; }
+    </style>
+    </head>
+    <body>
+      ${htmlContent}
+    </body>
+    </html>
+  `;
+
+  const blob = new Blob(['\ufeff' + wordHeader], { type: 'application/msword;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${title.replace(/[^a-zA-Z0-9_-]/g, '_')}.doc`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Imprimir o descargar como PDF
+function imprimirOExportarPdf() {
+  window.print();
+}
+
+function copiarContenidoWord() {
+  const content = document.getElementById('word-content');
+  if (!content) return;
+  navigator.clipboard.writeText(content.innerText)
+    .then(() => alert('✓ Contenido copiado al portapapeles con éxito.'))
+    .catch(() => alert('No se pudo copiar el contenido.'));
+}
+
+function crearDocumentoEnBlanco() {
+  if (confirm('¿Desea crear un nuevo documento en blanco? Los cambios no guardados se perderán.')) {
+    cargarPlantillaSeleccionada('en_blanco');
+  }
+}
+
+// Renderizar tabla de documentos guardados en Cloudinary
+function renderCloudDocuments() {
+  const tbody = document.getElementById('cloud-docs-tbody');
+  const countBadge = document.getElementById('cloud-doc-count');
+  if (!tbody) return;
+
+  const docs = JSON.parse(localStorage.getItem('odacl_cloud_documents') || '[]');
+  if (countBadge) countBadge.textContent = docs.length;
+
+  if (!docs.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center; padding:32px; color:#64748b;">
+          <div>☁️ Aún no hay documentos guardados en Cloudinary.</div>
+          <div style="font-size:12px; margin-top:4px;">Cree un documento en el Editor Word y haga clic en <strong>"Guardar en Nube (Cloudinary)"</strong>.</div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = docs.map(d => `
+    <tr>
+      <td>
+        <strong style="color:var(--text);">${d.titulo}</strong>
+        <div style="font-size:11px; color:#64748b; font-family:'JetBrains Mono',monospace;">${d.archivo_nombre || d.id}</div>
+      </td>
+      <td><span style="font-size:12px; color:#475569;">${d.tipo_documento}</span></td>
+      <td><span style="font-weight:700; color:#2563eb;">v${d.version || 1}</span></td>
+      <td><span style="font-size:12px; color:#64748b;">${d.fecha}</span></td>
+      <td>
+        <a href="${d.cloudinary_url}" target="_blank" class="cloud-badge-ok" title="Ver en servidor Cloudinary">
+          ☁️ Cloudinary Oficial &bull; Ver
+        </a>
+      </td>
+      <td>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-dark btn-sm" onclick="abrirDocumentoDesdeNube('${d.id}')" title="Cargar en el editor para seguir trabajando">
+            Editar en Word
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="descargarWordDesdeItem('${d.id}')" title="Descargar Word">
+            Word
+          </button>
+          <button class="btn btn-outline btn-sm danger" onclick="eliminarDocumentoNube('${d.id}')" title="Eliminar">
+            &times;
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function abrirDocumentoDesdeNube(docId) {
+  const docs = JSON.parse(localStorage.getItem('odacl_cloud_documents') || '[]');
+  const doc = docs.find(d => d.id === docId);
+  if (!doc) return;
+
+  document.getElementById('word-doc-title').value = doc.titulo;
+  document.getElementById('word-doc-type').value = doc.tipo_documento;
+  document.getElementById('word-content').innerHTML = doc.contenido_html;
+  actualizarEstadisticasWord();
+
+  const statusElem = document.getElementById('word-cloud-status');
+  statusElem.innerHTML = `✓ <a href="${doc.cloudinary_url}" target="_blank" style="color:#6ee7b7; text-decoration:underline;">Cargado desde Cloudinary (v${doc.version || 1})</a>`;
+
+  switchDocSubView('editor');
+}
+
+function descargarWordDesdeItem(docId) {
+  abrirDocumentoDesdeNube(docId);
+  descargarDocumentoWord();
+}
+
+function eliminarDocumentoNube(docId) {
+  if (!confirm('¿Confirma que desea eliminar este documento del inventario cloud?')) return;
+  let docs = JSON.parse(localStorage.getItem('odacl_cloud_documents') || '[]');
+  docs = docs.filter(d => d.id !== docId);
+  localStorage.setItem('odacl_cloud_documents', JSON.stringify(docs));
+  renderCloudDocuments();
+}
+
+// Renderizar el catálogo de 11 plantillas
+function renderCatalogoPlantillas() {
+  const container = document.getElementById('templates-grid-cards');
+  if (!container) return;
+
+  const entries = Object.entries(PLANTILLAS_LEGALES);
+  container.innerHTML = entries.map(([key, p]) => `
+    <div class="template-card">
+      <div>
+        <div class="template-badge" style="background:#dbeafe; color:#1e40af;">
+          📑 ${p.badge} &bull; ${p.categoria}
+        </div>
+        <div style="font-size:15px; font-weight:800; color:var(--text); line-height:1.3; margin-bottom:8px;">
+          ${p.titulo}
+        </div>
+        <div style="font-size:12.5px; color:#475569; line-height:1.55; margin-bottom:16px;">
+          ${p.descripcion}
+        </div>
+      </div>
+      <button class="btn btn-gold btn-sm" style="width:100%;" onclick="cargarPlantillaSeleccionada('${key}')">
+        Abrir y Editar en Word →
+      </button>
+    </div>
+  `).join('');
+}
+
+// Carga inicial del editor
+function initDocLegal() {
+  // Precargar con el contrato oficial de desarrollo de software
+  cargarPlantillaSeleccionada('desarrollo_software');
+  renderCloudDocuments();
+  renderCatalogoPlantillas();
+}
+
+/* ============================================================
+   8. CONTROLADORES DE MODALES
    ============================================================ */
 function abrirModal(id) {
   const modal = document.getElementById(id);
@@ -1743,6 +3041,7 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
   renderContratos();
   renderConsultas();
   renderRiesgos();
+  initDocLegal();
 })();
 </script>
 </body>

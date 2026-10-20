@@ -29,9 +29,15 @@ Plataforma oficial de gestión legal, gobierno societario, contratos corporativo
    - Ley N° 29783 (Seguridad y Salud en el Trabajo)
    - Ley N° 29571 (Código de Protección y Defensa del Consumidor)
 4. **Gestión de Contratos Corporativos:** Catálogo de contratos y visualizador del **Modelo Oficial de 14 Cláusulas** de Qubira S.A.C., con soporte de impresión oficial y copia rápida.
-5. **Asesoría Legal & Consultas:** Mesa de partes virtual para dictámenes jurídicos solicitados por OTI, ODN, RRHH, ADG y OPP.
-6. **Compliance & Matriz de Riesgos:** Semáforo de riesgos legales, dimensionamiento y planes de mitigación continuos.
-7. **Políticas Corporativas:** Términos y condiciones, política de privacidad y código de ética empresarial.
+5. **Doc. Legal (Editor Estilo Microsoft Word & Nube Cloudinary):**
+   - Editor de contratos legales enriquecido tipo Word/Office en lienzo de papel A4.
+   - Herramientas completas de edición de texto, fuentes, tamaños, alineación, tablas y firmas oficiales de QUBIRA S.A.C. (RUC 10764275981).
+   - Catálogo interactivo de 11 plantillas precargadas: Contrato Laboral D.L. 728, Contrato de Prestación de Servicios, Licenciamiento Software SaaS, Desarrollo de Software 14 Cláusulas, SLA 99.9%, Servicios Profesionales TI, Prácticas Pre Profesionales Ley 28518, Proveedores de Infraestructura Cloud, Acuerdo NDA, Políticas de Privacidad y Términos y Condiciones.
+   - Exportación nativa a **Microsoft Word (.doc)**, **PDF** para impresión y copiado rápido.
+   - Guardado y respaldo en la nube en **Cloudinary** (`qubira/legal/documentos`) con control de versiones y base de datos.
+6. **Asesoría Legal & Consultas:** Mesa de partes virtual para dictámenes jurídicos solicitados por OTI, ODN, RRHH, ADG y OPP.
+7. **Compliance & Matriz de Riesgos:** Semáforo de riesgos legales, dimensionamiento y planes de mitigación continuos.
+8. **Políticas Corporativas:** Términos y condiciones, política de privacidad y código de ética empresarial.
 
 ---
 
