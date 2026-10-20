@@ -5957,7 +5957,15 @@ function descargarDocumentoWord() {
   const title = document.getElementById('word-doc-title').value.trim() || 'Documento_Legal_QUBIRA';
   const container = document.getElementById('a4-pages-container');
   const sheets = container ? container.querySelectorAll('.a4-page-sheet') : [];
-  const footerLeft = footerLeftTextoGlobal || 'QUBIRA S.A.C. • RUC 10764275981 • Área Legal';
+  
+  // Extraer valores actuales del encabezado y pie (editados por el usuario o globales)
+  const firstSheet = sheets[0];
+  const comp = firstSheet?.querySelector('.a4-header-company')?.innerText?.trim() || headerCompanyGlobal || 'QUBIRA S.A.C.';
+  const tag = firstSheet?.querySelector('.a4-header-tagline')?.innerText?.trim() || headerTaglineGlobal || 'SOLUCIONES CORPORATIVAS DE SOFTWARE';
+  const ruc = firstSheet?.querySelector('.a4-header-ruc')?.innerText?.trim() || headerRucGlobal || 'RUC: 10764275981';
+  const addr = firstSheet?.querySelector('.a4-header-address')?.innerText?.trim() || headerAddressGlobal || 'Lima, República del Perú';
+  const contact = firstSheet?.querySelector('.a4-header-web')?.innerText?.trim() || headerContactGlobal || 'qubira@gmail.com | www.qubira.vercel.app';
+  const footerLeft = firstSheet?.querySelector('.a4-footer-left')?.innerText?.trim() || footerLeftTextoGlobal || 'QUBIRA S.A.C. • RUC 10764275981 • Área Legal';
 
   // Extraer el contenido continuo de todas las hojas del documento
   let fullBodyHtml = '';
@@ -6002,7 +6010,17 @@ function descargarDocumentoWord() {
         div.Section1 {
           page: Section1;
         }
-        div#h1, div#f1 {
+        table#hrdftrtbl {
+          margin: 0in 0in 0in 900in;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+        }
+        p.MsoHeader, div.MsoHeader {
+          margin: 0;
+          padding: 0;
+        }
+        p.MsoFooter, div.MsoFooter {
           margin: 0;
           padding: 0;
         }
@@ -6011,14 +6029,14 @@ function descargarDocumentoWord() {
           border-collapse: collapse;
           border-bottom: 1.5pt solid #0f172a;
           padding-bottom: 4pt;
-          margin-bottom: 6pt;
+          margin-bottom: 4pt;
         }
         table.MsoFooterTable {
           width: 100%;
           border-collapse: collapse;
           border-top: 1pt solid #cbd5e1;
           padding-top: 4pt;
-          margin-top: 6pt;
+          margin-top: 4pt;
         }
         body {
           font-family: 'Times New Roman', Georgia, serif;
@@ -6056,50 +6074,57 @@ function descargarDocumentoWord() {
     </head>
     <body style="tab-interval:35.4pt;">
 
-      <!-- ENCABEZADO OFICIAL MSO WORD EN ÁREA DE ENCABEZADO REAL -->
-      <div style='mso-element:header' id=h1>
-        <table class="MsoHeaderTable" style="width:100%; border:none; border-bottom:1.5pt solid #0f172a; padding-bottom:4pt;">
-          <tr style="border:none;">
-            <td style="border:none; width:60%; vertical-align:middle; text-align:left; padding:0;">
-              <table style="border:none; border-collapse:collapse; margin:0; padding:0;">
-                <tr style="border:none;">
-                  <td style="border:none; padding:0 8pt 0 0; vertical-align:middle;">
-                    <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" width="36" height="36" alt="Logo Qubira" style="vertical-align:middle;">
-                  </td>
-                  <td style="border:none; padding:0; vertical-align:middle;">
-                    <div style="font-family:'Arial',sans-serif; font-size:11pt; font-weight:bold; color:#0f172a; line-height:1.2;">${headerCompanyGlobal}</div>
-                    <div style="font-family:'Arial',sans-serif; font-size:7pt; font-weight:bold; color:#b45309; letter-spacing:0.5pt; line-height:1.2; text-transform:uppercase;">${headerTaglineGlobal}</div>
-                  </td>
-                </tr>
-              </table>
-            </td>
-            <td style="border:none; width:40%; vertical-align:middle; text-align:right; font-family:'Arial',sans-serif; font-size:7.5pt; line-height:1.3; color:#475569; padding:0;">
-              <strong style="color:#1e3a8a; font-size:8.5pt;">${headerRucGlobal}</strong><br>
-              ${headerAddressGlobal}<br>
-              ${headerContactGlobal}
-            </td>
-          </tr>
-        </table>
-      </div>
-
-      <!-- PIE DE PÁGINA OFICIAL MSO WORD CON NÚMEROS DE PÁGINA DINÁMICOS -->
-      <div style='mso-element:footer' id=f1>
-        <table class="MsoFooterTable" style="width:100%; border:none; border-top:1pt solid #cbd5e1; padding-top:4pt;">
-          <tr style="border:none;">
-            <td style="border:none; width:70%; font-family:'Arial',sans-serif; font-size:8.5pt; color:#64748b; text-align:left; padding:0;">
-              ${footerLeft}
-            </td>
-            <td style="border:none; width:30%; font-family:'Arial',sans-serif; font-size:8.5pt; color:#64748b; text-align:right; padding:0;">
-              Página <span style='mso-field-code: PAGE '></span> de <span style='mso-field-code: NUMPAGES '></span>
-            </td>
-          </tr>
-        </table>
-      </div>
-
-      <!-- CUERPO DEL DOCUMENTO EN SECCIÓN CONTINUA OFICIAL -->
+      <!-- CUERPO PRINCIPAL DEL DOCUMENTO EN SECCIÓN CONTINUA -->
       <div class="Section1">
         ${fullBodyHtml}
       </div>
+
+      <!-- TABLA MSO OFICIAL DE DEFINICIÓN DE ENCABEZADO Y PIE DE PÁGINA AISLADOS -->
+      <table id="hrdftrtbl">
+        <tr>
+          <td>
+            <!-- ENCABEZADO OFICIAL MSO WORD -->
+            <div style="mso-element:header" id="h1" class="MsoHeader">
+              <table class="MsoHeaderTable" style="width:100%; border:none; border-bottom:1.5pt solid #0f172a; padding-bottom:4pt;">
+                <tr style="border:none;">
+                  <td style="border:none; width:60%; vertical-align:middle; text-align:left; padding:0;">
+                    <table style="border:none; border-collapse:collapse; margin:0; padding:0;">
+                      <tr style="border:none;">
+                        <td style="border:none; padding:0 8pt 0 0; vertical-align:middle;">
+                          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" width="36" height="36" alt="Logo Qubira" style="vertical-align:middle;">
+                        </td>
+                        <td style="border:none; padding:0; vertical-align:middle;">
+                          <div style="font-family:'Arial',sans-serif; font-size:11pt; font-weight:bold; color:#0f172a; line-height:1.2;">${comp}</div>
+                          <div style="font-family:'Arial',sans-serif; font-size:7pt; font-weight:bold; color:#b45309; letter-spacing:0.5pt; line-height:1.2; text-transform:uppercase;">${tag}</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td style="border:none; width:40%; vertical-align:middle; text-align:right; font-family:'Arial',sans-serif; font-size:7.5pt; line-height:1.3; color:#475569; padding:0;">
+                    <strong style="color:#1e3a8a; font-size:8.5pt;">${ruc}</strong><br>
+                    ${addr}<br>
+                    ${contact}
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- PIE DE PÁGINA OFICIAL MSO WORD CON NÚMEROS DE PÁGINA DINÁMICOS -->
+            <div style="mso-element:footer" id="f1" class="MsoFooter">
+              <table class="MsoFooterTable" style="width:100%; border:none; border-top:1pt solid #cbd5e1; padding-top:4pt;">
+                <tr style="border:none;">
+                  <td style="border:none; width:70%; font-family:'Arial',sans-serif; font-size:8.5pt; color:#64748b; text-align:left; padding:0;">
+                    ${footerLeft}
+                  </td>
+                  <td style="border:none; width:30%; font-family:'Arial',sans-serif; font-size:8.5pt; color:#64748b; text-align:right; padding:0;">
+                    Página <span style="mso-field-code: ' PAGE '"></span> de <span style="mso-field-code: ' NUMPAGES '"></span>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </table>
 
     </body>
     </html>
