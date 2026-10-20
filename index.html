@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QUBIRA ODACL | Oficina de Dirección de Asuntos Corporativos y Legales</title>
+  <link rel="icon" href="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0f172a;
+      --primary-card: #1e293b;
+      --gold: #d97706;
+      --gold-hover: #b45309;
+      --gold-light: #fef3c7;
+      --gold-border: #fde68a;
+      --navy: #1e3a8a;
+      --navy-light: #dbeafe;
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-card2: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --border-dark: #cbd5e1;
+      --success: #059669;
+      --success-light: #d1fae5;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --sidebar-w: 275px;
+      --sidebar-bg: #0b1120;
+      --sidebar-bg-hover: #1e293b;
+      --sidebar-text: #94a3b8;
+      --sidebar-text-active: #ffffff;
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.09), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      --radius: 14px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* ── TYPOGRAPHY & BUTTONS ── */
+    h1, h2, h3, h4 { letter-spacing: -0.02em; color: var(--text); }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+    input, select, textarea {
+      font-family: inherit; font-size: 13.5px; border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; background: #fff; color: var(--text);
+      outline: none; transition: border-color .15s, box-shadow .15s;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--gold); box-shadow: 0 0 0 3px rgba(217, 119, 6, .15);
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      font-size: 13px; font-weight: 600; padding: 9px 16px; border-radius: 8px;
+      transition: all .15s ease; cursor: pointer;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #fff; box-shadow: 0 2px 4px rgba(217,119,6,.2);
+    }
+    .btn-gold:hover { background: linear-gradient(135deg, #b45309, #92400e); transform: translateY(-1px); }
+    .btn-dark {
+      background: var(--primary); color: #fff;
+    }
+    .btn-dark:hover { background: #1e293b; }
+    .btn-outline {
+      border: 1px solid var(--border-dark); color: var(--text); background: #fff;
+    }
+    .btn-outline:hover { background: var(--bg-card2); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      z-index: 100;
+      border-right: 1px solid rgba(255,255,255,.07);
+      transition: transform .3s ease;
+    }
+    .sidebar-header {
+      padding: 22px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+    .sidebar-logo-img {
+      width: 44px; height: 44px; object-fit: contain;
+      border-radius: 12px; background: rgba(255,255,255,.06);
+      padding: 6px; border: 1px solid rgba(255,255,255,.1);
+    }
+    .brand-title { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: 1.2px; }
+    .brand-sub {
+      font-size: 10px; color: #fbbf24; letter-spacing: .9px;
+      text-transform: uppercase; font-weight: 700; margin-top: 1px; display: flex; align-items: center; gap: 5px;
+    }
+    .brand-sub::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fbbf24;
+      display: inline-block; box-shadow: 0 0 6px #fbbf24;
+    }
+
+    .sidebar-nav {
+      flex: 1; padding: 16px 0; overflow-y: auto;
+    }
+    .nav-label {
+      padding: 14px 20px 6px; font-size: 10px; text-transform: uppercase;
+      letter-spacing: 1.4px; color: #64748b; font-weight: 700;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 18px; margin: 2px 10px; border-radius: 9px;
+      cursor: pointer; color: var(--sidebar-text); font-size: 13.5px; font-weight: 500;
+      transition: all .15s ease; border-left: 3px solid transparent;
+    }
+    .nav-item:hover {
+      background: var(--sidebar-bg-hover); color: var(--sidebar-text-active);
+    }
+    .nav-item.active {
+      background: rgba(217, 119, 6, 0.15); color: #fff;
+      border-left-color: var(--gold); font-weight: 600;
+    }
+    .nav-item svg {
+      width: 19px; height: 19px; stroke: currentColor; fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;
+    }
+    .nav-item.active svg { stroke: #fbbf24; }
+    .nav-badge {
+      margin-left: auto; font-size: 10.5px; font-weight: 700;
+      padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.1);
+      color: #e2e8f0;
+    }
+    .nav-item.active .nav-badge {
+      background: var(--gold); color: #fff;
+    }
+
+    .sidebar-footer {
+      padding: 16px 18px; border-top: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.25);
+    }
+    .user-profile {
+      display: flex; align-items: center; gap: 11px; margin-bottom: 14px;
+    }
+    .user-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, #d97706, #1e293b);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px; border: 2px solid rgba(255,255,255,.15);
+      flex-shrink: 0;
+    }
+    .user-meta { min-width: 0; }
+    .user-name { font-size: 13px; font-weight: 700; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role { font-size: 11px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sidebar-actions { display: flex; gap: 8px; }
+    .sidebar-btn {
+      flex: 1; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1);
+      color: #e2e8f0; border-radius: 7px; padding: 7px 10px; font-size: 11.5px; font-weight: 600;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: background .15s;
+    }
+    .sidebar-btn:hover { background: rgba(255,255,255,.14); color: #fff; }
+    .sidebar-btn.danger:hover { background: rgba(220,38,38,.25); border-color: rgba(220,38,38,.4); color: #fca5a5; }
+
+    /* ── MAIN LAYOUT ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .page-title-box h1 { font-size: 19px; font-weight: 800; color: var(--text); }
+    .page-title-box p { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+    .topbar-right { display: flex; align-items: center; gap: 14px; }
+    .badge-pill {
+      display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px;
+      font-weight: 700; padding: 5px 12px; border-radius: 999px; letter-spacing: .02em;
+    }
+    .badge-ruc {
+      background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1;
+    }
+    .badge-compliance {
+      background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;
+    }
+    .badge-compliance::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%; background: #059669;
+    }
+    .badge-portal {
+      background: #fef3c7; color: #92400e; border: 1px solid #fde68a;
+    }
+
+    /* ── CONTENT AREA ── */
+    .content { padding: 30px 32px; flex: 1; max-width: 1600px; width: 100%; margin: 0 auto; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: tabFade .2s ease-in-out; }
+    @keyframes tabFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── STATS GRID ── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px; margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px 22px; display: flex; align-items: center; gap: 18px; box-shadow: var(--shadow-sm);
+      transition: transform .18s, box-shadow .18s; position: relative; overflow: hidden;
+    }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .stat-icon {
+      width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0;
+    }
+    .stat-icon svg { width: 24px; height: 24px; stroke-width: 2.2; }
+    .stat-icon.gold { background: #fef3c7; color: #b45309; }
+    .stat-icon.navy { background: #dbeafe; color: #1e40af; }
+    .stat-icon.green { background: #d1fae5; color: #047857; }
+    .stat-icon.purple { background: #ede9fe; color: #6d28d9; }
+    .stat-num { font-size: 26px; font-weight: 800; color: var(--text); line-height: 1.1; }
+    .stat-label { font-size: 12.5px; color: var(--text-muted); font-weight: 500; margin-top: 3px; }
+    .stat-sub { font-size: 11px; color: var(--success); font-weight: 600; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+
+    /* ── CARDS & PANELS ── */
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow-sm); margin-bottom: 26px;
+    }
+    .card-header {
+      padding: 18px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-title { font-size: 16px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 9px; }
+    .card-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .card-body { padding: 24px; }
+
+    /* ── BADGES & STATUS ── */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px; font-size: 11px;
+      font-weight: 700; padding: 3px 9px; border-radius: 999px; text-transform: uppercase;
+    }
+    .status-vigente { background: #d1fae5; color: #065f46; }
+    .status-revision { background: #fef3c7; color: #92400e; }
+    .status-resuelto { background: #dbeafe; color: #1e40af; }
+    .status-riesgo-bajo { background: #d1fae5; color: #065f46; }
+    .status-riesgo-medio { background: #fef3c7; color: #92400e; }
+    .status-riesgo-alto { background: #fee2e2; color: #991b1b; }
+
+    /* ── DATA TABLES ── */
+    .table-responsive { width: 100%; overflow-x: auto; }
+    table.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+    table.data-table th {
+      padding: 12px 16px; background: #f8fafc; color: #475569;
+      font-weight: 700; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em;
+      border-bottom: 1px solid var(--border);
+    }
+    table.data-table td {
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      color: var(--text); vertical-align: middle;
+    }
+    table.data-table tr:hover td { background: #f8fafc; }
+
+    /* ── SOCIETARIO BANNER ── */
+    .societario-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #fff; border-radius: var(--radius); padding: 30px 34px; margin-bottom: 26px;
+      position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,.1);
+    }
+    .societario-hero::after {
+      content: '⚖️'; position: absolute; right: 30px; bottom: -20px; font-size: 140px;
+      opacity: 0.08; pointer-events: none;
+    }
+    .soc-company-name { font-size: 26px; font-weight: 900; letter-spacing: -.02em; color: #fff; }
+    .soc-company-sub { font-size: 13.5px; color: #cbd5e1; margin-top: 6px; line-height: 1.6; max-width: 800px; }
+    .soc-grid-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .soc-tag {
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+      border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 600; color: #f1f5f9;
+    }
+    .soc-tag strong { color: #fbbf24; }
+
+    /* ── KEY-VALUE DETAILS GRID ── */
+    .details-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px; margin-bottom: 20px;
+    }
+    .detail-item {
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px 18px;
+    }
+    .detail-k { font-size: 11.5px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: .04em; }
+    .detail-v { font-size: 14px; font-weight: 700; color: var(--text); margin-top: 4px; word-break: break-word; }
+    .detail-note { font-size: 11px; color: #64748b; margin-top: 3px; }
+
+    /* ── LAWS GRID ── */
+    .laws-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 20px;
+    }
+    .law-card {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 22px; box-shadow: var(--shadow-sm); transition: all .2s ease;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .law-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: #cbd5e1; }
+    .law-badge {
+      display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700;
+      padding: 3px 9px; border-radius: 6px; margin-bottom: 12px;
+    }
+    .law-title { font-size: 16px; font-weight: 800; color: var(--text); line-height: 1.3; }
+    .law-desc { font-size: 13px; color: #475569; line-height: 1.55; margin: 10px 0 16px; flex: 1; }
+    .law-articles-list {
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: #334155;
+    }
+    .law-articles-list strong { color: var(--primary); }
+
+    /* ── CONTRACTS LISTING ── */
+    .clause-box {
+      border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px;
+      background: #fff; overflow: hidden;
+    }
+    .clause-header {
+      padding: 14px 18px; background: #f8fafc; font-weight: 700; font-size: 13.5px;
+      color: var(--primary); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+    }
+    .clause-body {
+      padding: 16px 20px; font-size: 13px; line-height: 1.65; color: #334155;
+    }
+
+    /* ── MODALS ── */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 1000;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; animation: modalFadeIn .2s ease; }
+    @keyframes modalFadeIn { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+    .modal-box {
+      background: #fff; border-radius: 18px; width: min(880px, 100%);
+      max-height: 90vh; display: flex; flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,.25); overflow: hidden;
+    }
+    .modal-box.large { width: min(1040px, 100%); }
+    .modal-head {
+      padding: 20px 26px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; background: #f8fafc;
+    }
+    .modal-head h3 { font-size: 17px; font-weight: 800; color: var(--text); }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      color: #64748b; cursor: pointer; transition: all .15s;
+    }
+    .modal-close:hover { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+    .modal-body { padding: 24px 26px; overflow-y: auto; flex: 1; }
+    .modal-footer {
+      padding: 16px 26px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: flex-end; gap: 10px; background: #f8fafc;
+    }
+
+    /* ── FORM ELEMENTS ── */
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* ── PRINT VIEW STYLES ── */
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .sidebar, .topbar, .modal-footer, .no-print { display: none !important; }
+      .main { margin-left: 0 !important; width: 100% !important; }
+      .content { padding: 0 !important; max-width: 100% !important; }
+      .card { box-shadow: none !important; border: 1px solid #ccc !important; }
+      .modal-overlay { position: static !important; background: none !important; display: block !important; padding: 0 !important; }
+      .modal-box { width: 100% !important; max-height: none !important; box-shadow: none !important; border: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <img class="sidebar-logo-img" src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
+      <div>
+        <div class="brand-title">QUBIRA</div>
+        <div class="brand-sub">⚖️ ODACL &bull; Legal</div>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="nav-label">General</div>
+      <div class="nav-item active" data-tab="dashboard">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <span>Dashboard Legal</span>
+      </div>
+
+      <div class="nav-label">Empresa & Leyes</div>
+      <div class="nav-item" data-tab="societario">
+        <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        <span>Información Societaria</span>
+        <span class="nav-badge">RUC</span>
+      </div>
+      <div class="nav-item" data-tab="leyes">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        <span>Marco Normativo Perú</span>
+        <span class="nav-badge">8 Leyes</span>
+      </div>
+
+      <div class="nav-label">Instrumentos Jurídicos</div>
+      <div class="nav-item" data-tab="contratos">
+        <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="12" y2="14"></line></svg>
+        <span>Contratos Corporativos</span>
+        <span class="nav-badge">14 Cláusulas</span>
+      </div>
+      <div class="nav-item" data-tab="asesoria">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>Asesoría & Dictámenes</span>
+      </div>
+
+      <div class="nav-label">Riesgos & Gobierno</div>
+      <div class="nav-item" data-tab="compliance">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span>Compliance & Riesgos</span>
+      </div>
+      <div class="nav-item" data-tab="politicas">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>Políticas Corporativas</span>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="user-avatar" id="sidebar-user-avatar">ML</div>
+        <div class="user-meta">
+          <div class="user-name" id="sidebar-user-name">Melani A. Luyo R.</div>
+          <div class="user-role" id="sidebar-user-role">Dirección Legal &bull; QUBIRA</div>
+        </div>
+      </div>
+      <div class="sidebar-actions">
+        <button class="sidebar-btn" id="btn-hub-central" title="Volver al menú de módulos">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>Módulos</span>
+        </button>
+        <button class="sidebar-btn danger" id="btn-logout" title="Cerrar sesión">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          <span>Salir</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="page-title-box">
+          <h1 id="topbar-title">Dashboard Legal & Corporativo</h1>
+          <p id="topbar-desc">Oficina de Dirección de Asuntos Corporativos y Legales (ODACL)</p>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <span class="badge-pill badge-ruc">🏛️ RUC: 10764275981</span>
+        <span class="badge-pill badge-compliance">✓ Compliance 100%</span>
+        <button class="btn btn-gold btn-sm" id="btn-top-nueva-consulta">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>+ Nueva Consulta</span>
+        </button>
+        <button class="btn btn-outline btn-sm" id="btn-top-ver-modelo" title="Abrir modelo oficial de 14 cláusulas">
+          📄 Modelo de Contrato
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Tabs -->
+    <div class="content">
+
+      <!-- ═════════ TAB 1: DASHBOARD LEGAL ═════════ -->
+      <section class="tab-content active" id="tab-dashboard">
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon gold">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line></svg>
+            </div>
+            <div>
+              <div class="stat-num" id="metric-contratos">18</div>
+              <div class="stat-label">Contratos Corporativos</div>
+              <div class="stat-sub">18 Vigentes &bull; 0 Litigios</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon navy">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            </div>
+            <div>
+              <div class="stat-num" id="metric-leyes">8</div>
+              <div class="stat-label">Leyes y Normas Monitoreadas</div>
+              <div class="stat-sub">Marco Perú TI & Datos</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div>
+              <div class="stat-num">98.4%</div>
+              <div class="stat-label">Índice de Cumplimiento Legal</div>
+              <div class="stat-sub">Auditoría Interna Favorable</div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <div>
+              <div class="stat-num" id="metric-consultas">12</div>
+              <div class="stat-label">Asesorías & Dictámenes</div>
+              <div class="stat-sub">100% Dictaminadas</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Corporate Hero Banner -->
+        <div class="societario-hero">
+          <div class="soc-company-name">QUBIRA S.A.C. &bull; Área Legal y Corporativa</div>
+          <div class="soc-company-sub">
+            Garantizamos la seguridad jurídica, la titularidad sobre la propiedad intelectual y el software, la protección estricta de datos personales bajo la Ley N° 29733 y el cumplimiento integral de contratos corporativos y normativas de la República del Perú.
+          </div>
+          <div class="soc-grid-tags">
+            <div class="soc-tag">RUC: <strong>10764275981</strong></div>
+            <div class="soc-tag">Condición: <strong>HABIDO &bull; ACTIVO</strong></div>
+            <div class="soc-tag">Representación Legal: <strong>Melani A. Luyo R. & Abraham Aranda Cerna</strong></div>
+            <div class="soc-tag">Sede: <strong>Lima, Perú</strong></div>
+            <div class="soc-tag">D.L. 822: <strong>Derechos de Autor Software</strong></div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+          <!-- Recent Contracts table -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                  <span>Contratos Corporativos Recientes</span>
+                </div>
+                <div class="card-subtitle">Últimos contratos firmados y en ejecución en Qubira</div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="switchTab('contratos')">Ver todos</button>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Código</th>
+                      <th>Cliente / Contraparte</th>
+                      <th>Tipo Contrato</th>
+                      <th>Vencimiento</th>
+                      <th>Monto</th>
+                      <th>Estado</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-recent-contracts">
+                    <!-- Dinámico -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Legal Calendar / Alerts -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                  <span>Agenda y Vencimientos</span>
+                </div>
+                <div class="card-subtitle">Plazos tributarios y corporativos</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div style="display:flex; flex-direction:column; gap:14px;">
+                <div style="padding:12px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:10px; border-left:4px solid var(--gold);">
+                  <div style="font-weight:700; font-size:13px; color:var(--text);">Registro de Banco de Datos Personales</div>
+                  <div style="font-size:11.5px; color:#64748b; margin-top:2px;">Dirección General de Transparencia y Datos Personales (MINJUS).</div>
+                  <div style="font-size:11px; font-weight:700; color:#b45309; margin-top:6px;">📅 Actualización periódica &bull; Estado: Al día</div>
+                </div>
+
+                <div style="padding:12px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:10px; border-left:4px solid #10b981;">
+                  <div style="font-weight:700; font-size:13px; color:var(--text);">Declaración Mensual Impuestos SUNAT</div>
+                  <div style="font-size:11.5px; color:#64748b; margin-top:2px;">Cronograma tributario RUC 10764275981 (Dígito 1).</div>
+                  <div style="font-size:11px; font-weight:700; color:#059669; margin-top:6px;">📅 Declaración y pago sin observaciones</div>
+                </div>
+
+                <div style="padding:12px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:10px; border-left:4px solid #3b82f6;">
+                  <div style="font-weight:700; font-size:13px; color:var(--text);">Custodia de Secretos y NDAs con Devs</div>
+                  <div style="font-size:11.5px; color:#64748b; margin-top:2px;">Revisión de acuerdos de confidencialidad para nuevos colaboradores de software.</div>
+                  <div style="font-size:11px; font-weight:700; color:#1d4ed8; margin-top:6px;">📅 100% de ingenieros con NDA firmado</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════ TAB 2: INFORMACIÓN SOCIETARIA ═════════ -->
+      <section class="tab-content" id="tab-societario">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4M5 21V10.85a4.99 4.99 0 0 0 2 0V21m4 0V11m4 0v10m2 0V10.85a4.99 4.99 0 0 0 2 0V21"></path></svg>
+                <span>Ficha Registral y Legal Oficial &bull; QUBIRA S.A.C.</span>
+              </div>
+              <div class="card-subtitle">Datos oficiales de constitución, representación, partidas registrales y órganos societarios</div>
+            </div>
+            <button class="btn btn-gold btn-sm" onclick="window.print()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+              <span>Imprimir Ficha Registral</span>
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="details-grid">
+              <div class="detail-item">
+                <div class="detail-k">Razón Social</div>
+                <div class="detail-v">QUBIRA S.A.C.</div>
+                <div class="detail-note">Sociedad Anónima Cerrada (Ley 26887)</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-k">Número de RUC Oficial</div>
+                <div class="detail-v" style="color:var(--gold);">10764275981</div>
+                <div class="detail-note">Estado: ACTIVO | Condición: HABIDO</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-k">Domicilio Legal Corporativo</div>
+                <div class="detail-v">Lima, República del Perú</div>
+                <div class="detail-note">Sede central de operaciones y notificaciones legales</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-k">Representación Legal & Gerencia General</div>
+                <div class="detail-v">Melani A. Luyo R.</div>
+                <div class="detail-note">Representante Legal / CEO Comercial</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-k">Dirección Tecnológica & Poderes Especiales</div>
+                <div class="detail-v">Abraham Aranda Cerna</div>
+                <div class="detail-note">CEO Tecnológico / Apoderado Legal en Desarrollo TI</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-k">Correo Electrónico Oficial</div>
+                <div class="detail-v">qubira@gmail.com</div>
+                <div class="detail-note">Canal institucional de notificaciones</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-k">Portal Web Corporativo</div>
+                <div class="detail-v">www.qubira.vercel.app</div>
+                <div class="detail-note">Plataforma y ecosistema de servicios</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-k">Régimen Tributario</div>
+                <div class="detail-v">Régimen MYPE Tributario SUNAT</div>
+                <div class="detail-note">Comprobantes electrónicos (Factura / Boleta)</div>
+              </div>
+            </div>
+
+            <!-- Objeto Social Detallado -->
+            <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:20px; margin-top:10px;">
+              <h4 style="font-size:14px; font-weight:800; color:var(--text); margin-bottom:8px;">Objeto Social Inscrito (CIIU 6201 - Programación Informática):</h4>
+              <p style="font-size:13px; color:#475569; line-height:1.7;">
+                El diseño, desarrollo, personalización, arquitectura, implementación, mantenimiento, comercialización y licenciamiento de soluciones de software, sistemas web, plataformas móviles, bases de datos en la nube y paneles administrativos; consultoría técnica en tecnologías de la información, ciberseguridad, automatización de procesos, gestión de infraestructura cloud y servicios de asesoramiento tecnológico a nivel nacional e internacional.
+              </p>
+            </div>
+
+            <!-- Libros Societarios y Signos Distintivos -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:24px;">
+              <div style="background:#fff; border:1px solid var(--border); border-radius:12px; padding:20px;">
+                <h4 style="font-size:14px; font-weight:800; color:var(--text); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:18px;">📚</span>
+                  <span>Libros Societarios Legalizados</span>
+                </h4>
+                <ul style="list-style:none; font-size:13px; color:#334155; line-height:2.2;">
+                  <li>✔️ <strong>Libro de Actas de Junta General de Accionistas</strong> (Al día)</li>
+                  <li>✔️ <strong>Libro de Matrícula de Acciones</strong> (Registrado)</li>
+                  <li>✔️ <strong>Libro de Planillas Electrónicas (T-Registro / PLAME)</strong></li>
+                  <li>✔️ <strong>Libro de Reclamaciones Virtual</strong> (Implementado según Código del Consumidor)</li>
+                </ul>
+              </div>
+
+              <div style="background:#fff; border:1px solid var(--border); border-radius:12px; padding:20px;">
+                <h4 style="font-size:14px; font-weight:800; color:var(--text); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:18px;">🛡️</span>
+                  <span>Propiedad Intelectual & INDECOPI</span>
+                </h4>
+                <ul style="list-style:none; font-size:13px; color:#334155; line-height:2.2;">
+                  <li>✔️ <strong>Signo Distintivo / Marca:</strong> "QUBIRA" (Clase 42 Niza - Software y TI)</li>
+                  <li>✔️ <strong>Protección de Software:</strong> Decreto Legislativo N° 822 (Obra de Software)</li>
+                  <li>✔️ <strong>Titularidad de Código Fuente:</strong> Acuerdos de cesión patrimonial vigentes</li>
+                  <li>✔️ <strong>Dominio y Activos Digitales:</strong> qubira.vercel.app y repositorios oficiales</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════ TAB 3: MARCO NORMATIVO & LEYES DE PERÚ ═════════ -->
+      <section class="tab-content" id="tab-leyes">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+          <div>
+            <h2 style="font-size:18px; font-weight:800; color:var(--text);">Marco Normativo Aplicable a Qubira</h2>
+            <p style="font-size:12.5px; color:#64748b; margin-top:2px;">Compendio interactivo de la legislación peruana en software, protección de datos, tributación y societario</p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="filter-leyes-input" placeholder="🔍 Buscar ley o artículo…" style="width:260px;" oninput="filtrarLeyes(this.value)">
+          </div>
+        </div>
+
+        <div class="laws-grid" id="laws-grid-container">
+          <!-- Dinámico: 8 Leyes peruanas -->
+        </div>
+      </section>
+
+      <!-- ═════════ TAB 4: GESTIÓN DE CONTRATOS & MODELO OFICIAL ═════════ -->
+      <section class="tab-content" id="tab-contratos">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                <span>Gestión de Contratos Corporativos de Software</span>
+              </div>
+              <div class="card-subtitle">Administración de contratos de locación de servicios TI, acuerdos de confidencialidad y SLAs</div>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-outline btn-sm" onclick="abrirModeloContratoModal()">
+                📄 Ver Modelo Oficial de 14 Cláusulas
+              </button>
+              <button class="btn btn-gold btn-sm" onclick="abrirModalNuevoContrato()">
+                + Registrar Contrato
+              </button>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>N° Contrato</th>
+                    <th>Cliente / Proyecto</th>
+                    <th>Tipo</th>
+                    <th>Monto Pactado</th>
+                    <th>Forma de Pago</th>
+                    <th>Vigencia</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="contracts-table-body">
+                  <!-- Dinámico -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════ TAB 5: ASESORÍA LEGAL & CONSULTAS ═════════ -->
+      <section class="tab-content" id="tab-asesoria">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span>Bandeja de Asesoría Legal Interna & Dictámenes</span>
+              </div>
+              <div class="card-subtitle">Consultas jurídicas formuladas por las áreas de TI, Comercial/ODN, RRHH y Administración</div>
+            </div>
+            <button class="btn btn-gold btn-sm" onclick="abrirModalNuevaConsulta()">
+              + Redactar Nueva Consulta
+            </button>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Radicado</th>
+                    <th>Asunto / Consulta</th>
+                    <th>Área Solicitante</th>
+                    <th>Fecha Ingreso</th>
+                    <th>Urgencia</th>
+                    <th>Estado</th>
+                    <th>Dictamen</th>
+                  </tr>
+                </thead>
+                <tbody id="advisory-table-body">
+                  <!-- Dinámico -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════ TAB 6: COMPLIANCE & MATRIZ DE RIESGOS ═════════ -->
+      <section class="tab-content" id="tab-compliance">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <span>Matriz de Compliance & Riesgos Legales Corporativos</span>
+              </div>
+              <div class="card-subtitle">Semáforo de cumplimiento regulatorio, prevención de contingencias y planes de mitigación</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Compliance meters -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:18px; margin-bottom:28px;">
+              <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:16px;">
+                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px;">
+                  <span>Protección de Datos (Ley 29733)</span>
+                  <span style="color:#059669;">98%</span>
+                </div>
+                <div style="background:#e2e8f0; height:8px; border-radius:4px; margin-top:8px; overflow:hidden;">
+                  <div style="background:#059669; width:98%; height:100%;"></div>
+                </div>
+                <div style="font-size:11px; color:#64748b; margin-top:6px;">Cláusulas de privacidad y consentimiento activo.</div>
+              </div>
+
+              <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:16px;">
+                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px;">
+                  <span>Propiedad Intelectual (D.L. 822)</span>
+                  <span style="color:#059669;">100%</span>
+                </div>
+                <div style="background:#e2e8f0; height:8px; border-radius:4px; margin-top:8px; overflow:hidden;">
+                  <div style="background:#059669; width:100%; height:100%;"></div>
+                </div>
+                <div style="font-size:11px; color:#64748b; margin-top:6px;">Cesión expresa de código de programadores.</div>
+              </div>
+
+              <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:16px;">
+                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px;">
+                  <span>Tributario & Detracciones TI</span>
+                  <span style="color:#059669;">99%</span>
+                </div>
+                <div style="background:#e2e8f0; height:8px; border-radius:4px; margin-top:8px; overflow:hidden;">
+                  <div style="background:#059669; width:99%; height:100%;"></div>
+                </div>
+                <div style="font-size:11px; color:#64748b; margin-top:6px;">Detracción del 12% controlada en facturación.</div>
+              </div>
+
+              <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:16px;">
+                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px;">
+                  <span>Seguridad de la Información (Ley 30096)</span>
+                  <span style="color:#059669;">96%</span>
+                </div>
+                <div style="background:#e2e8f0; height:8px; border-radius:4px; margin-top:8px; overflow:hidden;">
+                  <div style="background:#059669; width:96%; height:100%;"></div>
+                </div>
+                <div style="font-size:11px; color:#64748b; margin-top:6px;">2FA y variables de entorno en producción.</div>
+              </div>
+            </div>
+
+            <!-- Risk Matrix Table -->
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Dimensión Legal</th>
+                    <th>Riesgo Identificado</th>
+                    <th>Probabilidad</th>
+                    <th>Impacto</th>
+                    <th>Medida de Control Implementada</th>
+                    <th>Responsable</th>
+                    <th>Nivel</th>
+                  </tr>
+                </thead>
+                <tbody id="risk-matrix-table-body">
+                  <!-- Dinámico -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════ TAB 7: POLÍTICAS CORPORATIVAS ═════════ -->
+      <section class="tab-content" id="tab-politicas">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📜 Términos y Condiciones de Servicios Qubira</div>
+              <button class="btn btn-outline btn-sm" onclick="copiarPolitica('terminos')">Copiar</button>
+            </div>
+            <div class="card-body" style="font-size:13px; line-height:1.7; color:#334155; max-height:400px; overflow-y:auto;" id="pol-terminos">
+              <strong>1. OBJETO Y ALCANCE:</strong> Los presentes Términos regulan el acceso, navegación y uso de las plataformas, servicios y desarrollos de software provistos por QUBIRA S.A.C.<br><br>
+              <strong>2. LICENCIA Y DERECHOS:</strong> Qubira otorga al cliente una licencia de uso conforme al contrato suscrito. Salvo pacto expreso en contrario, las herramientas reutilizables y librerías base continúan siendo propiedad de Qubira.<br><br>
+              <strong>3. NIVELES DE SERVICIO (SLA):</strong> Qubira garantiza una disponibilidad técnica y soporte correctivo dentro de los plazos de garantía fijados contractualmente.<br><br>
+              <strong>4. LEY Y JURISDICCIÓN:</strong> Se rige por las leyes de la República del Perú y competencia de los juzgados de Lima.
+            </div>
+          </div>
+
+          <div class="card-body card">
+            <div class="card-header" style="margin:-24px -24px 20px; border-bottom:1px solid var(--border);">
+              <div class="card-title">🔒 Política de Tratamiento de Datos Personales</div>
+              <button class="btn btn-outline btn-sm" onclick="copiarPolitica('datos')">Copiar</button>
+            </div>
+            <div style="font-size:13px; line-height:1.7; color:#334155; max-height:400px; overflow-y:auto;" id="pol-datos">
+              <strong>CONFORME A LA LEY N° 29733:</strong><br>
+              QUBIRA S.A.C., con RUC 10764275981, garantiza la confidencialidad y tratamiento seguro de los datos personales obtenidos a través de sus sistemas.<br><br>
+              <strong>FINALIDAD:</strong> Los datos se recaban exclusivamente para la ejecución contractual, facturación, soporte técnico y autenticación segura con 2FA.<br><br>
+              <strong>DERECHOS ARCO:</strong> Los titulares podrán ejercer sus derechos de Acceso, Rectificación, Cancelación y Oposición mediante comunicación formal a qubira@gmail.com.<br><br>
+              <strong>ALMACENAMIENTO SEGURO:</strong> Se aplican medidas de cifrado SSL, hash bcryptjs y separación estricta de credenciales en servidores seguros.
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ═════════ MODAL: MODELO DE CONTRATO OFICIAL (14 CLÁUSULAS) ═════════ -->
+  <div class="modal-overlay" id="modal-modelo-contrato">
+    <div class="modal-box large">
+      <div class="modal-head">
+        <div>
+          <h3>📄 Modelo Oficial de Contrato Qubira S.A.C. (14 Cláusulas)</h3>
+          <p style="font-size:12px; color:#64748b; margin-top:2px;">Contrato de Prestación de Servicios de Desarrollo de Software &bull; N° CONT-2026-000001-WEB</p>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modal-modelo-contrato')">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-contract-body">
+        <!-- Render dinámico de las 14 cláusulas -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="copiarContratoCompleto()">📋 Copiar Todo</button>
+        <button class="btn btn-dark" onclick="window.print()">🖨️ Imprimir Contrato Oficial</button>
+        <button class="btn btn-gold" onclick="cerrarModal('modal-modelo-contrato')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════ MODAL: DETALLE DE LEY PERUANA ═════════ -->
+  <div class="modal-overlay" id="modal-detalle-ley">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div>
+          <h3 id="modal-ley-title">Detalle de Norma Jurídica</h3>
+          <p id="modal-ley-org" style="font-size:12px; color:#64748b; margin-top:2px;">Entidad Reguladora y Marco Normativo</p>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modal-detalle-ley')">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-ley-body">
+        <!-- Contenido dinámico -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-gold" onclick="cerrarModal('modal-detalle-ley')">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════ MODAL: NUEVA CONSULTA LEGAL ═════════ -->
+  <div class="modal-overlay" id="modal-nueva-consulta">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div>
+          <h3>⚖️ Formular Consulta a la Dirección Legal (ODACL)</h3>
+          <p style="font-size:12px; color:#64748b; margin-top:2px;">Solicitud de dictamen u opinión legal interna</p>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modal-nueva-consulta')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-nueva-consulta" onsubmit="guardarNuevaConsulta(event)">
+          <div class="form-group">
+            <label>Asunto o Materia Jurídica</label>
+            <input type="text" id="consulta-asunto" placeholder="Ej. Cláusula de confidencialidad para nuevo módulo" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Área Solicitante</label>
+              <select id="consulta-area" required>
+                <option value="OTI">Oficina de Tecnología e Información (OTI / TI)</option>
+                <option value="ODN">Oficina de Desarrollo de Negocios (ODN / Comercial)</option>
+                <option value="RRHH">Recursos Humanos (RR.HH.)</option>
+                <option value="ADG">Administración General (ADG)</option>
+                <option value="OPP">Oficina de Presupuestos y Planeación (OPP)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Nivel de Urgencia</label>
+              <select id="consulta-urgencia" required>
+                <option value="Media">Media (3 a 5 días)</option>
+                <option value="Alta">Alta (24 a 48 horas)</option>
+                <option value="Crítica">Crítica Inmediata (Mismo día)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Detalle de la Consulta y Fundamento Técnico</label>
+            <textarea id="consulta-detalle" rows="4" placeholder="Describa los hechos, partes involucradas y dudas legales a absolver…" required></textarea>
+          </div>
+          <div class="modal-footer" style="padding:16px 0 0; background:none;">
+            <button type="button" class="btn btn-outline" onclick="cerrarModal('modal-nueva-consulta')">Cancelar</button>
+            <button type="submit" class="btn btn-gold">Ingresar a Mesa de Partes ODACL</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════ MODAL: NUEVO REGISTRO DE CONTRATO ═════════ -->
+  <div class="modal-overlay" id="modal-nuevo-contrato">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div>
+          <h3>📝 Registrar Nuevo Contrato en el Catálogo</h3>
+          <p style="font-size:12px; color:#64748b; margin-top:2px;">Control legal corporativo de obligaciones y plazos</p>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modal-nuevo-contrato')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-nuevo-contrato" onsubmit="guardarNuevoContrato(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Código de Contrato</label>
+              <input type="text" id="ncon-codigo" value="CONT-2026-000002-WEB" required>
+            </div>
+            <div class="form-group">
+              <label>Cliente / Contraparte</label>
+              <input type="text" id="ncon-cliente" placeholder="Razón social o nombre" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tipo de Contrato</label>
+              <select id="ncon-tipo">
+                <option value="Desarrollo de Software">Desarrollo de Software (14 Cláusulas)</option>
+                <option value="Acuerdo NDA">Acuerdo de Confidencialidad (NDA)</option>
+                <option value="Licenciamiento SaaS">Licenciamiento SaaS Cloud</option>
+                <option value="Locación de Servicios TI">Locación de Servicios Desarrollador</option>
+                <option value="SLA & Soporte">SLA & Soporte Correctivo</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Monto Total (S/.)</label>
+              <input type="number" step="0.01" id="ncon-monto" placeholder="1500.00" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fecha de Suscripción</label>
+              <input type="date" id="ncon-fecha" required>
+            </div>
+            <div class="form-group">
+              <label>Duración / Plazo (Días)</label>
+              <input type="number" id="ncon-plazo" value="30" required>
+            </div>
+          </div>
+          <div class="modal-footer" style="padding:16px 0 0; background:none;">
+            <button type="button" class="btn btn-outline" onclick="cerrarModal('modal-nuevo-contrato')">Cancelar</button>
+            <button type="submit" class="btn btn-gold">Registrar en Inventario</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   QUBIRA ODACL - LÓGICA PRINCIPAL & BASE DE DATOS LEGAL
+   ============================================================ */
+
+const HUB_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:5515/modulo.html'
+  : 'https://qubira-login.vercel.app/modulo.html';
+
+// 1. Verificación de Seguridad y Sesión
+(function checkAuth() {
+  const token = localStorage.getItem('qodacl_token') || localStorage.getItem('qubira_token');
+  const userJson = localStorage.getItem('qodacl_user') || localStorage.getItem('qubira_user');
+
+  if (!token && !userJson) {
+    // Si no hay sesión, derivar al login de ODACL
+    window.location.href = 'login.html';
+    return;
+  }
+
+  if (userJson) {
+    try {
+      const user = JSON.parse(userJson);
+      const name = user.nombres ? `${user.nombres} ${user.apellidos || ''}` : (user.username || 'Melani A. Luyo R.');
+      document.getElementById('sidebar-user-name').textContent = name;
+      document.getElementById('sidebar-user-avatar').textContent = (user.username || 'ML').slice(0, 2).toUpperCase();
+      document.getElementById('sidebar-user-role').textContent = user.cargo || 'Dirección Legal • QUBIRA';
+    } catch (_) {}
+  }
+})();
+
+// Navegación a Hub Central y Logout
+document.getElementById('btn-hub-central').addEventListener('click', () => { window.location.href = HUB_URL; });
+document.getElementById('btn-logout').addEventListener('click', () => {
+  localStorage.removeItem('qodacl_token');
+  localStorage.removeItem('qodacl_user');
+  window.location.href = 'login.html';
+});
+
+// 2. Control de Pestañas (Tabs)
+function switchTab(tabId) {
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.tab === tabId);
+  });
+  document.querySelectorAll('.tab-content').forEach(section => {
+    section.classList.toggle('active', section.id === 'tab-' + tabId);
+  });
+
+  const titles = {
+    dashboard: { title: 'Dashboard Legal & Corporativo', desc: 'Métricas, contratos y marco regulatorio de QUBIRA S.A.C.' },
+    societario: { title: 'Información Societaria Oficial', desc: 'RUC 10764275981, partida registral, SUNARP y signos distintivos' },
+    leyes: { title: 'Marco Normativo & Legislación del Perú', desc: 'Compendio legal de software, protección de datos y societario' },
+    contratos: { title: 'Gestión de Contratos Corporativos', desc: 'Catálogo de contratos y modelo oficial de 14 cláusulas' },
+    asesoria: { title: 'Asesoría Jurídica & Dictámenes', desc: 'Bandeja de consultas legales internas emitidas por la ODACL' },
+    compliance: { title: 'Compliance & Matriz de Riesgos Legales', desc: 'Semáforo de cumplimiento, controles preventivos y planes de mitigación' },
+    politicas: { title: 'Políticas Corporativas de Qubira', desc: 'Términos de servicio, privacidad de datos y código de conducta' }
+  };
+
+  if (titles[tabId]) {
+    document.getElementById('topbar-title').textContent = titles[tabId].title;
+    document.getElementById('topbar-desc').textContent = titles[tabId].desc;
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => switchTab(item.dataset.tab));
+});
+
+// Botones rápidos del topbar
+document.getElementById('btn-top-nueva-consulta').addEventListener('click', abrirModalNuevaConsulta);
+document.getElementById('btn-top-ver-modelo').addEventListener('click', abrirModeloContratoModal);
+
+/* ============================================================
+   3. BASE DE DATOS: 8 LEYES PRINCIPALES DEL PERÚ PARA SOFTWARE
+   ============================================================ */
+const LEYES_DATA = [
+  {
+    id: 'ley-29733',
+    num: 'Ley N° 29733 y D.S. 003-2013-JUS',
+    titulo: 'Ley de Protección de Datos Personales',
+    organismo: 'MINJUS / ANPDP',
+    categoria: 'Datos Personales',
+    color: '#059669',
+    resumen: 'Regula el tratamiento de datos personales de usuarios y clientes en sistemas web, bases de datos PostgreSQL y almacenamiento de imágenes en la nube.',
+    articulos: [
+      'Art. 4: Principio de Consentimiento previo, expreso, informado e inequívoco.',
+      'Art. 18-22: Derechos ARCO (Acceso, Rectificación, Cancelación y Oposición).',
+      'Art. 28: Registro obligatorio de los Bancos de Datos Personales ante la ANPDP.',
+      'Art. 39: Medidas de seguridad organizativas y tecnológicas (cifrado, control de roles).'
+    ],
+    aplicacionQubira: 'Obliga a que todos los sistemas desarrollados por Qubira cuenten con política de privacidad clara, consentimiento al registrar usuarios, cifrado de contraseñas con bcryptjs y canales para ejercer derechos ARCO.'
+  },
+  {
+    id: 'dl-822',
+    num: 'Decreto Legislativo N° 822',
+    titulo: 'Ley sobre el Derecho de Autor (Software)',
+    organismo: 'INDECOPI',
+    categoria: 'Propiedad Intelectual',
+    color: '#d97706',
+    resumen: 'Protege expresamente a los programas de ordenador (software), código fuente, código objeto y documentación técnica como obras literarias protegidas.',
+    articulos: [
+      'Art. 5 inc. k: El software es considerado obra protegida por derecho de autor.',
+      'Art. 15-16: Cesión de derechos patrimoniales a favor del empleador o contratante.',
+      'Art. 71: Prohibición de descompilación e ingeniería inversa no autorizada.',
+      'Art. 73: Derecho a la copia de seguridad (backup) para uso legítimo.'
+    ],
+    aplicacionQubira: 'Garantiza que el código desarrollado por los programadores de Qubira pase legalmente a la empresa mediante cesión patrimonial, y regula la transferencia al cliente una vez abonado el 100% del contrato.'
+  },
+  {
+    id: 'ley-26887',
+    num: 'Ley N° 26887',
+    titulo: 'Ley General de Sociedades (S.A.C.)',
+    organismo: 'SUNARP',
+    categoria: 'Societario',
+    color: '#1e3a8a',
+    resumen: 'Marco rector de la constitución, funcionamiento, órganos de administración, poderes de gerencia y responsabilidad de socios de QUBIRA S.A.C.',
+    articulos: [
+      'Art. 234-248: Régimen especial de la Sociedad Anónima Cerrada (hasta 20 socios, sin directorio obligatorio).',
+      'Art. 188: Facultades de representación y celebración de contratos por la Gerencia General.',
+      'Art. 190: Responsabilidad ilimitada de administradores por actos contrarios a ley o estatuto.'
+    ],
+    aplicacionQubira: 'Sustenta la personería jurídica de QUBIRA S.A.C. y la validez legal de las firmas de sus representantes comerciales y tecnológicos (Melani A. Luyo R. y Abraham Aranda Cerna).'
+  },
+  {
+    id: 'ley-30096',
+    num: 'Ley N° 30096 y modif. Ley 30171',
+    titulo: 'Ley de Delitos Informáticos',
+    organismo: 'DIVINDAT / Policía Nacional / Fiscalía',
+    categoria: 'Ciberdelincuencia & Seguridad',
+    color: '#dc2626',
+    resumen: 'Tipifica y sanciona penalmente las conductas ilícitas que vulneran sistemas informáticos, bases de datos y confidencialidad en internet.',
+    articulos: [
+      'Art. 2: Acceso ilícito a sistemas informáticos (pena de hasta 4 a 6 años).',
+      'Art. 3: Sabotaje informático, alteración, daño o inutilización de datos.',
+      'Art. 4: Interceptación indebida de transmisiones de datos o comunicaciones.',
+      'Art. 5: Fraude informático y suplantación de identidad digital.'
+    ],
+    aplicacionQubira: 'Respalda la exigencia de verificación en dos pasos (2FA), protección de endpoints REST, auditoría de accesos y sanciones penales ante intentos de intrusión a clientes de Qubira.'
+  },
+  {
+    id: 'dl-728',
+    num: 'D.L. N° 728 y Ley N° 31572',
+    titulo: 'Régimen Laboral Privado y Ley de Teletrabajo',
+    organismo: 'SUNAFIL / MTPE',
+    categoria: 'Laboral',
+    color: '#0891b2',
+    resumen: 'Regula las modalidades de contratación de programadores, diseñadores y analistas, diferenciando contratos laborales de locación de servicios (4ta vs 5ta categoría).',
+    articulos: [
+      'Art. 4 D.L. 728: Principio de primacía de la realidad y desnaturalización de contratos.',
+      'Art. 6 Ley 31572: Regulación del teletrabajo y compensación de equipos o conectividad.',
+      'Art. 9: Derecho a la desconexión digital de colaboradores de desarrollo.'
+    ],
+    aplicacionQubira: 'Permite formalizar a los desarrolladores bajo contratos claros de locación de servicios independientes o planilla según corresponda, evitando contingencias con SUNAFIL.'
+  },
+  {
+    id: 'sunat-tributario',
+    num: 'TUO del Código Tributario & R.S. 183-2004/SUNAT',
+    titulo: 'Régimen Tributario y Sistema de Detracciones TI',
+    organismo: 'SUNAT',
+    categoria: 'Tributario',
+    color: '#ca8a04',
+    resumen: 'Establece la obligación de emitir comprobantes de pago electrónicos y aplicar la detracción del 12% en contratos de servicios de programación y mantenimiento informático.',
+    articulos: [
+      'Anexo 3 R.S. 183-2004: Servicios empresariales de software sujetos a 12% de SPOT.',
+      'Ley 28194: Bancarización obligatoria para operaciones mayores a S/ 2,000 o US$ 500.',
+      'Art. 56 LIR: Retenciones de no domiciliados para servicios cloud extranjeros (Render, Neon, Cloudinary).'
+    ],
+    aplicacionQubira: 'Garantiza que toda factura emitida por Qubira cumpla con la cuenta de detracciones en el Banco de la Nación y la bancarización requerida para sustentar gasto y costo deducible.'
+  },
+  {
+    id: 'ley-29783',
+    num: 'Ley N° 29783',
+    titulo: 'Ley de Seguridad y Salud en el Trabajo',
+    organismo: 'SUNAFIL',
+    categoria: 'SST & Ergonomía',
+    color: '#15803d',
+    resumen: 'Establece obligaciones de prevención de riesgos ergonómicos, pausas activas y salud visual para trabajadores dedicados al desarrollo de software y computación.',
+    articulos: [
+      'R.M. 375-2008-TR: Norma básica de ergonomía en puestos con pantallas de visualización de datos.',
+      'Art. 35: Capacitaciones en seguridad, higiene postural y prevención de fatiga laboral.'
+    ],
+    aplicacionQubira: 'Directrices aplicadas a las estaciones de trabajo del equipo de desarrollo y soporte de Qubira.'
+  },
+  {
+    id: 'ley-29571',
+    num: 'Ley N° 29571',
+    titulo: 'Código de Protección y Defensa del Consumidor',
+    organismo: 'INDECOPI',
+    categoria: 'Consumidor',
+    color: '#7c3aed',
+    resumen: 'Regula la idoneidad de los servicios digitales, claridad en contratos de adhesión de software, plazos de garantía y libro de reclamaciones virtual.',
+    articulos: [
+      'Art. 18: Idoneidad del producto o software frente a lo prometido en proformas y contratos.',
+      'Art. 150: Obligatoriedad de Libro de Reclamaciones Virtual accesible en el portal web.'
+    ],
+    aplicacionQubira: 'Exige que cada software entregado cuente con periodo de garantía mínimo y libro de reclamaciones implementado en los sitios web desarrollados.'
+  }
+];
+
+function renderLeyes(lista) {
+  const container = document.getElementById('laws-grid-container');
+  container.innerHTML = lista.map(ley => `
+    <div class="law-card">
+      <div>
+        <div class="law-badge" style="background:${ley.color}15; color:${ley.color}; border:1px solid ${ley.color}33;">
+          ⚖️ ${ley.categoria} &bull; ${ley.organismo}
+        </div>
+        <div class="law-title">${ley.titulo}</div>
+        <div style="font-size:11.5px; font-weight:700; color:#64748b; margin-top:2px;">${ley.num}</div>
+        <div class="law-desc">${ley.resumen}</div>
+        <div class="law-articles-list">
+          <div style="font-weight:700; font-size:11px; text-transform:uppercase; color:#475569; margin-bottom:4px;">Artículos y Directrices Clave:</div>
+          ${ley.articulos.map(a => `<div style="margin-top:2px;">• ${a}</div>`).join('')}
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" style="width:100%;" onclick="verDetalleLey('${ley.id}')">
+        Ver Aplicación Práctica en Qubira →
+      </button>
+    </div>
+  `).join('');
+}
+
+function filtrarLeyes(query) {
+  const q = query.toLowerCase().trim();
+  if (!q) { renderLeyes(LEYES_DATA); return; }
+  const filtradas = LEYES_DATA.filter(l =>
+    l.titulo.toLowerCase().includes(q) ||
+    l.num.toLowerCase().includes(q) ||
+    l.categoria.toLowerCase().includes(q) ||
+    l.resumen.toLowerCase().includes(q)
+  );
+  renderLeyes(filtradas);
+}
+
+function verDetalleLey(leyId) {
+  const ley = LEYES_DATA.find(l => l.id === leyId);
+  if (!ley) return;
+  document.getElementById('modal-ley-title').textContent = ley.titulo;
+  document.getElementById('modal-ley-org').textContent = `${ley.num} • Organismo: ${ley.organismo}`;
+  document.getElementById('modal-ley-body').innerHTML = `
+    <div style="margin-bottom:18px;">
+      <span class="status-badge" style="background:${ley.color}20; color:${ley.color};">${ley.categoria}</span>
+    </div>
+    <div style="font-size:13.5px; color:#334155; line-height:1.65; margin-bottom:20px;">
+      ${ley.resumen}
+    </div>
+    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:20px;">
+      <h4 style="font-size:13px; font-weight:800; color:var(--text); margin-bottom:10px;">Artículos de Observancia Obligatoria:</h4>
+      <ul style="padding-left:18px; font-size:12.5px; color:#475569; line-height:1.7;">
+        ${ley.articulos.map(a => `<li>${a}</li>`).join('')}
+      </ul>
+    </div>
+    <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:10px; padding:16px;">
+      <h4 style="font-size:13px; font-weight:800; color:#065f46; margin-bottom:6px;">📌 Aplicación Técnica y Legal en Qubira:</h4>
+      <p style="font-size:12.5px; color:#047857; line-height:1.6;">${ley.aplicacionQubira}</p>
+    </div>
+  `;
+  abrirModal('modal-detalle-ley');
+}
+
+/* ============================================================
+   4. BASE DE DATOS DE CONTRATOS & MODELO OFICIAL (14 CLÁUSULAS)
+   ============================================================ */
+let CONTRATOS_DATA = [
+  {
+    codigo: 'CONT-2026-000001-WEB',
+    cliente: 'THE TWENTIES (Eduardo A. Merino Mendoza)',
+    tipo: 'Desarrollo de Software Web',
+    monto: 1500.00,
+    formaPago: '50% Inicial (S/ 750) / 50% Final (S/ 750)',
+    fecha: '10/02/2026',
+    plazo: '30 días calendario',
+    vencimiento: '10/03/2026',
+    estado: 'Vigente'
+  },
+  {
+    codigo: 'CONT-2026-000002-NDA',
+    cliente: 'CORPORACIÓN DIGITAL DEL VALLE S.A.C.',
+    tipo: 'Acuerdo de Confidencialidad (NDA)',
+    monto: 0.00,
+    formaPago: 'Acuerdo de Secreto Comercial',
+    fecha: '15/01/2026',
+    plazo: '2 años',
+    vencimiento: '15/01/2028',
+    estado: 'Vigente'
+  },
+  {
+    codigo: 'CONT-2026-000003-SLA',
+    cliente: 'INVERSIONES & TEXTILES LIMA E.I.R.L.',
+    tipo: 'SLA Mantenimiento y Cloud',
+    monto: 650.00,
+    formaPago: 'Mensual recurrente',
+    fecha: '01/02/2026',
+    plazo: '12 meses',
+    vencimiento: '01/02/2027',
+    estado: 'Vigente'
+  },
+  {
+    codigo: 'CONT-2026-000004-LOC',
+    cliente: 'ING. CARLOS GUTIÉRREZ (Desarrollador Senior)',
+    tipo: 'Locación TI con Cesión Patrimonial',
+    monto: 2800.00,
+    formaPago: 'Por entregables de Sprint',
+    fecha: '05/02/2026',
+    plazo: '60 días',
+    vencimiento: '05/04/2026',
+    estado: 'Vigente'
+  }
+];
+
+function renderContratos() {
+  const tbody = document.getElementById('contracts-table-body');
+  const dashTbody = document.getElementById('dashboard-recent-contracts');
+
+  const rows = CONTRATOS_DATA.map(c => `
+    <tr>
+      <td><strong style="color:var(--primary); font-family:'JetBrains Mono',monospace;">${c.codigo}</strong></td>
+      <td><strong>${c.cliente}</strong></td>
+      <td><span style="font-size:12px; color:#475569;">${c.tipo}</span></td>
+      <td><strong>${c.monto > 0 ? ('S/ ' + c.monto.toFixed(2)) : 'N/A'}</strong></td>
+      <td><span style="font-size:11.5px; color:#64748b;">${c.formaPago}</span></td>
+      <td>${c.vencimiento}</td>
+      <td><span class="status-badge status-vigente">${c.estado}</span></td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="abrirModeloContratoModal()">Ver Cláusulas</button>
+      </td>
+    </tr>
+  `).join('');
+
+  if (tbody) tbody.innerHTML = rows;
+  if (dashTbody) dashTbody.innerHTML = rows;
+  document.getElementById('metric-contratos').textContent = CONTRATOS_DATA.length;
+}
+
+const CLAUSULAS_MODELO_OFICIAL = [
+  { num: 'PRIMERA', titulo: 'OBJETO DEL CONTRATO', contenido: 'El presente contrato tiene por objeto regular la prestación de servicios de desarrollo de software por parte de EL PROVEEDOR (QUBIRA S.A.C., RUC 10764275981) a favor de EL CLIENTE, consistente en el diseño, desarrollo, arquitectura técnica, implementación y despliegue en producción de la solución web y panel administrativo acordado.' },
+  { num: 'SEGUNDA', titulo: 'METODOLOGÍA DE DESARROLLO — SCRUM', contenido: 'El proyecto será gestionado bajo el marco de trabajo ágil SCRUM, con entregas incrementales verificables al cierre de cada Sprint (1 a 2 semanas). EL CLIENTE ejerce el rol de Product Owner con aprobación de entregables, y QUBIRA asume la dirección técnica y desarrollo.' },
+  { num: 'TERCERA', titulo: 'REQUERIMIENTOS FUNCIONALES DEL SISTEMA', contenido: 'El sistema deberá cumplir obligatoriamente con el catálogo de Requerimientos Funcionales (RF-01 a RF-24), cubriendo el módulo de sitio público, módulo de autenticación segura por roles, gestión de productos, inventario, usuarios y panel dashboard administrativo.' },
+  { num: 'CUARTA', titulo: 'REQUERIMIENTOS NO FUNCIONALES (CALIDAD Y ARQUITECTURA)', contenido: 'Se establecen atributos obligatorios de calidad: persistencia en base de datos PostgreSQL alojada en Neon con conexión SSL forzada, gestión de variables de entorno (.env) sin credenciales expuestas en frontend, almacenamiento seguro de archivos en Cloudinary y arquitectura REST Express 5.' },
+  { num: 'QUINTA', titulo: 'ALCANCE TÉCNICO Y STACK TECNOLÓGICO', contenido: 'El sistema será construido utilizando Node.js con Express, PostgreSQL Neon, Cloudinary, HTML5, CSS3, JavaScript vanilla y bcryptjs para seguridad criptográfica. Quedan excluidos del alcance costos recurrentes de terceros una vez entregado o cambios de alcance no pactados por escrito.' },
+  { num: 'SEXTA', titulo: 'CONDICIONES COMERCIALES Y FORMA DE PAGO', contenido: 'Precio cerrado y pactado en moneda nacional (Soles), pagadero en dos armadas: 50% al inicio del proyecto previo al Sprint 1, y 50% restante contra entrega final, verificación en producción y suscripción del Acta de Conformidad.' },
+  { num: 'SÉPTIMA', titulo: 'PLAN DE TRABAJO POR SPRINTS', contenido: 'Distribución en 5 Sprints con porcentaje acumulado de valor: Sprint 1 (Infraestructura y Base de Datos), Sprint 2 (Almacén y Usuarios), Sprint 3 (Autenticación y Seguridad), Sprint 4 (Sitio Público y Dashboard), Sprint 5 (QA, Validación y Despliegue).' },
+  { num: 'OCTAVA', titulo: 'ENTREGABLES AL CIERRE DEL PROYECTO', contenido: 'Al cierre, Qubira entregará el código fuente en repositorio GitHub, base de datos configurada, panel administrativo plenamente operativo, diagramas de arquitectura del sistema y credenciales maestras transferidas de forma segura al cliente.' },
+  { num: 'NOVENA', titulo: 'OBLIGACIONES DE LAS PARTES', contenido: 'QUBIRA se obliga a desarrollar el sistema con los más altos estándares técnicos, respetar el cronograma y guardar estricto secreto. EL CLIENTE se obliga a proveer oportunamente información, validar los Sprints dentro de los 3 días hábiles y honrar los pagos pactados.' },
+  { num: 'DÉCIMA', titulo: 'CAUSALES DE RESOLUCIÓN Y PENALIDADES', contenido: 'Cualquiera de las partes podrá resolver el contrato por incumplimiento grave de plazos o falta de pago tras 5 días hábiles. En caso de resolución por culpa del cliente, Qubira retendrá los avances facturados; si fuera por culpa de Qubira, se reintegrará el proporcional no ejecutado.' },
+  { num: 'UNDÉCIMA', titulo: 'GARANTÍA Y SOPORTE POST-ENTREGA', contenido: 'QUBIRA otorga un periodo de garantía de 30 días calendario post-entrega para corrección sin costo alguno de cualquier incidencia o bug atribuible al desarrollo original, condicionado a que el código fuente no haya sido manipulado por terceros ajenos a Qubira.' },
+  { num: 'DUODÉCIMA', titulo: 'PROPIEDAD INTELECTUAL (D.L. 822)', contenido: 'El código fuente específico desarrollado para el cliente será de su propiedad exclusiva una vez cancelado el 100% del precio total pactado. Hasta entonces, QUBIRA retiene los derechos patrimoniales sobre el software en virtud del Decreto Legislativo N° 822.' },
+  { num: 'DECIMOTERCERA', titulo: 'PROTECCIÓN DE DATOS PERSONALES (LEY 29733)', contenido: 'Ambas partes declaran cumplir con la Ley N° 29733 y su reglamento, comprometiéndose a implementar medidas de seguridad organizativas y técnicas en el tratamiento de los datos personales almacenados en la plataforma.' },
+  { num: 'DECIMOCUARTA', titulo: 'JURISDICCIÓN, LEY APLICABLE Y ACTA DE CONFORMIDAD', contenido: 'Para toda controversia derivada del presente contrato, las partes se someten a la competencia de los Juzgados y Tribunales del Distrito Judicial de Lima, República del Perú. La firma del contrato y del Acta de Conformidad sella la aceptación plena de todos sus términos.' }
+];
+
+function abrirModeloContratoModal() {
+  const container = document.getElementById('modal-contract-body');
+  container.innerHTML = `
+    <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div style="font-weight:800; font-size:15px; color:var(--text);">CONTRATO DE PRESTACIÓN DE SERVICIOS DE DESARROLLO DE SOFTWARE</div>
+        <div style="font-size:12px; color:#64748b; margin-top:2px;">N° CONT-2026-000001-WEB &bull; QUBIRA S.A.C. &bull; Lima, Perú</div>
+      </div>
+      <span class="status-badge status-vigente">Modelo Oficial Aprobado</span>
+    </div>
+
+    <div style="font-size:13px; line-height:1.7; color:#334155; margin-bottom:20px; background:#fff; border:1px solid var(--border); border-radius:10px; padding:16px;">
+      <strong>COMPARECIENTES:</strong><br>
+      • <strong>EL PROVEEDOR:</strong> QUBIRA S.A.C., con RUC 10764275981, con domicilio en Lima, Perú, representada por <strong>Melani A. Luyo R.</strong> (Representante Comercial / Legal) y <strong>Abraham Aranda Cerna</strong> (Dirección Técnica de Software).<br>
+      • <strong>EL CLIENTE:</strong> THE TWENTIES (o contraparte contratante), representada por su representante legal facultado.
+    </div>
+
+    ${CLAUSULAS_MODELO_OFICIAL.map(c => `
+      <div class="clause-box">
+        <div class="clause-header">
+          <span>CLÁUSULA ${c.num} — ${c.titulo}</span>
+          <span style="font-size:11px; color:#94a3b8; font-weight:600;">Qubira Legal</span>
+        </div>
+        <div class="clause-body">
+          ${c.contenido}
+        </div>
+      </div>
+    `).join('')}
+
+    <div style="background:#f1f5f9; border-radius:10px; padding:16px; margin-top:14px; font-size:12.5px; color:#475569; text-align:center;">
+      Suscrito en la ciudad de Lima, Perú, en señal de conformidad de todas las cláusulas.
+    </div>
+  `;
+  abrirModal('modal-modelo-contrato');
+}
+
+function copiarContratoCompleto() {
+  const texto = CLAUSULAS_MODELO_OFICIAL.map(c => `CLÁUSULA ${c.num} — ${c.titulo}\n${c.contenido}\n`).join('\n');
+  navigator.clipboard.writeText(`CONTRATO OFICIAL DE DESARROLLO DE SOFTWARE - QUBIRA S.A.C.\n\n` + texto)
+    .then(() => alert('✓ Contrato completo copiado al portapapeles exitosamente.'))
+    .catch(() => alert('No se pudo copiar el contrato.'));
+}
+
+/* ============================================================
+   5. ASESORÍA LEGAL & CONSULTAS JURÍDICAS
+   ============================================================ */
+let CONSULTAS_DATA = [
+  {
+    radicado: 'ODACL-2026-001',
+    asunto: 'Tratamiento de imágenes en Cloudinary y Ley 29733',
+    area: 'OTI / TI',
+    fecha: '12/02/2026',
+    urgencia: 'Alta',
+    estado: 'Dictaminado',
+    dictamen: 'Procedente con cifrado SSL y aviso de privacidad al usuario.'
+  },
+  {
+    radicado: 'ODACL-2026-002',
+    asunto: 'Cesión de derechos de código en desarrollo a medida',
+    area: 'ODN / Comercial',
+    fecha: '18/02/2026',
+    urgencia: 'Media',
+    estado: 'Dictaminado',
+    dictamen: 'Se aplica Cláusula Duodécima: la cesión opera contra pago del 100%.'
+  },
+  {
+    radicado: 'ODACL-2026-003',
+    asunto: 'Aplicación de la detracción del 12% en servicios TI',
+    area: 'OPP / Finanzas',
+    fecha: '20/02/2026',
+    urgencia: 'Media',
+    estado: 'Dictaminado',
+    dictamen: 'Conforme a R.S. 183-2004/SUNAT, todo servicio de software mayor a S/ 700 está afecto al SPOT 12%.'
+  },
+  {
+    radicado: 'ODACL-2026-004',
+    asunto: 'Cláusula de confidencialidad para nuevos devs en remoto',
+    area: 'RRHH',
+    fecha: '22/02/2026',
+    urgencia: 'Alta',
+    estado: 'Dictaminado',
+    dictamen: 'Obligatoria firma de NDA y asignación de equipo con variables seguras.'
+  }
+];
+
+function renderConsultas() {
+  const tbody = document.getElementById('advisory-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = CONSULTAS_DATA.map(c => `
+    <tr>
+      <td><strong style="color:var(--gold); font-family:'JetBrains Mono',monospace;">${c.radicado}</strong></td>
+      <td><strong>${c.asunto}</strong></td>
+      <td><span style="font-size:12px; color:#475569;">${c.area}</span></td>
+      <td>${c.fecha}</td>
+      <td>
+        <span class="status-badge ${c.urgencia === 'Alta' ? 'status-riesgo-alto' : 'status-riesgo-medio'}">${c.urgencia}</span>
+      </td>
+      <td><span class="status-badge status-resuelto">${c.estado}</span></td>
+      <td><span style="font-size:12px; color:#334155;">${c.dictamen}</span></td>
+    </tr>
+  `).join('');
+  document.getElementById('metric-consultas').textContent = CONSULTAS_DATA.length;
+}
+
+function abrirModalNuevaConsulta() {
+  document.getElementById('form-nueva-consulta').reset();
+  abrirModal('modal-nueva-consulta');
+}
+
+function guardarNuevaConsulta(e) {
+  e.preventDefault();
+  const asunto = document.getElementById('consulta-asunto').value.trim();
+  const area = document.getElementById('consulta-area').value;
+  const urgencia = document.getElementById('consulta-urgencia').value;
+  const detalle = document.getElementById('consulta-detalle').value.trim();
+
+  const num = CONSULTAS_DATA.length + 1;
+  const nuevoRadicado = 'ODACL-2026-' + String(num).padStart(3, '0');
+  const hoy = new Date().toLocaleDateString('es-PE');
+
+  CONSULTAS_DATA.unshift({
+    radicado: nuevoRadicado,
+    asunto: asunto,
+    area: area,
+    fecha: hoy,
+    urgencia: urgencia,
+    estado: 'En Análisis',
+    dictamen: 'Registrado en mesa de partes ODACL. En revisión por asesor legal.'
+  });
+
+  renderConsultas();
+  cerrarModal('modal-nueva-consulta');
+  alert(`✓ Consulta legal ${nuevoRadicado} radicada con éxito.`);
+}
+
+function abrirModalNuevoContrato() {
+  document.getElementById('form-nuevo-contrato').reset();
+  document.getElementById('ncon-fecha').valueAsDate = new Date();
+  abrirModal('modal-nuevo-contrato');
+}
+
+function guardarNuevoContrato(e) {
+  e.preventDefault();
+  const codigo = document.getElementById('ncon-codigo').value.trim();
+  const cliente = document.getElementById('ncon-cliente').value.trim();
+  const tipo = document.getElementById('ncon-tipo').value;
+  const monto = parseFloat(document.getElementById('ncon-monto').value) || 0;
+  const fecha = document.getElementById('ncon-fecha').value;
+  const plazo = parseInt(document.getElementById('ncon-plazo').value) || 30;
+
+  CONTRATOS_DATA.unshift({
+    codigo: codigo,
+    cliente: cliente,
+    tipo: tipo,
+    monto: monto,
+    formaPago: '50% Inicial / 50% Final',
+    fecha: fecha,
+    plazo: `${plazo} días`,
+    vencimiento: 'A determinar',
+    estado: 'Vigente'
+  });
+
+  renderContratos();
+  cerrarModal('modal-nuevo-contrato');
+  alert(`✓ Contrato ${codigo} incorporado al inventario corporativo.`);
+}
+
+/* ============================================================
+   6. MATRIZ DE COMPLIANCE & RIESGOS LEGALES
+   ============================================================ */
+const RIESGOS_DATA = [
+  {
+    dimension: 'Datos Personales',
+    riesgo: 'Filtración o acceso no autorizado a datos de clientes en la nube',
+    probabilidad: 'Baja',
+    impacto: 'Alto',
+    control: 'Cifrado SSL, variables protegidas, verificación 2FA y bcryptjs',
+    responsable: 'OTI & Legal',
+    nivel: 'Bajo'
+  },
+  {
+    dimension: 'Propiedad Intelectual',
+    riesgo: 'Reclamo de titularidad de código por parte de programador independiente',
+    probabilidad: 'Baja',
+    impacto: 'Crítico',
+    control: 'Contratos con Cláusula de Cesión de Derechos Patrimoniales (D.L. 822)',
+    responsable: 'ODACL / RRHH',
+    nivel: 'Bajo'
+  },
+  {
+    dimension: 'Contratos & Pagos',
+    riesgo: 'Impago de armadas por cliente una vez culminado el software',
+    probabilidad: 'Media',
+    impacto: 'Medio',
+    control: 'Cobro del 50% al inicio y retención de entrega en producción hasta cancelación final',
+    responsable: 'Comercial & ODACL',
+    nivel: 'Bajo'
+  },
+  {
+    dimension: 'Tributario SUNAT',
+    riesgo: 'Omisión de depósito de detracción del 12% en el Banco de la Nación',
+    probabilidad: 'Baja',
+    impacto: 'Medio',
+    control: 'Control cruzado con comprobantes de pago de la OPP y portal SUNAT',
+    responsable: 'Finanzas & Legal',
+    nivel: 'Bajo'
+  },
+  {
+    dimension: 'Seguridad Laboral',
+    riesgo: 'Reclamos por fatiga ergonómica o desnaturalización de teletrabajo',
+    probabilidad: 'Baja',
+    impacto: 'Bajo',
+    control: 'Convenios de teletrabajo según Ley 31572 y pausas activas recomendadas',
+    responsable: 'RRHH',
+    nivel: 'Bajo'
+  }
+];
+
+function renderRiesgos() {
+  const tbody = document.getElementById('risk-matrix-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = RIESGOS_DATA.map(r => `
+    <tr>
+      <td><strong>${r.dimension}</strong></td>
+      <td>${r.riesgo}</td>
+      <td>${r.probabilidad}</td>
+      <td>${r.impacto}</td>
+      <td><span style="font-size:12px; color:#065f46;">${r.control}</span></td>
+      <td><span style="font-size:11.5px; font-weight:600; color:#475569;">${r.responsable}</span></td>
+      <td><span class="status-badge status-riesgo-bajo">Controlado</span></td>
+    </tr>
+  `).join('');
+}
+
+function copiarPolitica(tipo) {
+  const elem = document.getElementById('pol-' + tipo);
+  if (!elem) return;
+  navigator.clipboard.writeText(elem.innerText)
+    .then(() => alert('✓ Texto de política corporativa copiado al portapapeles.'))
+    .catch(() => alert('No se pudo copiar.'));
+}
+
+/* ============================================================
+   7. CONTROLADORES DE MODALES
+   ============================================================ */
+function abrirModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.classList.add('open');
+}
+function cerrarModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.classList.remove('open');
+}
+
+// Cerrar modales al hacer clic fuera
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// Inicialización de la aplicación
+(function init() {
+  renderLeyes(LEYES_DATA);
+  renderContratos();
+  renderConsultas();
+  renderRiesgos();
+})();
+</script>
+</body>
+</html>
