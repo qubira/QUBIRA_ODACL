@@ -1260,21 +1260,31 @@
         width: 210mm !important;
         color: #000000 !important;
       }
-      .sidebar, .top-header, .doc-nav-tabs, .word-ribbon, .word-statusbar, .btn, .modal-overlay,
+      .sidebar, .topbar, .doc-nav-tabs, .word-ribbon, .word-statusbar, .btn, .modal-overlay,
       #subview-cloud, #subview-templates, .no-print, .cloud-badge-ok {
         display: none !important;
       }
-      .main-content, .doc-legal-container, #subview-editor, .word-workspace {
+      .main, .content, #tab-doc-legal, .doc-legal-container, #subview-editor, .word-workspace {
         padding: 0 !important;
         margin: 0 !important;
         background: transparent !important;
         box-shadow: none !important;
+        border: none !important;
         display: block !important;
-        width: 210mm !important;
+        width: 100% !important;
+        overflow: visible !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        height: auto !important;
       }
       .a4-pages-container {
         gap: 0 !important;
         width: 210mm !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        transform: none !important;
+        overflow: visible !important;
+        display: block !important;
       }
       .a4-page-sheet {
         box-shadow: none !important;
@@ -2854,8 +2864,8 @@ function switchTab(tabId) {
   };
 
   if (titles[tabId]) {
-    document.getElementById('topbar-title').textContent = titles[tabId].title;
-    document.getElementById('topbar-desc').textContent = titles[tabId].desc;
+    document.getElementById('topbar-title').innerHTML = titles[tabId].title;
+    document.getElementById('topbar-desc').innerHTML = titles[tabId].desc;
   }
   if (tabId === 'doc-legal') {
     setTimeout(() => {
@@ -5942,101 +5952,160 @@ async function guardarEnCloudinary() {
   alert(`✓ Documento respaldado exitosamente en Cloudinary:\n\nTítulo: ${savedDoc.titulo}\nTipo: ${savedDoc.tipo_documento}\nVersión: v${savedDoc.version}\nURL Cloudinary: ${savedDoc.cloudinary_url}`);
 }
 
-// Exportar a Microsoft Word (.doc) respetando las hojas A4 y saltos de página APA 7
+// Exportar a Microsoft Word (.doc) respetando las hojas A4 y formato oficial Word MSO
 function descargarDocumentoWord() {
   const title = document.getElementById('word-doc-title').value.trim() || 'Documento_Legal_QUBIRA';
   const container = document.getElementById('a4-pages-container');
   const sheets = container ? container.querySelectorAll('.a4-page-sheet') : [];
-  const defaultHead = (runningHeadTextGlobal || title).toUpperCase();
   const footerLeft = footerLeftTextoGlobal || 'QUBIRA S.A.C. • RUC 10764275981 • Área Legal';
 
-  let bodyPagesHtml = '';
+  // Extraer el contenido continuo de todas las hojas del documento
+  let fullBodyHtml = '';
   sheets.forEach((sheet, idx) => {
-    const pageNum = idx + 1;
-    const content = sheet.querySelector('.a4-page-content')?.innerHTML || '';
-    const runningHeadText = sheet.querySelector('.a4-running-head')?.innerText.trim() || defaultHead;
-    const footerText = sheet.querySelector('.a4-footer-left')?.innerText.trim() || footerLeft;
-
-    if (idx > 0) {
-      bodyPagesHtml += `<br clear=all style='mso-special-character:line-break;page-break-before:always'>\n`;
+    const c = sheet.querySelector('.a4-page-content');
+    if (c) {
+      if (idx > 0) {
+        // Salto de página oficial en Word para respetar la división entre hojas A4
+        fullBodyHtml += `\n<br clear=all style='mso-special-character:line-break;page-break-before:always'>\n`;
+      }
+      fullBodyHtml += c.innerHTML;
     }
-    bodyPagesHtml += `
-      <div class="word-a4-page" style="page-break-after:always; position:relative;">
-        <div style="margin-bottom:14pt; border-bottom:1.5pt solid #0f172a; padding-bottom:5pt;">
-          <table style="width:100%; border:none; border-collapse:collapse; margin:0; padding:0;">
-            <tr style="border:none;">
-              <td style="border:none; padding:0; vertical-align:middle; width:60%;">
-                <table style="border:none; border-collapse:collapse; margin:0; padding:0;">
-                  <tr style="border:none;">
-                    <td style="border:none; padding:0 8pt 0 0; vertical-align:middle;">
-                      <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" width="36" height="36" alt="Logo">
-                    </td>
-                    <td style="border:none; padding:0; vertical-align:middle;">
-                      <div style="font-family:'Arial',sans-serif; font-size:11pt; font-weight:bold; color:#0f172a; line-height:1.2;">${headerCompanyGlobal}</div>
-                      <div style="font-family:'Arial',sans-serif; font-size:7pt; font-weight:bold; color:#b45309; letter-spacing:0.5pt; line-height:1.2;">${headerTaglineGlobal}</div>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-              <td style="border:none; padding:0; vertical-align:middle; text-align:right; font-family:'Arial',sans-serif; font-size:7.5pt; line-height:1.3; color:#475569;">
-                <strong style="color:#1e3a8a; font-size:8.5pt;">${headerRucGlobal}</strong><br>
-                ${headerAddressGlobal}<br>
-                ${headerContactGlobal}
-              </td>
-            </tr>
-          </table>
-        </div>
-        ${watermarkActual ? `<div style="text-align:center; font-size:28pt; font-weight:900; color:#cbd5e1; margin-bottom:14pt; letter-spacing:4px; text-transform:uppercase;">${watermarkActual}</div>` : ''}
-        ${content}
-        <div style="margin-top:28pt; border-top:1px solid #cbd5e1; padding-top:4pt; font-size:8.5pt; color:#64748b; font-family:'Arial',sans-serif; display:flex; justify-content:space-between;">
-          <span>${footerText}</span>
-          <span style="float:right;">Página ${pageNum} de ${sheets.length}</span>
-        </div>
-      </div>
-    `;
   });
 
-  const wordHeader = `
-    <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-    <head><meta charset='utf-8'><title>${title}</title>
-    <!--[if gte mso 9]>
-    <xml>
-      <w:WordDocument>
-        <w:View>Print</w:View>
-        <w:Zoom>100</w:Zoom>
-        <w:DoNotOptimizeForBrowser/>
-      </w:WordDocument>
-    </xml>
-    <![endif]-->
-    <style>
-      @page {
-        size: ${orientacionActual === 'landscape' ? '29.7cm 21.0cm' : '21.0cm 29.7cm'}; /* Medidas A4 Oficiales */
-        margin: ${margenActual === 'estrecho' ? '1.27cm 1.27cm 1.27cm 1.27cm' : (margenActual === 'normal' ? '2.5cm 2.5cm 2.5cm 2.5cm' : '2.54cm 2.54cm 2.54cm 2.54cm')}; /* Márgenes APA 7 o personalizados */
-        mso-header-margin: 1.27cm; /* Encabezado a 0.5 pulgada */
-        mso-footer-margin: 1.27cm;
-      }
-      body {
-        font-family: 'Times New Roman', 'Georgia', serif;
-        font-size: 12pt; /* APA 7 Standard */
-        line-height: 2.0; /* Doble espacio APA 7 */
-        color: #000000;
-        text-align: justify;
-      }
-      p { margin-bottom: 10pt; text-align: justify; }
-      h1, h2, h3, h4 { font-family: 'Times New Roman', serif; font-weight: bold; margin: 12pt 0; }
-      table { border-collapse: collapse; width: 100%; margin: 14pt 0; }
-      th, td { border: 1px solid #475569; padding: 6pt 10pt; font-size: 10pt; }
-      .qubira-official-header { border-bottom: 2pt solid #111827; padding-bottom: 10pt; margin-bottom: 20pt; }
-      .word-signature-block { margin-top: 40pt; }
-    </style>
+  const wordHtml = `
+    <html xmlns:v="urn:schemas-microsoft-com:vml"
+          xmlns:o="urn:schemas-microsoft-com:office:office"
+          xmlns:w="urn:schemas-microsoft-com:office:word"
+          xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+          xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <meta charset="utf-8">
+      <title>${title}</title>
+      <!--[if gte mso 9]>
+      <xml>
+        <w:WordDocument>
+          <w:View>Print</w:View>
+          <w:Zoom>100</w:Zoom>
+          <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+      </xml>
+      <![endif]-->
+      <style>
+        @page Section1 {
+          size: ${orientacionActual === 'landscape' ? '29.7cm 21.0cm' : '21.0cm 29.7cm'};
+          margin: 2.54cm 2.54cm 2.54cm 2.54cm;
+          mso-header-margin: 1.27cm;
+          mso-footer-margin: 1.27cm;
+          mso-header: h1;
+          mso-footer: f1;
+        }
+        div.Section1 {
+          page: Section1;
+        }
+        div#h1, div#f1 {
+          margin: 0;
+          padding: 0;
+        }
+        table.MsoHeaderTable {
+          width: 100%;
+          border-collapse: collapse;
+          border-bottom: 1.5pt solid #0f172a;
+          padding-bottom: 4pt;
+          margin-bottom: 6pt;
+        }
+        table.MsoFooterTable {
+          width: 100%;
+          border-collapse: collapse;
+          border-top: 1pt solid #cbd5e1;
+          padding-top: 4pt;
+          margin-top: 6pt;
+        }
+        body {
+          font-family: 'Times New Roman', Georgia, serif;
+          font-size: 12pt;
+          line-height: ${interlineadoActual};
+          color: #0f172a;
+          text-align: justify;
+        }
+        p {
+          margin: 0 0 10pt 0;
+          text-align: justify;
+          line-height: ${interlineadoActual};
+        }
+        h1, h2, h3, h4 {
+          font-family: 'Times New Roman', serif;
+          font-weight: bold;
+          margin: 10pt 0;
+          color: #0f172a;
+          text-align: center;
+        }
+        table { border-collapse: collapse; width: 100%; margin: 10pt 0; }
+        th, td { border: 1px solid #475569; padding: 5pt 8pt; font-size: 10pt; }
+        .word-signature-block {
+          width: 100%;
+          margin-top: 35pt;
+        }
+        .signature-line {
+          border-top: 1pt solid #0f172a;
+          padding-top: 6pt;
+          font-size: 10.5pt;
+          text-align: center;
+          line-height: 1.35;
+        }
+      </style>
     </head>
-    <body>
-      ${bodyPagesHtml}
+    <body style="tab-interval:35.4pt;">
+
+      <!-- ENCABEZADO OFICIAL MSO WORD EN ÁREA DE ENCABEZADO REAL -->
+      <div style='mso-element:header' id=h1>
+        <table class="MsoHeaderTable" style="width:100%; border:none; border-bottom:1.5pt solid #0f172a; padding-bottom:4pt;">
+          <tr style="border:none;">
+            <td style="border:none; width:60%; vertical-align:middle; text-align:left; padding:0;">
+              <table style="border:none; border-collapse:collapse; margin:0; padding:0;">
+                <tr style="border:none;">
+                  <td style="border:none; padding:0 8pt 0 0; vertical-align:middle;">
+                    <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" width="36" height="36" alt="Logo Qubira" style="vertical-align:middle;">
+                  </td>
+                  <td style="border:none; padding:0; vertical-align:middle;">
+                    <div style="font-family:'Arial',sans-serif; font-size:11pt; font-weight:bold; color:#0f172a; line-height:1.2;">${headerCompanyGlobal}</div>
+                    <div style="font-family:'Arial',sans-serif; font-size:7pt; font-weight:bold; color:#b45309; letter-spacing:0.5pt; line-height:1.2; text-transform:uppercase;">${headerTaglineGlobal}</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td style="border:none; width:40%; vertical-align:middle; text-align:right; font-family:'Arial',sans-serif; font-size:7.5pt; line-height:1.3; color:#475569; padding:0;">
+              <strong style="color:#1e3a8a; font-size:8.5pt;">${headerRucGlobal}</strong><br>
+              ${headerAddressGlobal}<br>
+              ${headerContactGlobal}
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- PIE DE PÁGINA OFICIAL MSO WORD CON NÚMEROS DE PÁGINA DINÁMICOS -->
+      <div style='mso-element:footer' id=f1>
+        <table class="MsoFooterTable" style="width:100%; border:none; border-top:1pt solid #cbd5e1; padding-top:4pt;">
+          <tr style="border:none;">
+            <td style="border:none; width:70%; font-family:'Arial',sans-serif; font-size:8.5pt; color:#64748b; text-align:left; padding:0;">
+              ${footerLeft}
+            </td>
+            <td style="border:none; width:30%; font-family:'Arial',sans-serif; font-size:8.5pt; color:#64748b; text-align:right; padding:0;">
+              Página <span style='mso-field-code: PAGE '></span> de <span style='mso-field-code: NUMPAGES '></span>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- CUERPO DEL DOCUMENTO EN SECCIÓN CONTINUA OFICIAL -->
+      <div class="Section1">
+        ${fullBodyHtml}
+      </div>
+
     </body>
     </html>
   `;
 
-  const blob = new Blob(['\ufeff' + wordHeader], { type: 'application/msword;charset=utf-8' });
+  const blob = new Blob(['\ufeff' + wordHtml], { type: 'application/msword;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -6047,9 +6116,177 @@ function descargarDocumentoWord() {
   URL.revokeObjectURL(url);
 }
 
-// Imprimir o descargar como PDF (con respeto exacto de hojas A4)
+// Imprimir o descargar como PDF (con respeto exacto de hojas A4 en iframe aislado)
 function imprimirOExportarPdf() {
-  window.print();
+  const container = document.getElementById('a4-pages-container');
+  if (!container) {
+    window.print();
+    return;
+  }
+
+  // Asegurar que las hojas están repaginadas
+  repaginarDocumentoCompleto();
+
+  const sheets = container.querySelectorAll('.a4-page-sheet');
+  if (!sheets.length) {
+    window.print();
+    return;
+  }
+
+  // Reutilizar o crear un iframe aislado para impresión perfecta sin interferencia de UI
+  let printFrame = document.getElementById('a4-print-iframe');
+  if (printFrame) printFrame.remove();
+
+  printFrame = document.createElement('iframe');
+  printFrame.id = 'a4-print-iframe';
+  printFrame.style.position = 'fixed';
+  printFrame.style.right = '0';
+  printFrame.style.bottom = '0';
+  printFrame.style.width = '0';
+  printFrame.style.height = '0';
+  printFrame.style.border = 'none';
+  printFrame.style.visibility = 'hidden';
+  document.body.appendChild(printFrame);
+
+  let sheetsHtml = '';
+  sheets.forEach(s => {
+    const clone = s.cloneNode(true);
+    clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    sheetsHtml += clone.outerHTML;
+  });
+
+  const fontFam = document.getElementById('word-font-family')?.value || "'Times New Roman', Georgia, serif";
+  const docTitle = document.getElementById('word-doc-title')?.value || 'Documento Legal Qubira';
+
+  const doc = printFrame.contentWindow.document;
+  doc.open();
+  doc.write(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="utf-8">
+      <title>${docTitle}</title>
+      <style>
+        @page {
+          size: ${orientacionActual === 'landscape' ? '297mm 210mm' : '210mm 297mm'};
+          margin: 0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+          background: #ffffff;
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          color: #0f172a;
+          font-family: ${fontFam};
+        }
+        .a4-page-sheet {
+          width: ${orientacionActual === 'landscape' ? '297mm' : '210mm'} !important;
+          height: ${orientacionActual === 'landscape' ? '210mm' : '297mm'} !important;
+          min-height: ${orientacionActual === 'landscape' ? '210mm' : '297mm'} !important;
+          max-height: ${orientacionActual === 'landscape' ? '210mm' : '297mm'} !important;
+          padding: 25.4mm !important;
+          box-sizing: border-box !important;
+          position: relative !important;
+          background: #ffffff !important;
+          page-break-after: always !important;
+          break-after: page !important;
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
+          overflow: hidden !important;
+          box-shadow: none !important;
+          border: none !important;
+          display: flex !important;
+          flex-direction: column !important;
+        }
+        .a4-page-sheet::before { display: none !important; }
+        .a4-page-header {
+          position: absolute !important;
+          top: 6mm !important;
+          left: 25.4mm !important;
+          right: 25.4mm !important;
+          min-height: 14mm !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          border-bottom: 1.5px solid #0f172a !important;
+          padding-bottom: 4px !important;
+          background: transparent !important;
+        }
+        .a4-page-header::before { display: none !important; }
+        .a4-header-letterhead { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .a4-header-brand { display: flex; align-items: center; gap: 10px; }
+        .a4-header-logo { width: 40px; height: 40px; object-fit: contain; }
+        .a4-header-titles { display: flex; flex-direction: column; justify-content: center; }
+        .a4-header-company { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 800; color: #0f172a; line-height: 1.2; }
+        .a4-header-tagline { font-family: 'Inter', sans-serif; font-size: 9.5px; font-weight: 800; color: #b45309; text-transform: uppercase; line-height: 1.2; }
+        .a4-header-contact { display: flex; flex-direction: column; align-items: flex-end; text-align: right; font-family: 'Inter', sans-serif; line-height: 1.35; font-size: 9.5px; color: #475569; }
+        .a4-header-ruc { font-size: 11px; font-weight: 800; color: #1e3a8a; }
+        .a4-page-footer {
+          position: absolute !important;
+          bottom: 10mm !important;
+          left: 25.4mm !important;
+          right: 25.4mm !important;
+          min-height: 8mm !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          font-family: 'Arial', sans-serif !important;
+          font-size: 8.5pt !important;
+          color: #64748b !important;
+          border-top: 1px dashed #cbd5e1 !important;
+          padding-top: 3px !important;
+        }
+        .a4-page-footer::before { display: none !important; }
+        .a4-page-content {
+          width: 100% !important;
+          height: ${orientacionActual === 'landscape' ? '159.2mm' : '246.2mm'} !important;
+          min-height: ${orientacionActual === 'landscape' ? '159.2mm' : '246.2mm'} !important;
+          max-height: ${orientacionActual === 'landscape' ? '159.2mm' : '246.2mm'} !important;
+          overflow: hidden !important;
+          outline: none !important;
+          font-family: ${fontFam};
+          font-size: 12pt;
+          line-height: ${interlineadoActual};
+          color: #0f172a;
+          text-align: justify;
+        }
+        .a4-page-content p { margin: 0 0 10pt 0; text-align: justify; }
+        .a4-page-content h1, .a4-page-content h2, .a4-page-content h3 { font-family: ${fontFam}; font-weight: 700; margin: 8pt 0; color: #0f172a; }
+        .a4-page-content table { border-collapse: collapse; width: 100%; margin: 10pt 0; }
+        .a4-page-content th, .a4-page-content td { border: 1px solid #475569; padding: 5pt 8pt; font-size: 10pt; }
+        .word-signature-block {
+          display: flex; justify-content: space-between; gap: 40px; margin-top: 36px; padding-top: 10px;
+        }
+        .word-signature-block > div { flex: 1; text-align: center; }
+        .signature-line {
+          border-top: 1px solid #0f172a; padding-top: 6px; font-size: 12px; line-height: 1.4; color: #0f172a;
+        }
+        .a4-watermark {
+          position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
+          font-size: 58pt; font-weight: 900; color: rgba(100, 116, 139, 0.12);
+          letter-spacing: 8px; user-select: none; pointer-events: none; z-index: 1; text-transform: uppercase;
+        }
+      </style>
+    </head>
+    <body>
+      ${sheetsHtml}
+    </body>
+    </html>
+  `);
+  doc.close();
+
+  setTimeout(() => {
+    try {
+      printFrame.contentWindow.focus();
+      printFrame.contentWindow.print();
+    } catch(err) {
+      window.print();
+    }
+    setTimeout(() => {
+      printFrame.remove();
+    }, 2500);
+  }, 300);
 }
 
 function copiarContenidoWord() {
