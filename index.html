@@ -538,22 +538,19 @@
 
     /* Encabezado APA 7 (Header): situado a 12.7 mm (0.5 in) del borde superior */
     /* ═══════════════════════════════════════════════════════════
-       ENCABEZADO Y PIE DE PÁGINA EDITABLES (MICROSOFT WORD APA 7)
+       ENCABEZADO CORPORATIVO OFICIAL EDITABLE (MEMBRETE QUBIRA)
        ═══════════════════════════════════════════════════════════ */
     .a4-page-header {
       position: absolute;
-      top: 12.7mm;
+      top: 6mm;
       left: 25.4mm;
       right: 25.4mm;
-      min-height: 9mm;
+      min-height: 14mm;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-family: 'Times New Roman', Georgia, serif;
-      font-size: 10pt;
-      color: #475569;
-      border-bottom: 1px dashed #cbd5e1;
-      padding-bottom: 2px;
+      border-bottom: 1.5px solid #0f172a;
+      padding-bottom: 4px;
       box-sizing: border-box;
       cursor: text;
       z-index: 10;
@@ -561,11 +558,15 @@
       user-select: text;
     }
     .a4-page-header:hover {
+      background: rgba(239, 246, 255, 0.4);
+      outline: 1px dashed #93c5fd;
+    }
+    .hf-editing .a4-page-header {
+      outline: 1.5px dashed #2563eb;
       background: rgba(239, 246, 255, 0.7);
-      border-bottom-color: #2563eb;
     }
     .a4-page-header::before {
-      content: 'Encabezado (APA 7)';
+      content: 'Encabezado Oficial (Membrete Editable)';
       position: absolute;
       top: -14px;
       left: 0;
@@ -583,49 +584,123 @@
       font-weight: 700;
     }
 
-    .a4-running-head {
-      text-transform: uppercase;
-      font-size: 8.5pt;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      color: #334155;
-      outline: none;
-      min-width: 140px;
-      max-width: 75%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      padding: 1px 6px;
-      border-radius: 4px;
-      border: 1px solid transparent;
-      transition: all .15s;
-    }
-    .a4-running-head:hover {
-      background: #ffffff;
-      border-color: #93c5fd;
-    }
-    .a4-running-head:focus {
-      background: #ffffff;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-      white-space: normal;
-      overflow: visible;
-    }
-
-    .a4-page-number-box {
+    .a4-header-letterhead {
+      width: 100%;
       display: flex;
       align-items: center;
-      gap: 3px;
-      margin-left: auto;
-      font-size: 10.5pt;
-      font-weight: 700;
-      color: #0f172a;
-      user-select: none;
+      justify-content: space-between;
+      gap: 16px;
     }
-    .a4-page-number {
-      font-size: 11pt;
-      font-weight: 700;
+    .a4-header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .a4-header-logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .a4-header-titles {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .a4-header-company {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
       color: #0f172a;
+      letter-spacing: 0.5px;
+      outline: none;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      padding: 1px 4px;
+      line-height: 1.2;
+      transition: all .15s;
+    }
+    .a4-header-company:hover,
+    .a4-header-company:focus {
+      background: #ffffff;
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+    }
+    .a4-header-tagline {
+      font-family: 'Inter', sans-serif;
+      font-size: 9.5px;
+      font-weight: 800;
+      color: #b45309;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      outline: none;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      padding: 1px 4px;
+      line-height: 1.2;
+      transition: all .15s;
+    }
+    .a4-header-tagline:hover,
+    .a4-header-tagline:focus {
+      background: #ffffff;
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+    }
+
+    .a4-header-contact {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      text-align: right;
+      font-family: 'Inter', sans-serif;
+      line-height: 1.35;
+    }
+    .a4-header-ruc {
+      font-size: 11px;
+      font-weight: 800;
+      color: #1e3a8a;
+      outline: none;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      padding: 1px 4px;
+      transition: all .15s;
+    }
+    .a4-header-ruc:hover,
+    .a4-header-ruc:focus {
+      background: #ffffff;
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+    }
+    .a4-header-address {
+      font-size: 9.5px;
+      color: #475569;
+      outline: none;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      padding: 1px 4px;
+      transition: all .15s;
+    }
+    .a4-header-address:hover,
+    .a4-header-address:focus {
+      background: #ffffff;
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+    }
+    .a4-header-web {
+      font-size: 9.5px;
+      color: #475569;
+      outline: none;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      padding: 1px 4px;
+      transition: all .15s;
+    }
+    .a4-header-web:hover,
+    .a4-header-web:focus {
+      background: #ffffff;
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
     }
 
     /* Pie de página A4 Editable a 12.7 mm del fondo */
@@ -1222,10 +1297,13 @@
         display: none !important; /* Ocultar guías de margen en impresión */
       }
       .a4-page-header {
-        top: 12.7mm !important;
+        top: 6mm !important;
         left: 25.4mm !important;
         right: 25.4mm !important;
         display: flex !important;
+        border-bottom: 1.5px solid #0f172a !important;
+        outline: none !important;
+        background: transparent !important;
       }
       .a4-page-footer {
         bottom: 10mm !important;
@@ -3854,6 +3932,11 @@ let rangeGuardadoParaEnlace = null;
 let headerSyncEnabled = true;
 let footerSyncEnabled = true;
 let differentFirstPage = false;
+let headerCompanyGlobal = 'QUBIRA S.A.C.';
+let headerTaglineGlobal = 'SOLUCIONES CORPORATIVAS DE SOFTWARE';
+let headerRucGlobal = 'RUC: 10764275981';
+let headerAddressGlobal = 'Lima, República del Perú';
+let headerContactGlobal = 'qubira@gmail.com | www.qubira.vercel.app';
 let runningHeadTextGlobal = '';
 let footerLeftTextoGlobal = 'QUBIRA S.A.C. • RUC 10764275981 • Área Legal';
 let watermarkActual = '';
@@ -3863,25 +3946,34 @@ let imagenCargadaBase64 = '';
 
 // Crear elemento visual de Hoja A4 estándar (210mm x 297mm) con encabezado y pie interactivo
 function crearElementoHojaA4(pageNumber, runningHead = '') {
-  const defaultHead = (runningHead || document.getElementById('word-doc-title')?.value || 'DOCUMENTO LEGAL').toUpperCase();
   const sheet = document.createElement('div');
   sheet.className = 'a4-page-sheet';
   sheet.dataset.page = pageNumber;
 
-  let headText = defaultHead;
-  if (differentFirstPage && pageNumber === 1) {
-    headText = defaultHead;
-  } else {
-    headText = runningHeadTextGlobal || defaultHead;
-  }
+  let comp = headerCompanyGlobal;
+  let tag = headerTaglineGlobal;
+  let ruc = headerRucGlobal;
+  let addr = headerAddressGlobal;
+  let web = headerContactGlobal;
+
   let footLeft = footerLeftTextoGlobal || 'QUBIRA S.A.C. • RUC 10764275981 • Área Legal';
 
   sheet.innerHTML = `
     <div class="a4-watermark ${watermarkActual ? 'active' : ''}">${watermarkActual}</div>
     <div class="a4-page-header" contenteditable="false" title="Doble clic para editar el Encabezado">
-      <div class="a4-running-head" contenteditable="true" spellcheck="false" title="Haga clic para editar el encabezado">${headText}</div>
-      <div class="a4-page-number-box">
-        <span class="a4-page-number">${pageNumber}</span>
+      <div class="a4-header-letterhead">
+        <div class="a4-header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="Logo Qubira" class="a4-header-logo">
+          <div class="a4-header-titles">
+            <div class="a4-header-company" contenteditable="true" spellcheck="false" title="Editar nombre de empresa">${comp}</div>
+            <div class="a4-header-tagline" contenteditable="true" spellcheck="false" title="Editar rubro corporativo">${tag}</div>
+          </div>
+        </div>
+        <div class="a4-header-contact">
+          <div class="a4-header-ruc" contenteditable="true" spellcheck="false" title="Editar RUC"><strong>${ruc}</strong></div>
+          <div class="a4-header-address" contenteditable="true" spellcheck="false" title="Editar dirección fiscal">${addr}</div>
+          <div class="a4-header-web" contenteditable="true" spellcheck="false" title="Editar correo y web">${web}</div>
+        </div>
       </div>
     </div>
     <div class="a4-page-content" contenteditable="true" spellcheck="true" data-page-index="${pageNumber}"></div>
@@ -3934,11 +4026,18 @@ function conectarEventosHoja(sheetEl) {
     actualizarEstadosRibbonActivo();
   });
 
-  // Doble clic en encabezado o pie activa modo de edición
+  // Doble clic o focus en encabezado o pie activa modo de edición
   if (header) {
     header.addEventListener('dblclick', (e) => {
       e.stopPropagation();
       activarModoEncabezado(sheetEl);
+    });
+    header.addEventListener('focusin', () => {
+      document.getElementById('word-workspace')?.classList.add('hf-editing');
+      cambiarPestanaRibbon('encabezado-pie');
+    });
+    header.addEventListener('input', () => {
+      manejarInputEncabezadoCorporativo(sheetEl);
     });
   }
   if (footer) {
@@ -3955,23 +4054,6 @@ function conectarEventosHoja(sheetEl) {
       desactivarModoEncabezadoPie();
     }
   });
-
-  // Eventos de edición de Encabezado y Pie con sincronización
-  if (runningHead) {
-    runningHead.addEventListener('focus', () => {
-      document.getElementById('word-workspace')?.classList.add('hf-editing');
-      cambiarPestanaRibbon('encabezado-pie');
-    });
-    runningHead.addEventListener('input', () => {
-      manejarInputEncabezado(runningHead);
-    });
-    runningHead.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        content.focus();
-      }
-    });
-  }
 
   if (footerLeft) {
     footerLeft.addEventListener('focus', () => {
@@ -4031,12 +4113,12 @@ function activarModoEncabezado(sheetTarget = null) {
   const container = document.getElementById('a4-pages-container');
   const sheet = sheetTarget || container?.querySelector('.a4-page-sheet') || null;
   if (sheet) {
-    const rh = sheet.querySelector('.a4-running-head');
-    if (rh) {
-      rh.focus();
+    const comp = sheet.querySelector('.a4-header-company');
+    if (comp) {
+      comp.focus();
       const sel = window.getSelection();
       const range = document.createRange();
-      range.selectNodeContents(rh);
+      range.selectNodeContents(comp);
       sel.removeAllRanges();
       sel.addRange(range);
     }
@@ -4071,16 +4153,23 @@ function desactivarModoEncabezadoPie() {
   if (activeContent) activeContent.focus();
 }
 
-function manejarInputEncabezado(headEl) {
-  const sheet = headEl.closest('.a4-page-sheet');
-  const pageNum = parseInt(sheet?.dataset?.page || '1', 10);
-  const newText = headEl.innerText;
+function manejarInputEncabezadoCorporativo(sheetEl) {
+  const pageNum = parseInt(sheetEl?.dataset?.page || '1', 10);
+  const compEl = sheetEl.querySelector('.a4-header-company');
+  const tagEl = sheetEl.querySelector('.a4-header-tagline');
+  const rucEl = sheetEl.querySelector('.a4-header-ruc');
+  const addrEl = sheetEl.querySelector('.a4-header-address');
+  const webEl = sheetEl.querySelector('.a4-header-web');
+
+  if (compEl) headerCompanyGlobal = compEl.innerText;
+  if (tagEl) headerTaglineGlobal = tagEl.innerText;
+  if (rucEl) headerRucGlobal = rucEl.innerText;
+  if (addrEl) headerAddressGlobal = addrEl.innerText;
+  if (webEl) headerContactGlobal = webEl.innerText;
 
   if (differentFirstPage && pageNum === 1) {
     return;
   }
-
-  runningHeadTextGlobal = newText;
 
   if (headerSyncEnabled) {
     const container = document.getElementById('a4-pages-container');
@@ -4089,16 +4178,25 @@ function manejarInputEncabezado(headEl) {
     allSheets.forEach(s => {
       const p = parseInt(s.dataset.page || '1', 10);
       if (differentFirstPage && p === 1) return;
-      const rh = s.querySelector('.a4-running-head');
-      if (rh && rh !== headEl && rh.innerText !== newText) {
-        rh.innerText = newText;
-      }
+      if (s === sheetEl) return;
+
+      const c = s.querySelector('.a4-header-company');
+      const t = s.querySelector('.a4-header-tagline');
+      const r = s.querySelector('.a4-header-ruc');
+      const a = s.querySelector('.a4-header-address');
+      const w = s.querySelector('.a4-header-web');
+
+      if (c && c.innerText !== headerCompanyGlobal) c.innerText = headerCompanyGlobal;
+      if (t && t.innerText !== headerTaglineGlobal) t.innerText = headerTaglineGlobal;
+      if (r && r.innerText !== headerRucGlobal) r.innerText = headerRucGlobal;
+      if (a && a.innerText !== headerAddressGlobal) a.innerText = headerAddressGlobal;
+      if (w && w.innerText !== headerContactGlobal) w.innerText = headerContactGlobal;
     });
   }
 
   const cloudStatus = document.getElementById('word-cloud-status');
   if (cloudStatus) {
-    cloudStatus.innerHTML = '● Encabezado actualizado';
+    cloudStatus.innerHTML = '● Encabezado corporativo actualizado';
     cloudStatus.style.color = '#fbbf24';
   }
 }
@@ -4141,23 +4239,41 @@ function insertarFechaHoraEncabezado() {
   const fechaStr = `${hoy.getDate()} de ${meses[hoy.getMonth()]} de ${hoy.getFullYear()}`;
   const container = document.getElementById('a4-pages-container');
   if (!container) return;
-  const activeHead = document.activeElement?.classList?.contains('a4-running-head')
+  const activeAddr = document.activeElement?.classList?.contains('a4-header-address')
     ? document.activeElement
-    : container.querySelector('.a4-running-head');
-  if (activeHead) {
-    activeHead.innerText = activeHead.innerText + ` • ${fechaStr}`;
-    manejarInputEncabezado(activeHead);
+    : container.querySelector('.a4-header-address');
+  if (activeAddr) {
+    activeAddr.innerText = `Lima, ${fechaStr}`;
+    const sheet = activeAddr.closest('.a4-page-sheet');
+    if (sheet) manejarInputEncabezadoCorporativo(sheet);
   }
 }
 
 function restaurarEncabezadoApa7() {
-  const docTitle = (document.getElementById('word-doc-title')?.value || 'DOCUMENTO LEGAL').toUpperCase();
-  runningHeadTextGlobal = docTitle;
+  headerCompanyGlobal = 'QUBIRA S.A.C.';
+  headerTaglineGlobal = 'SOLUCIONES CORPORATIVAS DE SOFTWARE';
+  headerRucGlobal = 'RUC: 10764275981';
+  headerAddressGlobal = 'Lima, República del Perú';
+  headerContactGlobal = 'qubira@gmail.com | www.qubira.vercel.app';
   footerLeftTextoGlobal = 'QUBIRA S.A.C. • RUC 10764275981 • Área Legal';
+
   const container = document.getElementById('a4-pages-container');
   if (!container) return;
-  container.querySelectorAll('.a4-running-head').forEach(rh => rh.innerText = docTitle);
-  container.querySelectorAll('.a4-footer-left').forEach(fl => fl.innerText = footerLeftTextoGlobal);
+  container.querySelectorAll('.a4-page-sheet').forEach(s => {
+    const c = s.querySelector('.a4-header-company');
+    const t = s.querySelector('.a4-header-tagline');
+    const r = s.querySelector('.a4-header-ruc');
+    const a = s.querySelector('.a4-header-address');
+    const w = s.querySelector('.a4-header-web');
+    const fl = s.querySelector('.a4-footer-left');
+
+    if (c) c.innerText = headerCompanyGlobal;
+    if (t) t.innerText = headerTaglineGlobal;
+    if (r) r.innerText = headerRucGlobal;
+    if (a) a.innerText = headerAddressGlobal;
+    if (w) w.innerText = headerContactGlobal;
+    if (fl) fl.innerText = footerLeftTextoGlobal;
+  });
   actualizarNumerosDePagina();
 }
 
@@ -4491,12 +4607,25 @@ function cargarHtmlEnPaginasA4(html) {
   const container = document.getElementById('a4-pages-container');
   if (!container) return;
 
+  // Si el HTML trae el membrete anterior dentro del cuerpo, limpiarlo para no duplicar
+  // ya que ahora reside oficialmente en el encabezado editable
+  let cleanHtml = html || '';
+  if (cleanHtml.includes('qubira-official-header')) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = cleanHtml;
+    const oldHeader = tempDiv.querySelector('.qubira-official-header');
+    if (oldHeader) {
+      oldHeader.remove();
+      cleanHtml = tempDiv.innerHTML;
+    }
+  }
+
   container.innerHTML = '';
   const sheet1 = crearElementoHojaA4(1);
   container.appendChild(sheet1);
 
   const content1 = sheet1.querySelector('.a4-page-content');
-  content1.innerHTML = html;
+  content1.innerHTML = cleanHtml;
 
   // Repaginar automáticamente todo el contenido en hojas A4
   repaginarDocumentoCompleto();
@@ -4514,29 +4643,18 @@ function obtenerHtmlCompletoDocumento() {
   return pages.join('\n<!-- a4-page-break -->\n<div class="a4-page-break" style="page-break-after:always; break-after:page;"></div>\n');
 }
 
-// Actualizar números de página y encabezados APA 7 en cada hoja
+// Actualizar números de página en el pie de página de cada hoja A4
 function actualizarNumerosDePagina() {
   const container = document.getElementById('a4-pages-container');
   if (!container) return;
   const sheets = container.querySelectorAll('.a4-page-sheet');
   const totalPages = sheets.length;
-  const docTitle = (document.getElementById('word-doc-title')?.value || 'DOCUMENTO LEGAL').toUpperCase();
 
   sheets.forEach((sheet, idx) => {
     const pageNum = idx + 1;
     sheet.dataset.page = pageNum;
 
-    // Encabezado APA 7 (Header a 12.7 mm con running head y número a la derecha)
-    const runningHead = sheet.querySelector('.a4-running-head');
-    if (runningHead) {
-      if (!runningHead.innerText.trim()) {
-        runningHead.innerText = (differentFirstPage && pageNum === 1) ? docTitle : (runningHeadTextGlobal || docTitle);
-      }
-    }
-    const pageNumEl = sheet.querySelector('.a4-page-number');
-    if (pageNumEl) pageNumEl.textContent = pageNum;
-
-    // Pie de página
+    // Pie de página (con conteo total)
     const footLeft = sheet.querySelector('.a4-footer-left');
     if (footLeft && !footLeft.innerText.trim()) {
       footLeft.innerText = footerLeftTextoGlobal;
@@ -5804,9 +5922,29 @@ function descargarDocumentoWord() {
     }
     bodyPagesHtml += `
       <div class="word-a4-page" style="page-break-after:always; position:relative;">
-        <div style="text-align:right; font-size:10pt; font-family:'Times New Roman', serif; margin-bottom:18pt; border-bottom:1px solid #cbd5e1; padding-bottom:4pt;">
-          <span style="float:left; text-transform:uppercase; font-size:9pt; color:#475569; font-weight:600;">${runningHeadText}</span>
-          <strong style="font-size:11pt; color:#0f172a;">${pageNum}</strong>
+        <div style="margin-bottom:14pt; border-bottom:1.5pt solid #0f172a; padding-bottom:5pt;">
+          <table style="width:100%; border:none; border-collapse:collapse; margin:0; padding:0;">
+            <tr style="border:none;">
+              <td style="border:none; padding:0; vertical-align:middle; width:60%;">
+                <table style="border:none; border-collapse:collapse; margin:0; padding:0;">
+                  <tr style="border:none;">
+                    <td style="border:none; padding:0 8pt 0 0; vertical-align:middle;">
+                      <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" width="36" height="36" alt="Logo">
+                    </td>
+                    <td style="border:none; padding:0; vertical-align:middle;">
+                      <div style="font-family:'Arial',sans-serif; font-size:11pt; font-weight:bold; color:#0f172a; line-height:1.2;">${headerCompanyGlobal}</div>
+                      <div style="font-family:'Arial',sans-serif; font-size:7pt; font-weight:bold; color:#b45309; letter-spacing:0.5pt; line-height:1.2;">${headerTaglineGlobal}</div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td style="border:none; padding:0; vertical-align:middle; text-align:right; font-family:'Arial',sans-serif; font-size:7.5pt; line-height:1.3; color:#475569;">
+                <strong style="color:#1e3a8a; font-size:8.5pt;">${headerRucGlobal}</strong><br>
+                ${headerAddressGlobal}<br>
+                ${headerContactGlobal}
+              </td>
+            </tr>
+          </table>
         </div>
         ${watermarkActual ? `<div style="text-align:center; font-size:28pt; font-weight:900; color:#cbd5e1; margin-bottom:14pt; letter-spacing:4px; text-transform:uppercase;">${watermarkActual}</div>` : ''}
         ${content}
