@@ -4036,9 +4036,24 @@ function conectarEventosHoja(sheetEl) {
   content.style.lineHeight = interlineadoActual;
   content.style.fontFamily = document.getElementById('word-font-family')?.value || "'Times New Roman', Georgia, serif";
 
+  let inputTimer = null;
   content.addEventListener('input', () => {
-    manejarInputEnPagina(content);
-    actualizarEstadisticasWord();
+    // Si no sobrepasa la altura imprimible, no interrumpir la escritura en absoluto
+    if (content.scrollHeight <= content.clientHeight + 2) {
+      actualizarEstadisticasWord();
+      const cloudStatus = document.getElementById('word-cloud-status');
+      if (cloudStatus) {
+        cloudStatus.innerHTML = '● Cambios sin guardar en Cloudinary';
+        cloudStatus.style.color = '#fbbf24';
+      }
+      return;
+    }
+    // Si sobrepasa la altura imprimible, paginar manteniendo el caret exacto
+    clearTimeout(inputTimer);
+    inputTimer = setTimeout(() => {
+      manejarInputEnPagina(content);
+      actualizarEstadisticasWord();
+    }, 45);
   });
 
   content.addEventListener('click', (e) => {
@@ -4123,8 +4138,11 @@ function conectarEventosHoja(sheetEl) {
 
   content.addEventListener('paste', () => {
     setTimeout(() => {
+      const caret = guardarCaret();
       repaginarDocumentoCompleto();
-    }, 40);
+      restaurarCaret(caret);
+      actualizarEstadisticasWord();
+    }, 35);
   });
 }
 
@@ -4353,18 +4371,231 @@ function obtenerPaginaActiva() {
   return contents[contents.length - 1] || null;
 }
 
+// ── SISTEMA DE PRESERVACIÓN Y RESTAURACIÓN DE CURSOR GLOBAL ──
+function guardarCaret() {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return null;
+  const range = sel.getRangeAt(0);
+  const container = document.getElementById('a4-pages-container');
+  if (!container || !container.contains(range.startContainer)) return null;
+
+  let activeContent = range.startContainer;
+  while (activeContent && !activeContent.classList?.contains('a4-page-content')) {
+    activeContent = activeContent.parentNode;
+  }
+  if (!activeContent) return null;
+
+  const allContents = container.querySelectorAll('.a4-page-content');
+  let globalOffset = 0;
+  for (const c of allContents) {
+    if (c === activeContent) {
+      const walker = document.createTreeWalker(c, NodeFilter.SHOW_TEXT, null, false);
+      let textNode;
+      while ((textNode = walker.nextNode())) {
+        if (textNode === range.startContainer) {
+          globalOffset += range.startOffset;
+          return { globalOffset };
+        }
+        globalOffset += textNode.length;
+      }
+      return { globalOffset };
+    } else {
+      globalOffset += (c.textContent || '').length;
+    }
+  }
+  return { globalOffset };
+}
+
+function restaurarCaret(saved) {
+  if (!saved || typeof saved.globalOffset !== 'number') return;
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return;
+
+  const allContents = container.querySelectorAll('.a4-page-content');
+  let remaining = saved.globalOffset;
+
+  for (let i = 0; i < allContents.length; i++) {
+    const c = allContents[i];
+    const cLen = (c.textContent || '').length;
+    if (remaining <= cLen || i === allContents.length - 1) {
+      c.focus();
+      const walker = document.createTreeWalker(c, NodeFilter.SHOW_TEXT, null, false);
+      let textNode;
+      let lastNode = null;
+      while ((textNode = walker.nextNode())) {
+        lastNode = textNode;
+        if (remaining <= textNode.length) {
+          try {
+            const range = document.createRange();
+            range.setStart(textNode, Math.max(0, remaining));
+            range.collapse(true);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+            return;
+          } catch (e) {}
+        }
+        remaining -= textNode.length;
+      }
+      if (lastNode) {
+        try {
+          const range = document.createRange();
+          range.setStart(lastNode, lastNode.length);
+          range.collapse(true);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+          return;
+        } catch (e) {}
+      }
+      return;
+    }
+    remaining -= cLen;
+  }
+}
+
+// ── DIVISIÓN NO DESTRUCTIVA DE PÁRRAFO A NIVEL DE LÍNEA EXACTA ──
+function dividirElementoDesbordante(el, content, nextContent, targetH) {
+  if (!el || el.nodeType !== Node.ELEMENT_NODE) return false;
+  const tag = (el.tagName || '').toLowerCase();
+  // No partir títulos, tablas, imágenes ni bloque de firmas
+  if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'img', 'tr'].includes(tag) || el.classList.contains('word-signature-block')) {
+    return false;
+  }
+
+  const elTop = el.offsetTop;
+  const availH = targetH - elTop;
+  // Si no hay espacio ni para una sola línea (menos de 26px), mover todo el elemento
+  if (availH < 26) {
+    return false;
+  }
+
+  // Recolectar todos los nodos de texto
+  const textNodes = [];
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+  let tn;
+  while ((tn = walker.nextNode())) {
+    if (tn.nodeValue && tn.nodeValue.length > 0) {
+      textNodes.push(tn);
+    }
+  }
+  if (!textNodes.length) return false;
+
+  const contentRect = content.getBoundingClientRect();
+  const maxBottom = contentRect.bottom;
+  const range = document.createRange();
+
+  let splitNode = null;
+  let splitOffset = -1;
+
+  for (let i = 0; i < textNodes.length; i++) {
+    const node = textNodes[i];
+    const len = node.nodeValue.length;
+    try {
+      range.setStart(node, 0);
+      range.setEnd(node, len);
+      const rect = range.getBoundingClientRect();
+      if (rect.bottom > maxBottom + 1) {
+        // El desborde ocurre dentro de este nodo: buscar el carácter que cruza maxBottom
+        let low = 0;
+        let high = len;
+        let foundChar = len;
+        while (low <= high) {
+          const mid = Math.floor((low + high) / 2);
+          const endChar = Math.min(mid + 1, len);
+          range.setStart(node, mid);
+          range.setEnd(node, endChar);
+          const charRect = range.getBoundingClientRect();
+          if (charRect.bottom > maxBottom + 1) {
+            foundChar = mid;
+            high = mid - 1;
+          } else {
+            low = mid + 1;
+          }
+        }
+        splitNode = node;
+        splitOffset = foundChar;
+        break;
+      }
+    } catch (e) {}
+  }
+
+  if (!splitNode || splitOffset < 0) {
+    return false;
+  }
+
+  // Retroceder hasta el espacio en blanco más cercano para no cortar palabras a la mitad
+  const str = splitNode.nodeValue;
+  let spaceIdx = splitOffset;
+  while (spaceIdx > 0 && !/\s/.test(str[spaceIdx])) {
+    spaceIdx--;
+  }
+
+  if (spaceIdx > 0) {
+    splitOffset = spaceIdx + 1;
+  } else if (spaceIdx === 0 && /\s/.test(str[0])) {
+    splitOffset = 1;
+  } else {
+    // Buscar espacio en el nodo de texto anterior
+    const nodeIdx = textNodes.indexOf(splitNode);
+    if (nodeIdx > 0) {
+      const prevNode = textNodes[nodeIdx - 1];
+      const prevStr = prevNode.nodeValue;
+      let pIdx = prevStr.length - 1;
+      while (pIdx > 0 && !/\s/.test(prevStr[pIdx])) {
+        pIdx--;
+      }
+      if (pIdx > 0) {
+        splitNode = prevNode;
+        splitOffset = pIdx + 1;
+      }
+    }
+  }
+
+  // Validar que realmente queda texto en la primera mitad
+  try {
+    range.setStart(el, 0);
+    range.setEnd(splitNode, splitOffset);
+    if (!range.toString().trim()) {
+      return false;
+    }
+  } catch (e) {
+    return false;
+  }
+
+  // Extraer limpiamente la porción sobrante con el motor nativo de Ranges
+  try {
+    range.setStart(splitNode, splitOffset);
+    range.setEndAfter(el.lastChild);
+    const tailFrag = range.extractContents();
+
+    const twin = el.cloneNode(false);
+    twin.appendChild(tailFrag);
+
+    if (!twin.textContent.trim()) {
+      twin.remove();
+      return true;
+    }
+
+    nextContent.insertBefore(twin, nextContent.firstChild);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 // ── MOTOR DE SALTO AUTOMÁTICO DE HOJA A4 AL EXCEDER LÍMITE INFERIOR ──
 function manejarInputEnPagina(contentEl) {
   const sheet = contentEl.closest('.a4-page-sheet');
   if (!sheet) return;
   const pageIndex = parseInt(sheet.dataset.page, 10) - 1;
 
-  // Si el contenido excede la altura imprimible A4 (246.2 mm = clientHeight)
   if (contentEl.scrollHeight > contentEl.clientHeight + 2) {
+    const caret = guardarCaret();
     desbordarPagina(pageIndex);
+    restaurarCaret(caret);
   }
 
-  // Notificar estado
   const cloudStatus = document.getElementById('word-cloud-status');
   if (cloudStatus) {
     cloudStatus.innerHTML = '● Cambios sin guardar en Cloudinary';
@@ -4382,7 +4613,7 @@ function desbordarPagina(pageIndex) {
   if (!content) return;
 
   const targetH = content.clientHeight || (orientacionActual === 'landscape' ? 602 : 930);
-  if (targetH < 100) return; // Contenedor oculto en este instante
+  if (targetH < 100) return;
 
   if (content.scrollHeight <= targetH + 2) {
     return;
@@ -4401,71 +4632,59 @@ function desbordarPagina(pageIndex) {
   const nextContent = nextSheet.querySelector('.a4-page-content');
   if (!nextContent) return;
 
-  const sel = window.getSelection();
-  let caretInsideMoved = false;
+  // Analizar los hijos de content para encontrar el elemento que cruza targetH
+  const children = Array.from(content.children);
+  let splitDone = false;
 
-  // Mover elementos que sobrepasan el límite inferior
-  let loopCount = 0;
-  while (content.scrollHeight > targetH + 2 && content.childNodes.length > 0 && loopCount < 180) {
-    loopCount++;
-    const lastChild = content.lastChild;
-    if (!lastChild) break;
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i];
+    const bottomEdge = child.offsetTop + child.offsetHeight;
 
-    // ¿El usuario estaba escribiendo dentro de este elemento que va a pasar a la siguiente hoja?
-    if (sel && sel.anchorNode && lastChild.contains(sel.anchorNode)) {
-      caretInsideMoved = true;
-    }
+    if (bottomEdge > targetH + 2) {
+      // Este elemento sobrepasa el límite inferior de la hoja A4
+      const remainingChildren = children.slice(i + 1);
 
-    if (content.childNodes.length > 1) {
-      nextContent.insertBefore(lastChild, nextContent.firstChild);
-    } else {
-      // Es un único elemento largo (párrafo extenso): dividirlo proporcionalmente
-      const dividio = dividirParrafoDesbordante(lastChild, content, nextContent);
-      if (!dividio) {
-        nextContent.insertBefore(lastChild, nextContent.firstChild);
+      // Si el elemento empieza antes del límite, intentar partirlo de forma fluida
+      if (child.offsetTop < targetH - 10) {
+        const dividio = dividirElementoDesbordante(child, content, nextContent, targetH);
+        if (dividio) {
+          splitDone = true;
+          // Mover todos los hermanos posteriores al inicio de nextContent (después del gemelo)
+          let insertRef = nextContent.firstChild ? nextContent.firstChild.nextSibling : null;
+          remainingChildren.forEach(remChild => {
+            nextContent.insertBefore(remChild, insertRef);
+          });
+          break;
+        }
       }
+
+      // Si no se pudo partir o empieza muy cerca del final, mover el elemento completo y sus hermanos
+      nextContent.insertBefore(child, nextContent.firstChild);
+      let insertRef = child.nextSibling;
+      remainingChildren.forEach(remChild => {
+        nextContent.insertBefore(remChild, insertRef);
+      });
+      splitDone = true;
       break;
     }
   }
 
-  // Si el cursor estaba en el elemento transferido, mantener el foco en la nueva hoja
-  if (caretInsideMoved) {
-    colocarCursorAlFinal(nextContent);
+  // Si por alguna razón de nodos de texto directos scrollHeight sigue excediendo:
+  let loopCount = 0;
+  while (content.scrollHeight > targetH + 2 && content.childNodes.length > 1 && loopCount < 50) {
+    loopCount++;
+    const last = content.lastChild;
+    if (!last) break;
+    nextContent.insertBefore(last, nextContent.firstChild);
   }
 
   actualizarNumerosDePagina();
 
-  // Si nextContent ahora también desborda, propagar en cascada a la siguiente hoja
+  // Propagar a la siguiente hoja si nextContent ahora también desborda
   const nextTargetH = nextContent.clientHeight || targetH;
   if (nextContent.scrollHeight > nextTargetH + 2) {
     desbordarPagina(pageIndex + 1);
   }
-}
-
-// Dividir un párrafo que excede el límite para que una parte quede en Sheet N y la otra en Sheet N+1
-function dividirParrafoDesbordante(node, sourceContent, targetContent) {
-  if (!node || node.nodeType !== Node.ELEMENT_NODE) return false;
-  const fullText = node.innerText || '';
-  const words = fullText.trim().split(/\s+/);
-  if (words.length <= 4) return false;
-
-  const twin = document.createElement(node.tagName || 'p');
-  twin.className = node.className || '';
-  if (node.style.cssText) twin.style.cssText = node.style.cssText;
-  targetContent.insertBefore(twin, targetContent.firstChild);
-
-  const movedWords = [];
-  let safety = 0;
-  while (sourceContent.scrollHeight > sourceContent.clientHeight + 2 && words.length > 2 && safety < 300) {
-    safety++;
-    movedWords.unshift(words.pop());
-    node.innerText = words.join(' ');
-  }
-
-  twin.innerText = movedWords.join(' ');
-  if (!twin.innerText.trim()) twin.remove();
-  if (!node.innerText.trim()) node.remove();
-  return true;
 }
 
 // Absorber contenido de la hoja siguiente al borrar texto (Backspace/Delete)
@@ -4488,12 +4707,15 @@ function absorberContenidoSiguiente(pageIndex) {
     return;
   }
 
+  const targetH = content.clientHeight || (orientacionActual === 'landscape' ? 602 : 930);
+
+  // Intentar traer elementos que quepan en el espacio disponible de content
   let count = 0;
-  while (nextContent.firstChild && count < 60) {
+  while (nextContent.firstChild && count < 40) {
     const first = nextContent.firstChild;
     content.appendChild(first);
-    if (content.scrollHeight > content.clientHeight + 2) {
-      // Excedió el límite de la hoja A4, devolver a la siguiente
+    if (content.scrollHeight > targetH + 2) {
+      // Excedió el límite de la hoja A4, devolver a nextContent y detener
       nextContent.insertBefore(first, nextContent.firstChild);
       break;
     }
@@ -4527,10 +4749,11 @@ function retrocederPagina(sheetEl) {
     return;
   }
 
+  const targetH = prevContent.clientHeight || (orientacionActual === 'landscape' ? 602 : 930);
   while (currentContent.firstChild) {
     const first = currentContent.firstChild;
     prevContent.appendChild(first);
-    if (prevContent.scrollHeight > prevContent.clientHeight + 2) {
+    if (prevContent.scrollHeight > targetH + 2) {
       currentContent.insertBefore(first, currentContent.firstChild);
       break;
     }
@@ -4597,7 +4820,7 @@ function insertarSaltoDePagina() {
   actualizarEstadisticasWord();
 }
 
-// Repaginar el documento completo distribuyendo entre hojas A4
+// Repaginar el documento completo distribuyendo entre hojas A4 sin huecos en blanco
 function repaginarDocumentoCompleto() {
   const container = document.getElementById('a4-pages-container');
   if (!container) return;
@@ -4605,10 +4828,10 @@ function repaginarDocumentoCompleto() {
   const firstSheet = container.querySelector('.a4-page-sheet');
   const firstContent = firstSheet?.querySelector('.a4-page-content');
   if (firstContent && firstContent.clientHeight < 100) {
-    // Si la vista está oculta en este instante (display: none), las dimensiones son 0;
-    // se repaginará automáticamente al hacerse visible.
     return;
   }
+
+  const caret = guardarCaret();
 
   let i = 0;
   let safety = 0;
@@ -4636,6 +4859,7 @@ function repaginarDocumentoCompleto() {
     }
   }
 
+  restaurarCaret(caret);
   actualizarNumerosDePagina();
   actualizarEstadisticasWord();
 }
