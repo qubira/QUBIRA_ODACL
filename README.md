@@ -11,7 +11,7 @@ Plataforma oficial de gestión legal, gobierno societario, contratos corporativo
 - **Condición:** ACTIVO / HABIDO
 - **Representación Legal:** Melani A. Luyo R. & Abraham Aranda Cerna
 - **Sede:** Lima, República del Perú
-- **Correo Institucional:** qubira@gmail.com
+- **Correo Institucional:** qubirasac@gmail.com
 - **Portal Web:** https://qubira.vercel.app
 
 ---
