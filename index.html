@@ -462,7 +462,7 @@
     .qdlg-details a { color: var(--navy); text-decoration: underline; }
     .qdlg-field { margin-top: 12px; }
     .qdlg-field label { display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px; }
-    .qdlg-field input { width: 100%; box-sizing: border-box; }
+    .qdlg-field input, .qdlg-field select { width: 100%; box-sizing: border-box; }
     .qdlg-foot {
       padding: 14px 22px; border-top: 1px solid var(--border); background: #f8fafc;
       display: flex; justify-content: flex-end; gap: 10px;
@@ -1415,6 +1415,24 @@
       box-shadow: var(--shadow-sm); transition: all .18s; display: flex; flex-direction: column; justify-content: space-between;
     }
     .template-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); border-color: #2563eb; }
+    /* Plantilla oficial publicada desde un documento editado */
+    .template-card.oficial { border-color: #86efac; box-shadow: 0 0 0 1px #bbf7d0; }
+    .template-oficial-info {
+      background: var(--success-light); border: 1px solid #a7f3d0; color: #065f46;
+      border-radius: 8px; padding: 8px 10px; font-size: 11.5px; line-height: 1.5; margin-bottom: 12px;
+    }
+    .template-oficial-info strong { display: block; font-size: 12px; }
+    .template-oficial-info button {
+      margin-top: 4px; background: none; border: none; padding: 0; color: #047857;
+      font-size: 11px; font-weight: 700; text-decoration: underline; cursor: pointer;
+    }
+    .doc-oficial-badge {
+      display: inline-flex; align-items: center; gap: 4px; margin-top: 4px;
+      background: var(--success-light); color: #065f46; border: 1px solid #a7f3d0;
+      font-size: 10.5px; font-weight: 700; padding: 1px 8px; border-radius: 999px;
+    }
+    .btn-oficial { background: #ecfdf5; color: #047857; border: 1px solid #6ee7b7; }
+    .btn-oficial:hover { background: #d1fae5; }
     .template-badge {
       display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700;
       padding: 3px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 10px;
@@ -2995,6 +3013,10 @@
    QUBIRA ODACL - LÓGICA PRINCIPAL & BASE DE DATOS LEGAL
    ============================================================ */
 
+const QODACL_API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:4000'
+  : 'https://api-qubira.onrender.com';
+
 const HUB_URL = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
   ? 'http://localhost:5515/modulo.html'
   : 'https://qubira-login.vercel.app/modulo.html';
@@ -3074,7 +3096,9 @@ function qDialogo(opts) {
           ${campos.map((c, i) => `
             <div class="qdlg-field">
               <label for="qdlg-campo-${i}">${qdlgEscapar(c.label)}</label>
-              <input id="qdlg-campo-${i}" type="${c.tipo || 'text'}" value="${qdlgEscapar(c.valor ?? '')}" ${c.tipo === 'number' ? 'min="1" max="50"' : ''}>
+              ${c.tipo === 'select'
+                ? `<select id="qdlg-campo-${i}">${(c.opciones || []).map(o => `<option value="${qdlgEscapar(o.valor)}" ${o.valor === c.valor ? 'selected' : ''}>${qdlgEscapar(o.texto)}</option>`).join('')}</select>`
+                : `<input id="qdlg-campo-${i}" type="${c.tipo || 'text'}" value="${qdlgEscapar(c.valor ?? '')}" ${c.tipo === 'number' ? 'min="1" max="50"' : ''}>`}
             </div>`).join('')}
         </div>
         <div class="qdlg-foot">
@@ -3084,7 +3108,7 @@ function qDialogo(opts) {
       </div>`;
     document.body.appendChild(overlay);
 
-    const inputs = Array.from(overlay.querySelectorAll('input'));
+    const inputs = Array.from(overlay.querySelectorAll('.qdlg-field input, .qdlg-field select'));
     const cerrar = (aceptado) => {
       document.removeEventListener('keydown', onKey, true);
       const valores = inputs.map(inp => inp.value);
@@ -3116,7 +3140,7 @@ function qDialogo(opts) {
     setTimeout(() => {
       const primero = inputs[0] || overlay.querySelector('[data-accion="aceptar"]');
       primero.focus();
-      if (inputs[0]) inputs[0].select();
+      if (inputs[0] && inputs[0].select) inputs[0].select();
     }, 30);
   });
 }
@@ -7836,6 +7860,7 @@ function renderCloudDocuments() {
       <td>
         <strong style="color:var(--text);">${d.titulo}</strong>
         <div style="font-size:11px; color:#64748b; font-family:'JetBrains Mono',monospace;">${d.archivo_nombre || d.id}</div>
+        ${Object.values(PLANTILLAS_LEGALES).filter(p => p.oficial && p.oficial.origenId === d.id).map(p => `<span class="doc-oficial-badge" title="Actualizada ${formatoFechaHora(p.oficial.fecha)}">★ Plantilla oficial: ${qdlgEscapar(p.titulo)}</span>`).join('')}
       </td>
       <td><span style="font-size:12px; color:#475569;">${d.tipo_documento}</span></td>
       <td><span style="font-weight:700; color:#2563eb;">v${d.version || 1}</span></td>
@@ -7852,6 +7877,9 @@ function renderCloudDocuments() {
           </button>
           <button class="btn btn-outline btn-sm" onclick="descargarWordDesdeItem('${d.id}')" title="Descargar Word">
             Word
+          </button>
+          <button class="btn btn-sm btn-oficial" onclick="ponerComoPlantillaOficial('${d.id}')" title="Reemplazar la plantilla oficial del Catálogo con este documento">
+            ★ Plantilla oficial
           </button>
           <button class="btn btn-outline btn-sm danger" onclick="eliminarDocumentoNube('${d.id}')" title="Eliminar">
             &times;
@@ -7890,6 +7918,140 @@ async function eliminarDocumentoNube(docId) {
   renderCloudDocuments();
 }
 
+// ══════════ PLANTILLAS OFICIALES ══════════
+// Un documento editado en la nube puede reemplazar la plantilla oficial de su
+// tipo en el Catálogo. Se guarda en el servidor (todo el equipo la ve) y se
+// conserva una copia en caché local por si la API no responde.
+const PLANTILLAS_CONTENIDO_ORIGINAL = {};
+Object.entries(PLANTILLAS_LEGALES).forEach(([k, p]) => { PLANTILLAS_CONTENIDO_ORIGINAL[k] = p.contenido; });
+
+function tokenOdacl() {
+  return localStorage.getItem('qodacl_token') || localStorage.getItem('qubira_token') || '';
+}
+
+async function apiOdacl(ruta, opciones = {}) {
+  const res = await fetch(`${QODACL_API_BASE}/api/odacl${ruta}`, {
+    ...opciones,
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tokenOdacl(), ...(opciones.headers || {}) }
+  });
+  let data = null;
+  try { data = await res.json(); } catch (e) {}
+  if (!res.ok || (data && data.ok === false)) {
+    throw new Error((data && (data.error || data.message)) || `Error ${res.status}`);
+  }
+  return data;
+}
+
+function formatoFechaHora(valor) {
+  const d = new Date(valor);
+  if (isNaN(d)) return '';
+  return d.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' +
+         d.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+}
+
+// Aplica las plantillas oficiales publicadas sobre el catálogo base
+function aplicarPlantillasOficiales(lista) {
+  Object.entries(PLANTILLAS_LEGALES).forEach(([k, p]) => {
+    p.contenido = PLANTILLAS_CONTENIDO_ORIGINAL[k];
+    delete p.oficial;
+  });
+  (lista || []).forEach(t => {
+    const p = PLANTILLAS_LEGALES[t.clave];
+    if (!p || !t.contenido_html) return;
+    p.contenido = t.contenido_html;
+    p.oficial = {
+      fecha: t.updated_at,
+      por: t.actualizado_por || '',
+      origenId: t.origen_doc_id || '',
+      origenTitulo: t.origen_titulo || '',
+      origenVersion: t.origen_version || null
+    };
+  });
+}
+
+async function cargarPlantillasOficiales() {
+  let lista = null;
+  try {
+    const data = await apiOdacl('/templates');
+    lista = data.templates || [];
+    localStorage.setItem('odacl_plantillas_oficiales', JSON.stringify(lista));
+  } catch (e) {
+    console.warn('[ODACL] Plantillas oficiales: usando copia local.', e.message);
+    try { lista = JSON.parse(localStorage.getItem('odacl_plantillas_oficiales') || '[]'); } catch (_) { lista = []; }
+  }
+  aplicarPlantillasOficiales(lista);
+  renderCatalogoPlantillas();
+  renderCloudDocuments();
+  return lista;
+}
+
+// Plantilla que corresponde a un documento (por su tipo legal)
+function clavePlantillaParaDocumento(doc) {
+  const entrada = Object.entries(PLANTILLAS_LEGALES).find(([, p]) => p.tipo === doc.tipo_documento);
+  return entrada ? entrada[0] : 'en_blanco';
+}
+
+// Botón "Poner como plantilla oficial" de la tabla de documentos en la nube
+async function ponerComoPlantillaOficial(docId) {
+  const docs = JSON.parse(localStorage.getItem('odacl_cloud_documents') || '[]');
+  const doc = docs.find(d => d.id === docId);
+  if (!doc) return;
+
+  const sugerida = clavePlantillaParaDocumento(doc);
+  const r = await qDialogo({
+    tipo: 'question',
+    titulo: 'Poner como plantilla oficial',
+    mensaje: `El contenido de «${doc.titulo}» (v${doc.version || 1}) reemplazará la plantilla seleccionada en el Catálogo de Plantillas.\nTodo el equipo legal verá esta versión al abrir la plantilla.`,
+    campos: [{
+      label: 'Plantilla del catálogo a reemplazar',
+      tipo: 'select',
+      valor: sugerida,
+      opciones: Object.entries(PLANTILLAS_LEGALES).map(([k, p]) => ({ valor: k, texto: p.titulo + (p.oficial ? '  (ya actualizada)' : '') }))
+    }],
+    aceptar: 'Publicar como oficial',
+    cancelar: 'Cancelar'
+  });
+  if (!r.aceptado) return;
+  const clave = r.valores[0];
+  const plantilla = PLANTILLAS_LEGALES[clave];
+  if (!plantilla) return;
+
+  try {
+    const data = await apiOdacl(`/templates/${encodeURIComponent(clave)}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        titulo: plantilla.titulo,
+        tipo_documento: plantilla.tipo,
+        contenido_html: doc.contenido_html,
+        origen_doc_id: doc.id,
+        origen_titulo: doc.titulo,
+        origen_version: doc.version || 1
+      })
+    });
+    await cargarPlantillasOficiales();
+    const t = data.template || {};
+    qAlert(`✓ Plantilla oficial actualizada:\n\nPlantilla: ${plantilla.titulo}\nDocumento origen: ${doc.titulo} (v${doc.version || 1})\nActualizada: ${formatoFechaHora(t.updated_at || Date.now())}\nPor: ${t.actualizado_por || ''}`,
+      { titulo: 'Plantilla oficial publicada' });
+  } catch (e) {
+    qAlert(`No se pudo publicar la plantilla oficial en el servidor.\n${e.message}\n\nVerifique su conexión y que su sesión siga activa, luego intente de nuevo.`, { tipo: 'error' });
+  }
+}
+
+async function restaurarPlantillaOriginal(clave) {
+  const p = PLANTILLAS_LEGALES[clave];
+  if (!p) return;
+  const ok = await qConfirm(`¿Restaurar «${p.titulo}» a su versión original del sistema?\nLa versión oficial publicada dejará de usarse para todo el equipo.`,
+    { titulo: 'Restaurar plantilla original', tipo: 'warning', aceptar: 'Restaurar' });
+  if (!ok) return;
+  try {
+    await apiOdacl(`/templates/${encodeURIComponent(clave)}`, { method: 'DELETE' });
+    await cargarPlantillasOficiales();
+    mostrarNotificacionToast('↺ Plantilla restaurada a la versión original');
+  } catch (e) {
+    qAlert(`No se pudo restaurar la plantilla.\n${e.message}`, { tipo: 'error' });
+  }
+}
+
 // Renderizar el catálogo de 11 plantillas
 function renderCatalogoPlantillas() {
   const container = document.getElementById('templates-grid-cards');
@@ -7897,7 +8059,7 @@ function renderCatalogoPlantillas() {
 
   const entries = Object.entries(PLANTILLAS_LEGALES);
   container.innerHTML = entries.map(([key, p]) => `
-    <div class="template-card">
+    <div class="template-card ${p.oficial ? 'oficial' : ''}">
       <div>
         <div class="template-badge" style="background:#dbeafe; color:#1e40af;">
           📑 ${p.badge} &bull; ${p.categoria}
@@ -7908,6 +8070,13 @@ function renderCatalogoPlantillas() {
         <div style="font-size:12.5px; color:#475569; line-height:1.55; margin-bottom:16px;">
           ${p.descripcion}
         </div>
+        ${p.oficial ? `
+        <div class="template-oficial-info">
+          <strong>✓ Plantilla oficial actualizada</strong>
+          ${formatoFechaHora(p.oficial.fecha)}${p.oficial.por ? ` · por ${qdlgEscapar(p.oficial.por)}` : ''}<br>
+          ${p.oficial.origenTitulo ? `Desde: ${qdlgEscapar(p.oficial.origenTitulo)}${p.oficial.origenVersion ? ` (v${p.oficial.origenVersion})` : ''}<br>` : ''}
+          <button type="button" onclick="restaurarPlantillaOriginal('${key}')">Restaurar original</button>
+        </div>` : ''}
       </div>
       <button class="btn btn-gold btn-sm" style="width:100%;" onclick="cargarPlantillaSeleccionada('${key}')">
         Abrir y Editar en Word →
@@ -7919,9 +8088,12 @@ function renderCatalogoPlantillas() {
 // Carga inicial del editor
 function initDocLegal() {
   // Recuperar el último documento en edición; si no hay, precargar el contrato oficial
-  if (!restaurarAutoguardadoWord()) {
-    cargarPlantillaSeleccionada('desarrollo_software');
-  }
+  // (esperando brevemente las plantillas oficiales publicadas por el equipo)
+  const restaurado = restaurarAutoguardadoWord();
+  const espera = new Promise(r => setTimeout(r, 2500));
+  Promise.race([cargarPlantillasOficiales(), espera]).finally(() => {
+    if (!restaurado) cargarPlantillaSeleccionada('desarrollo_software');
+  });
   renderCloudDocuments();
   renderCatalogoPlantillas();
   iniciarAutoguardadoWord();
