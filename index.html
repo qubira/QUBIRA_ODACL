@@ -505,6 +505,19 @@
       background: #f8fafc; border-bottom: 1px solid var(--border); padding: 12px 20px;
       display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
     }
+    /* Barra superior del editor: plantilla en edición */
+    .editor-contexto { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-width: 0; }
+    .editor-contexto-k { font-size: 10px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; color: #64748b; }
+    .editor-contexto-t { font-size: 15px; font-weight: 800; color: var(--text); line-height: 1.25; }
+    .template-borrador-info {
+      background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a;
+      border-radius: 8px; padding: 8px 10px; font-size: 11.5px; line-height: 1.5; margin-bottom: 12px;
+    }
+    .template-borrador-info strong { display: block; font-size: 12px; }
+    .template-borrador-info button {
+      margin-top: 4px; background: none; border: none; padding: 0; color: #1d4ed8;
+      font-size: 11px; font-weight: 700; text-decoration: underline; cursor: pointer;
+    }
     .word-doc-title-input {
       font-size: 15px; font-weight: 800; color: #0f172a; border: 1px solid var(--border);
       padding: 7px 14px; border-radius: 8px; background: #fff; width: 340px;
@@ -2107,44 +2120,32 @@
 
           <!-- Sub-navigation tabs: Editor Word / Documentos Cloudinary / Plantillas -->
           <div class="doc-nav-tabs">
-            <button class="doc-tab-btn active" data-doc-view="editor" onclick="switchDocSubView('editor')">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-              <span>Editor Word Legal</span>
-            </button>
             <button class="doc-tab-btn" data-doc-view="cloud" onclick="switchDocSubView('cloud')">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
               <span>Documentos en Nube (Cloudinary)</span>
               <span class="nav-badge" id="cloud-doc-count" style="background:#2563eb; color:#fff;">0</span>
             </button>
-            <button class="doc-tab-btn" data-doc-view="templates" onclick="switchDocSubView('templates')">
+            <button class="doc-tab-btn active" data-doc-view="templates" onclick="switchDocSubView('templates')">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
               <span>Catálogo de Plantillas Legales (11)</span>
             </button>
           </div>
 
           <!-- SUBVIEW 1: EDITOR WORD -->
-          <div class="doc-subview active" id="subview-editor">
+          <div class="doc-subview" id="subview-editor">
             <!-- Word Ribbon -->
             <div class="word-ribbon">
               <!-- Head: Title, Type & Main Actions -->
               <div class="word-ribbon-head">
-                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-                  <span style="font-size:18px;">📄</span>
-                  <input type="text" id="word-doc-title" class="word-doc-title-input" value="Contrato de Desarrollo de Software - THE TWENTIES" title="Haga clic para renombrar el documento" oninput="actualizarNumerosDePagina()">
-                  <select id="word-doc-type" class="word-select" style="font-weight:600; color:#1e3a8a; border-color:#93c5fd;">
-                    <option value="Contrato de Desarrollo de Software">Contrato de Desarrollo de Software (14 Cláusulas)</option>
-                    <option value="Contrato Laboral (D.L. 728)">Contrato Laboral (Régimen Privado D.L. 728)</option>
-                    <option value="Contrato de Prestación de Servicios">Contrato de Prestación de Servicios (Locación Civil)</option>
-                    <option value="Contrato de Licenciamiento de Software">Contrato de Licenciamiento de Software (SaaS / On-Premise)</option>
-                    <option value="Acuerdo de Nivel de Servicio (SLA)">Acuerdo de Nivel de Servicio (SLA)</option>
-                    <option value="Contrato de Prestación de Servicios Profesionales">Contrato de Prestación de Servicios Profesionales (TI)</option>
-                    <option value="Contrato de Prácticas Pre Profesionales">Contrato de Prácticas Pre Profesionales (Ley 28518)</option>
-                    <option value="Contrato Proveedores Infraestructura">Contrato con Proveedores de Infraestructura (Cloud)</option>
-                    <option value="Acuerdo de Confidencialidad (NDA)">Acuerdo de Confidencialidad (NDA)</option>
-                    <option value="Políticas de Privacidad">Políticas de Privacidad (Ley 29733)</option>
-                    <option value="Términos y Condiciones">Términos y Condiciones de Uso</option>
-                    <option value="Documento Legal Personalizado">Documento Legal Personalizado</option>
-                  </select>
+                <!-- Plantilla en edición (el editor solo se abre desde el Catálogo) -->
+                <div class="editor-contexto">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="volverAlCatalogo()" title="Guardar borrador y volver al Catálogo de Plantillas">← Catálogo</button>
+                  <div>
+                    <div class="editor-contexto-k">📄 Editando plantilla</div>
+                    <div class="editor-contexto-t" id="editor-plantilla-titulo">—</div>
+                  </div>
+                  <input type="hidden" id="word-doc-title" value="">
+                  <input type="hidden" id="word-doc-type" value="">
                 </div>
 
                 <div class="word-ribbon-actions">
@@ -2165,9 +2166,6 @@
                   </button>
                   <button class="btn btn-outline btn-sm" onclick="copiarContenidoWord()" title="Copiar todo el texto al portapapeles">
                     <span>📋 Copiar</span>
-                  </button>
-                  <button class="btn btn-outline btn-sm" onclick="crearDocumentoEnBlanco()" title="Empezar un documento nuevo en blanco">
-                    <span>➕ Nuevo</span>
                   </button>
                 </div>
               </div>
@@ -2220,24 +2218,6 @@
                       </select>
                     </div>
 
-                    <!-- Plantilla legal rápida -->
-                    <div class="word-tool-group">
-                      <select id="quick-template-select" class="word-select" onchange="cargarPlantillaSeleccionada(this.value)" title="Plantillas de contratos y documentos legales">
-                        <option value="">Plantilla legal rápida…</option>
-                        <option value="desarrollo_software">1. Contrato de Desarrollo de Software (14 Cláusulas)</option>
-                        <option value="laboral_dl728">2. Contrato Laboral (D.L. 728)</option>
-                        <option value="prestacion_servicios">3. Contrato de Prestación de Servicios (Locación)</option>
-                        <option value="licenciamiento_software">4. Contrato de Licenciamiento Software (SaaS)</option>
-                        <option value="sla_servicio">5. Acuerdo de Nivel de Servicio (SLA)</option>
-                        <option value="servicios_profesionales">6. Contrato Servicios Profesionales TI</option>
-                        <option value="servicios_preprofesionales">7. Contrato Prácticas Pre Profesionales (Ley 28518)</option>
-                        <option value="proveedores_infraestructura">8. Contrato Proveedores de Infraestructura</option>
-                        <option value="acuerdo_nda">9. Acuerdo de Confidencialidad (NDA)</option>
-                        <option value="politica_privacidad">10. Políticas de Privacidad (Ley 29733)</option>
-                        <option value="terminos_condiciones">11. Términos y Condiciones de Uso</option>
-                        <option value="en_blanco">12. Documento en Blanco con Membrete</option>
-                      </select>
-                    </div>
 
                     <!-- Fuente y Tamaño: se aplican a TODO el documento -->
                     <div class="word-tool-group global">
@@ -2637,8 +2617,8 @@
                   </div>
                   <div class="card-subtitle">Contratos legales guardados en la nube oficial de Qubira (Carpeta: qubira/legal/documentos)</div>
                 </div>
-                <button class="btn btn-gold btn-sm" onclick="switchDocSubView('editor')">
-                  + Redactar Nuevo Documento
+                <button class="btn btn-gold btn-sm" onclick="switchDocSubView('templates')">
+                  + Nuevo desde el Catálogo
                 </button>
               </div>
               <div class="card-body" style="padding:0;">
@@ -2664,7 +2644,7 @@
           </div>
 
           <!-- SUBVIEW 3: CATÁLOGO DE PLANTILLAS -->
-          <div class="doc-subview" id="subview-templates">
+          <div class="doc-subview active" id="subview-templates">
             <div style="margin-bottom:18px;">
               <h3 style="font-size:17px; font-weight:800; color:var(--text);">Catálogo de Plantillas Legales Corporativas</h3>
               <p style="font-size:12.5px; color:#64748b; margin-top:2px;">Seleccione una plantilla legal preconfigurada para cargarla directamente en el editor Word</p>
@@ -4315,6 +4295,9 @@ const PLANTILLAS_LEGALES = {
 
 // Sub-navegación dentro de Doc. Legal
 function switchDocSubView(subview) {
+  if (subview !== 'editor' && document.getElementById('subview-editor')?.classList.contains('active')) {
+    guardarAutoguardadoWord();
+  }
   document.querySelectorAll('.doc-tab-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.docView === subview);
   });
@@ -5849,13 +5832,23 @@ function cargarHtmlEnPaginasA4(html) {
     tmp.innerHTML = cleanHtml;
     const f = tmp.querySelector('.a4-page-export[data-tamano]');
     if (f) {
-      fuenteGlobal = f.dataset.fuente || fuenteGlobal;
+      fuenteGlobal = f.dataset.fuente || 'Times New Roman';
       tamanoFuenteGlobalPt = parseFloat(f.dataset.tamano) || tamanoFuenteGlobalPt;
       interlineadoActual = f.dataset.interlineado || interlineadoActual;
       margenActual = MARGENES_MM[f.dataset.margen] ? f.dataset.margen : margenActual;
       orientacionActual = f.dataset.orientacion === 'landscape' ? 'landscape' : 'portrait';
       sincronizarControlesFormatoGlobal();
     }
+  }
+
+  if (!cleanHtml.includes('data-tamano')) {
+    // Plantilla sin formato propio: formato APA 7 por defecto (cada plantilla aislada)
+    fuenteGlobal = 'Times New Roman';
+    tamanoFuenteGlobalPt = 12;
+    interlineadoActual = '2.0';
+    margenActual = 'apa7';
+    orientacionActual = 'portrait';
+    sincronizarControlesFormatoGlobal();
   }
 
   container.innerHTML = '';
@@ -6540,20 +6533,44 @@ document.addEventListener('copy', (e) => {
 });
 
 // Cargar plantilla seleccionada
+// ══════════ EDICIÓN POR PLANTILLA ══════════
+// El editor solo se abre desde el Catálogo. Cada plantilla tiene su propio
+// borrador: editar una nunca sobrescribe a otra.
+let plantillaEnEdicion = null;
+let firmaBaseDocumento = '';
+
+const claveBorrador = k => 'odacl_word_borrador_' + k;
+function leerBorrador(k) {
+  try { return JSON.parse(localStorage.getItem(claveBorrador(k)) || 'null'); } catch (e) { return null; }
+}
+
+// Huella del documento sin los marcadores internos de paginación
+function firmaDocumento() {
+  return obtenerHtmlCompletoDocumento().replace(/ data-(frag|cont|page)="[^"]*"/g, '');
+}
+
 function cargarPlantillaSeleccionada(key) {
   if (!key || !PLANTILLAS_LEGALES[key]) return;
+  // Guardar el borrador de la plantilla anterior antes de cambiar
+  if (plantillaEnEdicion && plantillaEnEdicion !== key) guardarAutoguardadoWord();
   const p = PLANTILLAS_LEGALES[key];
+  plantillaEnEdicion = key;
   document.getElementById('word-doc-title').value = p.titulo;
   document.getElementById('word-doc-type').value = p.tipo;
-  const sel = document.getElementById('quick-template-select');
-  if (sel) sel.value = key;
+  const tituloEl = document.getElementById('editor-plantilla-titulo');
+  if (tituloEl) tituloEl.textContent = p.titulo;
+  const borrador = leerBorrador(key);
+  firmaBaseDocumento = '';
 
   // Cambiar primero a la vista de editor para que esté visible en pantalla
   switchDocSubView('editor');
 
-  // Cargar contenido y repaginar tras el ciclo de reflow del navegador
+  // Cargar contenido (borrador propio o plantilla) y repaginar
   setTimeout(() => {
-    cargarHtmlEnPaginasA4(p.contenido);
+    cargarHtmlEnPaginasA4(borrador ? borrador.html : p.contenido);
+    // Huella tras la paginación: solo se guarda borrador si luego hay cambios
+    setTimeout(() => { if (plantillaEnEdicion === key) firmaBaseDocumento = firmaDocumento(); }, 450);
+    if (borrador) mostrarNotificacionToast(`✎ Continuando tu borrador de esta plantilla (${formatoFechaHora(borrador.timestamp)})`);
   }, 40);
 
   const cloudStatus = document.getElementById('word-cloud-status');
@@ -7512,23 +7529,25 @@ function abrirModalAtajosWord() {
 
 // ── MOTOR DE AUTOGUARDADO EN SEGUNDO PLANO (CADA 30 SEGUNDOS) ──
 function guardarAutoguardadoWord() {
-    const title = document.getElementById('word-doc-title')?.value.trim() || 'Documento_Legal';
-    const docType = document.getElementById('word-doc-type')?.value || 'Contrato Legal';
+    // Solo hay borrador cuando hay una plantilla abierta y se modificó algo
+    if (!plantillaEnEdicion || !firmaBaseDocumento) return;
+    if (firmaDocumento() === firmaBaseDocumento) return;
     const html = obtenerHtmlCompletoDocumento();
     if (!html || html.length < 20) return;
 
     const autoData = {
-      titulo: title,
-      tipo: docType,
+      clave: plantillaEnEdicion,
+      titulo: document.getElementById('word-doc-title')?.value || '',
       html: html,
       timestamp: Date.now()
     };
-    localStorage.setItem('odacl_word_autosave', JSON.stringify(autoData));
+    try { localStorage.setItem(claveBorrador(plantillaEnEdicion), JSON.stringify(autoData)); } catch (e) { return; }
+    firmaBaseDocumento = firmaDocumento();
 
     const badge = document.getElementById('word-autosave-badge');
     if (badge) {
       const hora = new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      badge.textContent = `✓ Autoguardado local (${hora})`;
+      badge.textContent = `✓ Borrador guardado (${hora})`;
       badge.style.color = '#6ee7b7';
     }
 }
@@ -7545,20 +7564,33 @@ function iniciarAutoguardadoWord() {
 
 // Recupera el documento autoguardado (antes nunca se restauraba: al recargar
 // se cargaba siempre la plantilla por defecto y se perdía lo escrito)
-function restaurarAutoguardadoWord() {
+// Migra el autoguardado único anterior al borrador de su plantilla
+function migrarAutoguardadoAnterior() {
   let auto = null;
   try { auto = JSON.parse(localStorage.getItem('odacl_word_autosave') || 'null'); } catch (e) {}
-  if (!auto || !auto.html || auto.html.length < 20) return false;
-  document.getElementById('word-doc-title').value = auto.titulo || 'Documento_Legal';
-  const tipoSel = document.getElementById('word-doc-type');
-  if (tipoSel && auto.tipo) tipoSel.value = auto.tipo;
-  switchDocSubView('editor');
-  setTimeout(() => {
-    cargarHtmlEnPaginasA4(auto.html);
-    const hora = auto.timestamp ? new Date(auto.timestamp).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
-    mostrarNotificacionToast(`↺ Documento recuperado del autoguardado ${hora}`);
-  }, 40);
-  return true;
+  if (!auto || !auto.html) return;
+  const entrada = Object.entries(PLANTILLAS_LEGALES).find(([, p]) => p.titulo === auto.titulo)
+    || Object.entries(PLANTILLAS_LEGALES).find(([, p]) => p.tipo === auto.tipo);
+  if (entrada && !leerBorrador(entrada[0])) {
+    try { localStorage.setItem(claveBorrador(entrada[0]), JSON.stringify({ clave: entrada[0], titulo: auto.titulo, html: auto.html, timestamp: auto.timestamp || Date.now() })); } catch (e) {}
+  }
+  localStorage.removeItem('odacl_word_autosave');
+}
+
+function volverAlCatalogo() {
+  guardarAutoguardadoWord();
+  switchDocSubView('templates');
+}
+
+async function descartarBorrador(key) {
+  const p = PLANTILLAS_LEGALES[key];
+  const ok = await qConfirm(`¿Descartar tu borrador de «${p ? p.titulo : key}»?\nLa próxima vez se abrirá la plantilla oficial.`,
+    { titulo: 'Descartar borrador', tipo: 'warning', aceptar: 'Descartar', peligro: true });
+  if (!ok) return;
+  localStorage.removeItem(claveBorrador(key));
+  if (plantillaEnEdicion === key) { plantillaEnEdicion = null; firmaBaseDocumento = ''; }
+  renderCatalogoPlantillas();
+  mostrarNotificacionToast('Borrador descartado');
 }
 
 // Guardar documento en la Nube (Cloudinary & Base de Datos PostgreSQL Neon)
@@ -7644,8 +7676,11 @@ async function guardarEnCloudinary() {
 }
 
 // Exportar a Microsoft Word (.doc) respetando las hojas A4 y formato oficial Word MSO
-function descargarDocumentoWord() {
-  const title = document.getElementById('word-doc-title').value.trim() || 'Documento_Legal_QUBIRA';
+function descargarDocumentoWord(opciones = {}) {
+  const title = (opciones.titulo || document.getElementById('word-doc-title').value || '').trim() || 'Documento_Legal_QUBIRA';
+  const fuenteDoc = opciones.fuente || fuenteGlobal;
+  const tamanoDoc = opciones.tamano || tamanoFuenteGlobalPt;
+  const interDoc = opciones.interlineado || interlineadoActual;
   const container = document.getElementById('a4-pages-container');
   const sheets = container ? container.querySelectorAll('.a4-page-sheet') : [];
   
@@ -7659,17 +7694,9 @@ function descargarDocumentoWord() {
   const footerLeft = firstSheet?.querySelector('.a4-footer-left')?.innerText?.trim() || footerLeftTextoGlobal || 'QUBIRA S.A.C. • RUC 10764275981 • Área Legal';
 
   // Extraer el contenido continuo de todas las hojas del documento
-  let fullBodyHtml = '';
-  sheets.forEach((sheet, idx) => {
-    const c = sheet.querySelector('.a4-page-content');
-    if (c) {
-      if (idx > 0) {
-        // Salto de página oficial en Word para respetar la división entre hojas A4
-        fullBodyHtml += `\n<br clear=all style='mso-special-character:line-break;page-break-before:always'>\n`;
-      }
-      fullBodyHtml += c.innerHTML;
-    }
-  });
+  const paginasHtml = opciones.paginas || Array.from(sheets).map(sh => sh.querySelector('.a4-page-content')?.innerHTML || '');
+  // Salto de página oficial en Word para respetar la división entre hojas A4
+  const fullBodyHtml = paginasHtml.join(`\n<br clear=all style='mso-special-character:line-break;page-break-before:always'>\n`);
 
   const wordHtml = `
     <html xmlns:v="urn:schemas-microsoft-com:vml"
@@ -7730,9 +7757,9 @@ function descargarDocumentoWord() {
           margin-top: 4pt;
         }
         body {
-          font-family: ${pilaFuente(fuenteGlobal)};
-          font-size: ${tamanoFuenteGlobalPt}pt;
-          line-height: ${interlineadoActual};
+          font-family: ${pilaFuente(fuenteDoc)};
+          font-size: ${tamanoDoc}pt;
+          line-height: ${interDoc};
           color: #0f172a;
           text-align: justify;
         }
@@ -8022,12 +8049,6 @@ function copiarContenidoWord() {
     .catch(() => qAlert('No se pudo copiar el contenido.'));
 }
 
-async function crearDocumentoEnBlanco() {
-  if (await qConfirm('¿Desea crear un nuevo documento en blanco?\nLos cambios no guardados se perderán.', { titulo: 'Nuevo documento', tipo: 'warning', aceptar: 'Crear en blanco' })) {
-    cargarPlantillaSeleccionada('en_blanco');
-  }
-}
-
 // Renderizar tabla de documentos guardados en Cloudinary
 function renderCloudDocuments() {
   const tbody = document.getElementById('cloud-docs-tbody');
@@ -8066,10 +8087,7 @@ function renderCloudDocuments() {
       </td>
       <td>
         <div style="display:flex; gap:6px;">
-          <button class="btn btn-dark btn-sm" onclick="abrirDocumentoDesdeNube('${d.id}')" title="Cargar en el editor para seguir trabajando">
-            Editar en Word
-          </button>
-          <button class="btn btn-outline btn-sm" onclick="descargarWordDesdeItem('${d.id}')" title="Descargar Word">
+          <button class="btn btn-dark btn-sm" onclick="descargarWordDesdeItem('${d.id}')" title="Descargar este documento en Word">
             Word
           </button>
           <button class="btn btn-sm btn-oficial" onclick="ponerComoPlantillaOficial('${d.id}')" title="Reemplazar la plantilla oficial del Catálogo con este documento">
@@ -8084,24 +8102,24 @@ function renderCloudDocuments() {
   `).join('');
 }
 
-function abrirDocumentoDesdeNube(docId) {
+// Descarga un documento de la nube en Word SIN cargarlo en el editor
+// (antes lo cargaba encima de la plantilla que se estaba editando)
+function descargarWordDesdeItem(docId) {
   const docs = JSON.parse(localStorage.getItem('odacl_cloud_documents') || '[]');
   const doc = docs.find(d => d.id === docId);
   if (!doc) return;
-
-  document.getElementById('word-doc-title').value = doc.titulo;
-  document.getElementById('word-doc-type').value = doc.tipo_documento;
-  cargarHtmlEnPaginasA4(doc.contenido_html);
-
-  const statusElem = document.getElementById('word-cloud-status');
-  statusElem.innerHTML = `✓ <a href="${doc.cloudinary_url}" target="_blank" style="color:#6ee7b7; text-decoration:underline;">Cargado desde Cloudinary (v${doc.version || 1})</a>`;
-
-  switchDocSubView('editor');
-}
-
-function descargarWordDesdeItem(docId) {
-  abrirDocumentoDesdeNube(docId);
-  descargarDocumentoWord();
+  const tmp = document.createElement('div');
+  tmp.innerHTML = doc.contenido_html || '';
+  const envolturas = tmp.querySelectorAll('.a4-page-export');
+  const paginas = envolturas.length ? Array.from(envolturas).map(w => w.innerHTML) : [tmp.innerHTML];
+  const f = tmp.querySelector('.a4-page-export[data-tamano]');
+  descargarDocumentoWord({
+    titulo: doc.titulo,
+    paginas,
+    fuente: f ? f.dataset.fuente : null,
+    tamano: f ? parseFloat(f.dataset.tamano) : null,
+    interlineado: f ? f.dataset.interlineado : null
+  });
 }
 
 async function eliminarDocumentoNube(docId) {
@@ -8264,6 +8282,12 @@ function renderCatalogoPlantillas() {
         <div style="font-size:12.5px; color:#475569; line-height:1.55; margin-bottom:16px;">
           ${p.descripcion}
         </div>
+        ${(() => { const b = leerBorrador(key); return b ? `
+        <div class="template-borrador-info">
+          <strong>✎ Borrador en edición</strong>
+          Guardado ${formatoFechaHora(b.timestamp)}<br>
+          <button type="button" onclick="descartarBorrador('${key}')">Descartar borrador</button>
+        </div>` : ''; })()}
         ${p.oficial ? `
         <div class="template-oficial-info">
           <strong>✓ Plantilla oficial actualizada</strong>
@@ -8273,7 +8297,7 @@ function renderCatalogoPlantillas() {
         </div>` : ''}
       </div>
       <button class="btn btn-gold btn-sm" style="width:100%;" onclick="cargarPlantillaSeleccionada('${key}')">
-        Abrir y Editar en Word →
+        ${leerBorrador(key) ? 'Continuar editando →' : 'Abrir y Editar en Word →'}
       </button>
     </div>
   `).join('');
@@ -8281,13 +8305,9 @@ function renderCatalogoPlantillas() {
 
 // Carga inicial del editor
 function initDocLegal() {
-  // Recuperar el último documento en edición; si no hay, precargar el contrato oficial
-  // (esperando brevemente las plantillas oficiales publicadas por el equipo)
-  const restaurado = restaurarAutoguardadoWord();
-  const espera = new Promise(r => setTimeout(r, 2500));
-  Promise.race([cargarPlantillasOficiales(), espera]).finally(() => {
-    if (!restaurado) cargarPlantillaSeleccionada('desarrollo_software');
-  });
+  // El módulo abre en el Catálogo; cada plantilla se edita desde su tarjeta
+  migrarAutoguardadoAnterior();
+  cargarPlantillasOficiales();
   renderCloudDocuments();
   renderCatalogoPlantillas();
   iniciarAutoguardadoWord();
