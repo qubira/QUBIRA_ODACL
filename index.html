@@ -424,6 +424,52 @@
       display: flex; align-items: center; justify-content: flex-end; gap: 10px; background: #f8fafc;
     }
 
+    /* ── DIÁLOGOS DEL SISTEMA (reemplazan alert/confirm/prompt del navegador) ── */
+    .qdlg-overlay {
+      position: fixed; inset: 0; z-index: 10050;
+      background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; padding: 16px;
+      animation: modalFadeIn .18s ease;
+    }
+    .qdlg-box {
+      background: #fff; border-radius: 18px; width: min(460px, 100%);
+      max-height: 90vh; display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,.35); border: 1px solid var(--border);
+    }
+    .qdlg-head {
+      display: flex; align-items: center; gap: 14px; padding: 20px 22px 14px;
+    }
+    .qdlg-icon {
+      width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--navy-light); color: var(--navy);
+    }
+    .qdlg-icon svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .qdlg-success .qdlg-icon { background: var(--success-light); color: var(--success); }
+    .qdlg-error .qdlg-icon { background: #fee2e2; color: var(--danger); }
+    .qdlg-warning .qdlg-icon { background: var(--gold-light); color: var(--gold); }
+    .qdlg-title { font-size: 16px; font-weight: 800; color: var(--text); line-height: 1.3; }
+    .qdlg-sub { font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
+    .qdlg-body { padding: 0 22px 18px; overflow-y: auto; font-size: 13.5px; line-height: 1.6; color: #334155; }
+    .qdlg-msg { white-space: pre-line; overflow-wrap: anywhere; }
+    .qdlg-details {
+      margin-top: 12px; background: var(--bg-card2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 14px; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px;
+      font-size: 12.5px;
+    }
+    .qdlg-details dt { font-weight: 700; color: #475569; }
+    .qdlg-details dd { margin: 0; color: var(--text); overflow-wrap: anywhere; }
+    .qdlg-details a { color: var(--navy); text-decoration: underline; }
+    .qdlg-field { margin-top: 12px; }
+    .qdlg-field label { display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+    .qdlg-field input { width: 100%; box-sizing: border-box; }
+    .qdlg-foot {
+      padding: 14px 22px; border-top: 1px solid var(--border); background: #f8fafc;
+      display: flex; justify-content: flex-end; gap: 10px;
+    }
+    .qdlg-foot .btn-danger { background: var(--danger); color: #fff; }
+    .qdlg-foot .btn-danger:hover { background: #b91c1c; }
+
     /* ── FORM ELEMENTS ── */
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 12.5px; font-weight: 600; color: #475569; margin-bottom: 6px; }
@@ -2539,6 +2585,7 @@
                 </div>
               </div>
           </div>
+          </div><!-- /subview-editor -->
 
           <!-- SUBVIEW 2: DOCUMENTOS EN LA NUBE (CLOUDINARY) -->
           <div class="doc-subview" id="subview-cloud">
@@ -2950,6 +2997,153 @@ const HUB_URL = (location.hostname === 'localhost' || location.hostname === '127
   ? 'http://localhost:5515/modulo.html'
   : 'https://qubira-login.vercel.app/modulo.html';
 
+// ── DIÁLOGOS DEL SISTEMA: reemplazan alert/confirm/prompt nativos del navegador ──
+const QDLG_ICONOS = {
+  success: '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+  error: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>',
+  warning: '<svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
+  info: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
+  question: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
+};
+const QDLG_TITULOS = { success: 'Operación exitosa', error: 'No se pudo completar', warning: 'Atención', info: 'Aviso', question: 'Confirmar acción' };
+
+function qdlgEscapar(t) {
+  return String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Deduce el tipo de aviso según el texto (✓ éxito, "No se pudo" error, etc.)
+function qdlgTipoDesdeTexto(msg) {
+  const t = String(msg || '').trim();
+  if (/^✓|exitosa|con éxito|correctamente/i.test(t)) return 'success';
+  if (/^(no se pudo|error)/i.test(t)) return 'error';
+  if (/^(por favor|seleccione|ingrese)/i.test(t)) return 'warning';
+  return 'info';
+}
+
+// Mensaje → HTML. Las líneas "Etiqueta: valor" tras una línea en blanco se muestran como ficha de datos.
+function qdlgCuerpoHtml(msg) {
+  const texto = String(msg ?? '').replace(/^✓\s*/, '');
+  const bloques = texto.split(/\n\s*\n/);
+  let html = '';
+  bloques.forEach((bloque, i) => {
+    const lineas = bloque.split('\n').filter(l => l.trim());
+    const esFicha = i > 0 && lineas.length && lineas.every(l => /^[^:\n]{1,40}:\s+\S/.test(l));
+    if (esFicha) {
+      html += '<dl class="qdlg-details">' + lineas.map(l => {
+        const k = l.indexOf(':');
+        const clave = l.slice(0, k).trim();
+        const valor = l.slice(k + 1).trim();
+        const valorHtml = /^https?:\/\//.test(valor)
+          ? `<a href="${qdlgEscapar(valor)}" target="_blank" rel="noopener">${qdlgEscapar(valor)}</a>`
+          : qdlgEscapar(valor);
+        return `<dt>${qdlgEscapar(clave)}</dt><dd>${valorHtml}</dd>`;
+      }).join('') + '</dl>';
+    } else {
+      html += `<div class="qdlg-msg">${qdlgEscapar(bloque.replace(/:\s*$/, '.'))}</div>`;
+    }
+  });
+  return html;
+}
+
+/* Abre un diálogo y devuelve una promesa.
+   opts: { tipo, titulo, mensaje, campos:[{label, valor, tipo}], aceptar, cancelar, peligro } */
+function qDialogo(opts) {
+  return new Promise(resolve => {
+    // Guardar la selección del editor para restaurarla al cerrar (insertar en el punto del cursor)
+    const sel = window.getSelection();
+    const rangoGuardado = sel && sel.rangeCount ? sel.getRangeAt(0).cloneRange() : null;
+    const focoPrevio = document.activeElement;
+
+    const tipo = opts.tipo || 'info';
+    const campos = opts.campos || [];
+    const overlay = document.createElement('div');
+    overlay.className = `qdlg-overlay qdlg-${tipo}`;
+    overlay.innerHTML = `
+      <div class="qdlg-box" role="dialog" aria-modal="true">
+        <div class="qdlg-head">
+          <div class="qdlg-icon">${QDLG_ICONOS[tipo] || QDLG_ICONOS.info}</div>
+          <div>
+            <div class="qdlg-title">${qdlgEscapar(opts.titulo || QDLG_TITULOS[tipo] || 'Aviso')}</div>
+            <div class="qdlg-sub">QUBIRA ODACL • Legal</div>
+          </div>
+        </div>
+        <div class="qdlg-body">
+          ${opts.mensaje ? qdlgCuerpoHtml(opts.mensaje) : ''}
+          ${campos.map((c, i) => `
+            <div class="qdlg-field">
+              <label for="qdlg-campo-${i}">${qdlgEscapar(c.label)}</label>
+              <input id="qdlg-campo-${i}" type="${c.tipo || 'text'}" value="${qdlgEscapar(c.valor ?? '')}" ${c.tipo === 'number' ? 'min="1" max="50"' : ''}>
+            </div>`).join('')}
+        </div>
+        <div class="qdlg-foot">
+          ${opts.cancelar ? `<button type="button" class="btn btn-outline" data-accion="cancelar">${qdlgEscapar(opts.cancelar)}</button>` : ''}
+          <button type="button" class="btn ${opts.peligro ? 'btn-danger' : 'btn-gold'}" data-accion="aceptar">${qdlgEscapar(opts.aceptar || 'Aceptar')}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    const inputs = Array.from(overlay.querySelectorAll('input'));
+    const cerrar = (aceptado) => {
+      document.removeEventListener('keydown', onKey, true);
+      const valores = inputs.map(inp => inp.value);
+      overlay.remove();
+      if (rangoGuardado) {
+        try {
+          const host = rangoGuardado.startContainer.nodeType === 1 ? rangoGuardado.startContainer : rangoGuardado.startContainer.parentElement;
+          const editable = host && host.closest('[contenteditable="true"]');
+          if (editable) editable.focus({ preventScroll: true });
+          const s2 = window.getSelection();
+          s2.removeAllRanges();
+          s2.addRange(rangoGuardado);
+        } catch (e) {}
+      } else if (focoPrevio && focoPrevio.focus) {
+        try { focoPrevio.focus({ preventScroll: true }); } catch (e) {}
+      }
+      resolve({ aceptado, valores });
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); cerrar(false); }
+      else if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); cerrar(true); }
+    };
+    document.addEventListener('keydown', onKey, true);
+    overlay.addEventListener('click', (e) => {
+      const accion = e.target.closest('[data-accion]')?.dataset.accion;
+      if (accion) cerrar(accion === 'aceptar');
+      else if (e.target === overlay && opts.cancelar) cerrar(false);
+    });
+    setTimeout(() => {
+      const primero = inputs[0] || overlay.querySelector('[data-accion="aceptar"]');
+      primero.focus();
+      if (inputs[0]) inputs[0].select();
+    }, 30);
+  });
+}
+
+function qAlert(mensaje, opts = {}) {
+  const tipo = opts.tipo || qdlgTipoDesdeTexto(mensaje);
+  return qDialogo({ tipo, mensaje, titulo: opts.titulo, aceptar: 'Aceptar' });
+}
+
+async function qConfirm(mensaje, opts = {}) {
+  const r = await qDialogo({
+    tipo: opts.tipo || 'question', mensaje, titulo: opts.titulo,
+    aceptar: opts.aceptar || 'Confirmar', cancelar: 'Cancelar', peligro: !!opts.peligro
+  });
+  return r.aceptado;
+}
+
+// campos: [{label, valor, tipo}] → devuelve array de valores, o null si se cancela
+async function qPrompt(titulo, campos, opts = {}) {
+  const r = await qDialogo({
+    tipo: opts.tipo || 'info', titulo, mensaje: opts.mensaje, campos,
+    aceptar: opts.aceptar || 'Insertar', cancelar: 'Cancelar'
+  });
+  return r.aceptado ? r.valores : null;
+}
+
+// Cualquier qAlert() restante usa el diseño del sistema
+window.alert = (mensaje) => { qAlert(mensaje); };
+
 // ── BARRA LATERAL: reducir a solo íconos (igual que en ADG) ──
 (function initSidebarCollapse() {
   if (localStorage.getItem('odacl_sidebar_collapsed') === '1') {
@@ -3354,8 +3548,8 @@ function abrirModeloContratoModal() {
 function copiarContratoCompleto() {
   const texto = CLAUSULAS_MODELO_OFICIAL.map(c => `CLÁUSULA ${c.num} — ${c.titulo}\n${c.contenido}\n`).join('\n');
   navigator.clipboard.writeText(`CONTRATO OFICIAL DE DESARROLLO DE SOFTWARE - QUBIRA S.A.C.\n\n` + texto)
-    .then(() => alert('✓ Contrato completo copiado al portapapeles exitosamente.'))
-    .catch(() => alert('No se pudo copiar el contrato.'));
+    .then(() => qAlert('✓ Contrato completo copiado al portapapeles exitosamente.'))
+    .catch(() => qAlert('No se pudo copiar el contrato.'));
 }
 
 /* ============================================================
@@ -3447,7 +3641,7 @@ function guardarNuevaConsulta(e) {
 
   renderConsultas();
   cerrarModal('modal-nueva-consulta');
-  alert(`✓ Consulta legal ${nuevoRadicado} radicada con éxito.`);
+  qAlert(`✓ Consulta legal ${nuevoRadicado} radicada con éxito.`);
 }
 
 function abrirModalNuevoContrato() {
@@ -3479,7 +3673,7 @@ function guardarNuevoContrato(e) {
 
   renderContratos();
   cerrarModal('modal-nuevo-contrato');
-  alert(`✓ Contrato ${codigo} incorporado al inventario corporativo.`);
+  qAlert(`✓ Contrato ${codigo} incorporado al inventario corporativo.`);
 }
 
 /* ============================================================
@@ -3553,8 +3747,8 @@ function copiarPolitica(tipo) {
   const elem = document.getElementById('pol-' + tipo);
   if (!elem) return;
   navigator.clipboard.writeText(elem.innerText)
-    .then(() => alert('✓ Texto de política corporativa copiado al portapapeles.'))
-    .catch(() => alert('No se pudo copiar.'));
+    .then(() => qAlert('✓ Texto de política corporativa copiado al portapapeles.'))
+    .catch(() => qAlert('No se pudo copiar.'));
 }
 
 /* ============================================================
@@ -5332,7 +5526,7 @@ function cambiarMayusculasMinusculas(modo) {
   const range = sel.getRangeAt(0);
   const text = range.toString();
   if (!text) {
-    alert('Seleccione primero el texto que desea cambiar a mayúsculas/minúsculas.');
+    qAlert('Seleccione primero el texto que desea cambiar a mayúsculas/minúsculas.');
     return;
   }
 
@@ -5537,7 +5731,7 @@ function confirmarInsertarImagenWord() {
   const urlVal = document.getElementById('word-img-url')?.value.trim() || '';
   const src = imagenCargadaBase64 || urlVal;
   if (!src) {
-    alert('Por favor seleccione una imagen desde su equipo o ingrese una URL válida.');
+    qAlert('Por favor seleccione una imagen desde su equipo o ingrese una URL válida.');
     return;
   }
   const widthVal = document.getElementById('word-img-width')?.value || '50%';
@@ -5886,7 +6080,7 @@ function activarCopiarFormato() {
   }
   const sel = window.getSelection();
   if (!sel || !sel.rangeCount || sel.isCollapsed) {
-    alert('Seleccione primero el texto cuyo estilo desea duplicar (Fuente, tamaño, color, negrita, alineación).');
+    qAlert('Seleccione primero el texto cuyo estilo desea duplicar (Fuente, tamaño, color, negrita, alineación).');
     return;
   }
   const parent = sel.anchorNode.nodeType === 3 ? sel.anchorNode.parentElement : sel.anchorNode;
@@ -6001,7 +6195,7 @@ function confirmarInsertarEnlace() {
   const text = document.getElementById('link-text-input')?.value.trim() || 'Enlace Legal';
   let url = document.getElementById('link-url-input')?.value.trim() || '';
   if (!url) {
-    alert('Por favor ingrese la dirección URL o enlace.');
+    qAlert('Por favor ingrese la dirección URL o enlace.');
     return;
   }
   if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('#')) {
@@ -6071,7 +6265,7 @@ function insertarSelloValidacionDigital() {
 }
 
 // ── NOTA AL PIE DE PÁGINA (FOOTNOTE LEGAL) ──
-function insertarNotaAlPieLegal() {
+async function insertarNotaAlPieLegal() {
   const activeContent = obtenerPaginaActiva();
   if (!activeContent) return;
   const sheet = activeContent.closest('.a4-page-sheet');
@@ -6085,7 +6279,10 @@ function insertarNotaAlPieLegal() {
   }
 
   const currentCount = sheet.querySelectorAll('.word-footnote-item').length + 1;
-  const textoNota = prompt(`Ingrese el texto para la Nota al Pie [${currentCount}]:`, `Ley Aplicable del Código Civil Peruano y jurisprudencia vinculante.`);
+  const rNota = await qPrompt(`Nota al pie [${currentCount}]`, [
+    { label: 'Texto de la nota al pie', valor: 'Ley Aplicable del Código Civil Peruano y jurisprudencia vinculante.' }
+  ]);
+  const textoNota = rNota && rNota[0].trim();
   if (!textoNota) return;
 
   activeContent.focus();
@@ -6102,7 +6299,7 @@ function insertarNotaAlPieLegal() {
 }
 
 // ── GENERADOR SECUENCIAL AUTOMÁTICO DE CLÁUSULAS CONTRACTUALES ──
-function insertarClausulaLegalSiguiente() {
+async function insertarClausulaLegalSiguiente() {
   const ordinals = [
     'PRIMERA', 'SEGUNDA', 'TERCERA', 'CUARTA', 'QUINTA', 'SEXTA', 'SÉPTIMA',
     'OCTAVA', 'NOVENA', 'DÉCIMA', 'DÉCIMA PRIMERA', 'DÉCIMA SEGUNDA', 'DÉCIMA TERCERA',
@@ -6121,10 +6318,14 @@ function insertarClausulaLegalSiguiente() {
   }
   const ordinalSugerido = ordinals[nextIndex] || `CLÁUSULA ${nextIndex + 1}`;
 
-  const numero = prompt('Número u ordinal de la cláusula:', ordinalSugerido);
+  const rClaus = await qPrompt('Insertar cláusula', [
+    { label: 'Número u ordinal de la cláusula', valor: ordinalSugerido },
+    { label: 'Título o materia (Ej: CONFIDENCIALIDAD Y NO COMPETENCIA)', valor: 'OBLIGACIONES DE LAS PARTES' }
+  ]);
+  if (!rClaus) return;
+  const numero = rClaus[0].trim();
+  const titulo = rClaus[1];
   if (!numero) return;
-  const titulo = prompt('Título o materia de la cláusula (Ej: CONFIDENCIALIDAD Y NO COMPETENCIA):', 'OBLIGACIONES DE LAS PARTES');
-  if (titulo === null) return;
 
   const activeContent = obtenerPaginaActiva();
   if (activeContent) {
@@ -6192,7 +6393,7 @@ function toggleModoRevisionLegal() {
       btn.style.borderColor = '#f59e0b';
     }
     if (ws) ws.classList.add('review-mode-active');
-    alert('Modo Revisión Legal Activado:\nLas ediciones contarán con resaltado y trazabilidad de cambios contractuales.');
+    qAlert('Modo Revisión Legal Activado:\nLas ediciones contarán con resaltado y trazabilidad de cambios contractuales.');
   } else {
     if (btn) {
       btn.classList.remove('active');
@@ -6527,10 +6728,14 @@ function insertarCuadroFirmas() {
   repaginarDocumentoCompleto();
 }
 
-function insertarClausulaLegal() {
-  const numClausula = prompt('Ingrese el número o nombre de la cláusula (Ej. DÉCIMA PRIMERA):', 'CLÁUSULA SIGUIENTE');
+async function insertarClausulaLegal() {
+  const rClaus = await qPrompt('Insertar cláusula', [
+    { label: 'Número o nombre de la cláusula (Ej. DÉCIMA PRIMERA)', valor: 'CLÁUSULA SIGUIENTE' },
+    { label: 'Título de la cláusula (Ej. PENALIDADES POR INCUMPLIMIENTO)', valor: 'OBLIGACIONES ESPECÍFICAS' }
+  ]);
+  const numClausula = rClaus && rClaus[0].trim();
   if (!numClausula) return;
-  const tituloClausula = prompt('Título de la cláusula (Ej. PENALIDADES POR INCUMPLIMIENTO):', 'OBLIGACIONES ESPECÍFICAS');
+  const tituloClausula = rClaus[1];
   const clausulaHtml = `
     <p><strong>${numClausula.toUpperCase()} — ${(tituloClausula || '').toUpperCase()}:</strong> Las partes acuerdan expresamente que...</p>
   `;
@@ -6554,9 +6759,14 @@ function insertarFechaLugar() {
   }
 }
 
-function insertarTablaWord() {
-  const filas = parseInt(prompt('Número de filas:', '3')) || 3;
-  const cols = parseInt(prompt('Número de columnas:', '3')) || 3;
+async function insertarTablaWord() {
+  const rTabla = await qPrompt('Insertar tabla', [
+    { label: 'Número de filas', valor: '3', tipo: 'number' },
+    { label: 'Número de columnas', valor: '3', tipo: 'number' }
+  ]);
+  if (!rTabla) return;
+  const filas = Math.min(50, parseInt(rTabla[0]) || 3);
+  const cols = Math.min(20, parseInt(rTabla[1]) || 3);
   let tablaHtml = '<table style="border-collapse:collapse; width:100%; margin:16px 0;">';
   for (let r = 0; r < filas; r++) {
     tablaHtml += '<tr>';
@@ -6743,7 +6953,7 @@ async function guardarEnCloudinary() {
   statusElem.style.color = '#6ee7b7';
 
   renderCloudDocuments();
-  alert(`✓ Documento respaldado exitosamente en Cloudinary:\n\nTítulo: ${savedDoc.titulo}\nTipo: ${savedDoc.tipo_documento}\nVersión: v${savedDoc.version}\nURL Cloudinary: ${savedDoc.cloudinary_url}`);
+  qAlert(`✓ Documento respaldado exitosamente en Cloudinary:\n\nTítulo: ${savedDoc.titulo}\nTipo: ${savedDoc.tipo_documento}\nVersión: v${savedDoc.version}\nURL Cloudinary: ${savedDoc.cloudinary_url}`, { titulo: 'Respaldo en la nube completado' });
 }
 
 // Exportar a Microsoft Word (.doc) respetando las hojas A4 y formato oficial Word MSO
@@ -7121,12 +7331,12 @@ function copiarContenidoWord() {
   });
 
   navigator.clipboard.writeText(fullText.trim())
-    .then(() => alert('✓ Contenido de todas las páginas A4 copiado al portapapeles con éxito.'))
-    .catch(() => alert('No se pudo copiar el contenido.'));
+    .then(() => qAlert('✓ Contenido de todas las páginas A4 copiado al portapapeles con éxito.'))
+    .catch(() => qAlert('No se pudo copiar el contenido.'));
 }
 
-function crearDocumentoEnBlanco() {
-  if (confirm('¿Desea crear un nuevo documento en blanco? Los cambios no guardados se perderán.')) {
+async function crearDocumentoEnBlanco() {
+  if (await qConfirm('¿Desea crear un nuevo documento en blanco?\nLos cambios no guardados se perderán.', { titulo: 'Nuevo documento', tipo: 'warning', aceptar: 'Crear en blanco' })) {
     cargarPlantillaSeleccionada('en_blanco');
   }
 }
@@ -7203,8 +7413,8 @@ function descargarWordDesdeItem(docId) {
   descargarDocumentoWord();
 }
 
-function eliminarDocumentoNube(docId) {
-  if (!confirm('¿Confirma que desea eliminar este documento del inventario cloud?')) return;
+async function eliminarDocumentoNube(docId) {
+  if (!(await qConfirm('¿Confirma que desea eliminar este documento del inventario cloud?\nEsta acción no se puede deshacer.', { titulo: 'Eliminar documento', tipo: 'error', aceptar: 'Eliminar', peligro: true }))) return;
   let docs = JSON.parse(localStorage.getItem('odacl_cloud_documents') || '[]');
   docs = docs.filter(d => d.id !== docId);
   localStorage.setItem('odacl_cloud_documents', JSON.stringify(docs));
