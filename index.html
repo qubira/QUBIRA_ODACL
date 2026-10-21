@@ -4519,6 +4519,13 @@ function conectarEventosHoja(sheetEl) {
       return;
     }
 
+    // Ctrl+B / I / U con una selección que abarca varias hojas
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && ['b', 'i', 'u'].includes(e.key.toLowerCase()) && seleccionMultiHoja()) {
+      e.preventDefault();
+      ejecutarFormatoWord({ b: 'bold', i: 'italic', u: 'underline' }[e.key.toLowerCase()]);
+      return;
+    }
+
     // Selección que abarca varias hojas A4: borrar solo el cuerpo de cada hoja
     const escribeTexto = e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey;
     if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Enter' || escribeTexto) {
@@ -5930,28 +5937,55 @@ function cambiarPestanaRibbon(tabId) {
 }
 
 // ── CAMBIO DE MAYÚSCULAS / MINÚSCULAS (Aa) ──
+// Convierte mayúsculas/minúsculas DENTRO de los nodos de texto seleccionados.
+// Antes reemplazaba la selección por texto plano: perdía negritas y, con una
+// selección entre hojas, podía volcar todo el texto en la hoja 1.
+function transformarMayusculasEnRango(range, modo, estado) {
+  const raiz = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentNode;
+  const w = document.createTreeWalker(raiz, NodeFilter.SHOW_TEXT);
+  const nodos = [];
+  let t;
+  while ((t = w.nextNode())) if (range.intersectsNode(t)) nodos.push(t);
+  const esLetra = ch => /\p{L}/u.test(ch);
+  nodos.forEach(n => {
+    const ini = n === range.startContainer ? range.startOffset : 0;
+    const fin = n === range.endContainer ? range.endOffset : n.length;
+    if (fin <= ini) return;
+    const txt = n.nodeValue;
+    let out = '';
+    for (const ch of txt.slice(ini, fin)) {
+      let c = ch;
+      if (modo === 'mayusculas') c = ch.toUpperCase();
+      else if (modo === 'minusculas') c = ch.toLowerCase();
+      else if (modo === 'oracion') {
+        c = (!estado.primeraHecha && esLetra(ch)) ? ch.toUpperCase() : ch.toLowerCase();
+        if (esLetra(ch)) estado.primeraHecha = true;
+      } else if (modo === 'capitalizar') {
+        c = esLetra(ch) && !esLetra(estado.previo) ? ch.toUpperCase() : ch;
+      }
+      estado.previo = ch;
+      out += c;
+    }
+    n.nodeValue = txt.slice(0, ini) + out + txt.slice(fin);
+  });
+}
+
 function cambiarMayusculasMinusculas(modo) {
   const sel = window.getSelection();
-  if (!sel || !sel.rangeCount) return;
-  const range = sel.getRangeAt(0);
-  const text = range.toString();
-  if (!text) {
+  if (!sel || !sel.rangeCount || !sel.getRangeAt(0).toString().trim()) {
     qAlert('Seleccione primero el texto que desea cambiar a mayúsculas/minúsculas.');
     return;
   }
-
-  let converted = text;
-  if (modo === 'mayusculas') {
-    converted = text.toUpperCase();
-  } else if (modo === 'minusculas') {
-    converted = text.toLowerCase();
-  } else if (modo === 'oracion') {
-    converted = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-  } else if (modo === 'capitalizar') {
-    converted = text.replace(/\b\w/g, l => l.toUpperCase());
+  const range = sel.getRangeAt(0);
+  const estado = { primeraHecha: false, previo: ' ' };
+  const multi = seleccionMultiHoja();
+  if (multi) {
+    aplicarPorHojas(multi, (content, sub) => transformarMayusculasEnRango(sub, modo, estado));
+    return;
   }
-
-  document.execCommand('insertText', false, converted);
+  const guardada = guardarSeleccionGlobal(range);
+  transformarMayusculasEnRango(range, modo, estado);
+  restaurarSeleccionGlobal(guardada);
   const activeContent = obtenerPaginaActiva();
   if (activeContent) manejarInputEnPagina(activeContent);
 }
@@ -6530,7 +6564,107 @@ function cargarPlantillaSeleccionada(key) {
 }
 
 // Formateo de texto estilo Microsoft Word
+// ── FORMATO SOBRE UNA SELECCIÓN QUE ABARCA VARIAS HOJAS ──
+// Cada hoja es una zona editable independiente y execCommand solo actúa en
+// una: con Ctrl+A el formato se aplicaba únicamente a la hoja 1. Se aplica
+// hoja por hoja y luego se restaura la selección completa.
+const COMANDOS_ALTERNANTES = new Set(['bold', 'italic', 'underline', 'strikeThrough', 'superscript', 'subscript', 'insertOrderedList', 'insertUnorderedList']);
+
+// Posición de texto global (todas las hojas) de un punto del documento
+function offsetGlobalDePunto(nodo, off) {
+  const contents = Array.from(document.querySelectorAll('#a4-pages-container .a4-page-content'));
+  let total = 0;
+  for (const c of contents) {
+    if (c === nodo || c.contains(nodo)) {
+      const r = document.createRange();
+      r.setStart(c, 0);
+      try { r.setEnd(nodo, off); } catch (e) { r.setEnd(c, c.childNodes.length); }
+      return total + r.toString().length;
+    }
+    total += c.textContent.length;
+  }
+  return total;
+}
+
+function puntoDesdeOffsetGlobal(objetivo, haciaAdelante) {
+  const contents = Array.from(document.querySelectorAll('#a4-pages-container .a4-page-content'));
+  let resto = objetivo, ultimo = null;
+  for (const c of contents) {
+    const w = document.createTreeWalker(c, NodeFilter.SHOW_TEXT);
+    let t;
+    while ((t = w.nextNode())) {
+      ultimo = t;
+      if (haciaAdelante ? resto < t.length : resto <= t.length) return { node: t, offset: resto };
+      resto -= t.length;
+    }
+  }
+  if (ultimo) return { node: ultimo, offset: ultimo.length };
+  const c0 = contents[0];
+  return c0 ? { node: c0, offset: 0 } : null;
+}
+
+function guardarSeleccionGlobal(range) {
+  return { ini: offsetGlobalDePunto(range.startContainer, range.startOffset), fin: offsetGlobalDePunto(range.endContainer, range.endOffset) };
+}
+
+function restaurarSeleccionGlobal(g) {
+  if (!g) return;
+  const a = puntoDesdeOffsetGlobal(g.ini, true);
+  const b = puntoDesdeOffsetGlobal(g.fin, false);
+  if (!a || !b) return;
+  const r = document.createRange();
+  try { r.setStart(a.node, a.offset); r.setEnd(b.node, b.offset); } catch (e) { return; }
+  const host = (a.node.nodeType === 1 ? a.node : a.node.parentElement)?.closest('.a4-page-content');
+  if (host) host.focus({ preventScroll: true });
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(r);
+}
+
+// Ejecuta una acción sobre la parte de la selección de cada hoja y reacomoda
+function aplicarPorHojas(range, accion) {
+  const guardada = guardarSeleccionGlobal(range);
+  const partes = subrangosPorHoja(range);
+  const sel = window.getSelection();
+  partes.forEach(({ content, sub }, i) => {
+    content.focus({ preventScroll: true });
+    sel.removeAllRanges();
+    sel.addRange(sub);
+    accion(content, sub, i);
+  });
+  reajustarDocumentoCompleto();
+  restaurarSeleccionGlobal(guardada);
+  actualizarEstadisticasWord();
+  actualizarEstadosRibbonActivo();
+  const cloudStatus = document.getElementById('word-cloud-status');
+  if (cloudStatus) { cloudStatus.innerHTML = '● Cambios sin guardar en Cloudinary'; cloudStatus.style.color = '#fbbf24'; }
+}
+
+function ejecutarFormatoMultiHoja(command, value, range) {
+  const partes = subrangosPorHoja(range);
+  // Negrita, cursiva…: si TODO ya lo tiene se quita, si no se pone (como Word)
+  let objetivo = null;
+  if (COMANDOS_ALTERNANTES.has(command)) {
+    const sel = window.getSelection();
+    objetivo = !partes.every(({ content, sub }) => {
+      content.focus({ preventScroll: true });
+      sel.removeAllRanges();
+      sel.addRange(sub);
+      return document.queryCommandState(command);
+    });
+  }
+  aplicarPorHojas(range, () => {
+    if (objetivo !== null && document.queryCommandState(command) === objetivo) return;
+    document.execCommand(command, false, value);
+  });
+}
+
 function ejecutarFormatoWord(command, value = null) {
+  const multi = seleccionMultiHoja();
+  if (multi) {
+    ejecutarFormatoMultiHoja(command, value, multi);
+    return;
+  }
   const activeContent = obtenerPaginaActiva();
   if (activeContent) activeContent.focus();
   document.execCommand(command, false, value);
@@ -6743,7 +6877,7 @@ function aplicarFormatoCopiado() {
 // ── GALERÍA DE ESTILOS RÁPIDOS (NORMAL, TÍTULOS APA 7, CLÁUSULA) ──
 function aplicarEstiloRapido(estilo) {
   const activeContent = obtenerPaginaActiva();
-  if (activeContent) activeContent.focus();
+  if (activeContent && !seleccionMultiHoja() && document.activeElement !== activeContent) activeContent.focus();
 
   if (estilo === 'normal') {
     ejecutarFormatoWord('formatBlock', '<p>');
