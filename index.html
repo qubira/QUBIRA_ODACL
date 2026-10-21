@@ -4483,22 +4483,14 @@ function conectarEventosHoja(sheetEl) {
       return;
     }
 
-    // Borrado limpio cuando la selección activa abarca múltiples hojas A4
-    if (e.key === 'Backspace' || e.key === 'Delete') {
-      const sel = window.getSelection();
-      if (sel && !sel.isCollapsed && sel.rangeCount > 0) {
-        const range = sel.getRangeAt(0);
-        const container = document.getElementById('a4-pages-container');
-        if (container && container.querySelectorAll('.a4-page-content').length > 1) {
-          const startContent = range.startContainer.nodeType === 3 ? range.startContainer.parentElement?.closest('.a4-page-content') : range.startContainer?.closest('.a4-page-content');
-          const endContent = range.endContainer.nodeType === 3 ? range.endContainer.parentElement?.closest('.a4-page-content') : range.endContainer?.closest('.a4-page-content');
-          if (startContent && endContent && startContent !== endContent) {
-            e.preventDefault();
-            range.deleteContents();
-            reflujarDocumento(0);
-            return;
-          }
-        }
+    // Selección que abarca varias hojas A4: borrar solo el cuerpo de cada hoja
+    const escribeTexto = e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey;
+    if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'Enter' || escribeTexto) {
+      const multi = seleccionMultiHoja();
+      if (multi) {
+        borrarSeleccionMultiHoja(multi);
+        // Backspace/Supr terminan aquí; una letra o Enter sigue su curso normal en el cursor
+        if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); return; }
       }
     }
 
@@ -4546,7 +4538,9 @@ function conectarEventosHoja(sheetEl) {
     if (limpio) {
       e.preventDefault();
       content._pegando = true;
-      document.execCommand('insertHTML', false, limpio);
+      if (!insertarHtmlEnCursor(content, limpio)) {
+        document.execCommand('insertHTML', false, limpio);
+      }
     }
     // Repaginar todo tras el pegado: los párrafos largos se parten por línea
     requestAnimationFrame(() => {
@@ -5036,7 +5030,18 @@ function dividirElementoDesbordante(el, content, nextContent, targetH, allowFall
      con la hoja en su posición real. */
   content.scrollTop = 0;
   const contentRect = content.getBoundingClientRect();
-  const maxBottom = contentRect.top + content.clientTop + targetH;
+  // El zoom del documento usa transform: scale(); las medidas en pantalla
+  // vienen escaladas y targetH no, así que se convierte a la misma escala.
+  const escala = content.offsetHeight ? (contentRect.height / content.offsetHeight) || 1 : 1;
+  const maxBottom = contentRect.top + (content.clientTop + targetH) * escala;
+
+  /* Los rectángulos de un carácter abarcan solo el glifo; con interlineado
+     doble la caja de la línea es más alta. Se suma el medio interlineado para
+     medir la línea completa (si no, una línea quedaba unos px fuera de la hoja). */
+  const medioInterlineado = (node, rect) => {
+    const lh = parseFloat(getComputedStyle(node.parentElement || el).lineHeight);
+    return isNaN(lh) ? 0 : Math.max(0, (lh * escala - rect.height) / 2);
+  };
   const range = document.createRange();
 
   let splitNode = null;
@@ -5049,7 +5054,11 @@ function dividirElementoDesbordante(el, content, nextContent, targetH, allowFall
       range.setStart(node, 0);
       range.setEnd(node, len);
       const rect = range.getBoundingClientRect();
-      if (rect.bottom > maxBottom + 1) {
+      // Altura de un glifo (1 carácter) para calcular el interlineado de este nodo
+      const r1 = document.createRange();
+      r1.setStart(node, 0); r1.setEnd(node, Math.min(1, len));
+      const finalLinea = rect.bottom + medioInterlineado(node, r1.getBoundingClientRect());
+      if (finalLinea > maxBottom + 1) {
         // El desborde ocurre dentro de este nodo: buscar el carácter que cruza maxBottom
         let low = 0;
         let high = len;
@@ -5060,7 +5069,7 @@ function dividirElementoDesbordante(el, content, nextContent, targetH, allowFall
           range.setStart(node, mid);
           range.setEnd(node, endChar);
           const charRect = range.getBoundingClientRect();
-          if (charRect.bottom > maxBottom + 1) {
+          if (charRect.bottom + medioInterlineado(node, charRect) > maxBottom + 1) {
             foundChar = mid;
             high = mid - 1;
           } else {
@@ -5549,6 +5558,160 @@ function repaginarDocumentoCompleto() {
   resetearScrollHojas();
   actualizarNumerosDePagina();
   actualizarEstadisticasWord();
+}
+
+// ── PEGADO: inserta HTML ya limpio en el cursor, partiendo el párrafo actual.
+//    (execCommand('insertHTML') de Chrome añade <span style="font-size:..">
+//    al texto pegado, que luego impedía cambiar el formato del documento) ──
+// Si el cursor quedó entre bloques (directamente en la hoja), moverlo al
+// final del bloque anterior (o al inicio del siguiente)
+function ajustarCursorDentroDeBloque(content) {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  if (range.startContainer !== content) return;
+  const hijos = content.childNodes;
+  let prev = hijos[range.startOffset - 1];
+  while (prev && prev.nodeType !== 1) prev = prev.previousSibling;
+  let next = hijos[range.startOffset];
+  while (next && next.nodeType !== 1) next = next.nextSibling;
+  const r = document.createRange();
+  if (prev) r.setStart(prev, prev.childNodes.length);
+  else if (next) r.setStart(next, 0);
+  else return;
+  r.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(r);
+}
+
+function asegurarFocoEn(content) {
+  if (document.activeElement !== content) content.focus({ preventScroll: true });
+}
+
+// Inserta bloques (cláusula, tabla) DESPUÉS del párrafo donde está el cursor;
+// si ese párrafo está vacío, lo reemplaza. Deja el cursor listo para seguir escribiendo.
+function insertarBloqueTrasCursor(content, html) {
+  asegurarFocoEn(content);
+  ajustarCursorDentroDeBloque(content);
+  const sel = window.getSelection();
+  const tpl = document.createElement('template');
+  tpl.innerHTML = html.trim();
+  const nodos = Array.from(tpl.content.childNodes).filter(n => n.nodeType === 1);
+  if (!nodos.length) return;
+
+  let bloque = null;
+  if (sel && sel.rangeCount && content.contains(sel.getRangeAt(0).startContainer)) {
+    bloque = sel.getRangeAt(0).startContainer;
+    while (bloque && bloque.parentNode !== content) bloque = bloque.parentNode;
+  }
+  const vacio = bloque && bloque.nodeType === 1 && !bloque.textContent.trim() && !bloque.querySelector('img, table, hr');
+  if (bloque && bloque.nodeType === 1) {
+    let ref = bloque;
+    nodos.forEach(n => { ref.after(n); ref = n; });
+    if (vacio) bloque.remove();
+  } else {
+    nodos.forEach(n => content.appendChild(n));
+  }
+
+  let ultimo = nodos[nodos.length - 1];
+  // Tras una tabla, dejar una línea vacía debajo para seguir escribiendo
+  if (ultimo.tagName === 'TABLE') {
+    const pNuevo = document.createElement('p');
+    pNuevo.appendChild(document.createElement('br'));
+    ultimo.after(pNuevo);
+    ultimo = pNuevo;
+  }
+  const r = document.createRange();
+  if (ultimo.tagName === 'P' && ultimo.firstChild && ultimo.firstChild.nodeName === 'BR' && ultimo.childNodes.length === 1) r.setStart(ultimo, 0);
+  else r.setStart(ultimo, ultimo.childNodes.length);
+  r.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(r);
+}
+
+function insertarHtmlEnCursor(content, html) {
+  ajustarCursorDentroDeBloque(content);
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return false;
+  const range = sel.getRangeAt(0);
+  if (!content.contains(range.startContainer)) return false;
+  if (!range.collapsed) range.deleteContents();
+
+  const tpl = document.createElement('template');
+  tpl.innerHTML = html;
+  const bloques = Array.from(tpl.content.childNodes).filter(n => n.nodeType === 1 || n.nodeValue.trim());
+  if (!bloques.length) return true;
+  const esP = n => n.nodeType === 1 && n.tagName === 'P';
+  const sinTexto = el => !el.textContent.trim() && !el.querySelector('img, table, hr');
+  const quitarBrSueltos = el => { if (sinTexto(el)) el.innerHTML = ''; };
+
+  let bloque = range.startContainer;
+  while (bloque && bloque.parentNode !== content) bloque = bloque.parentNode;
+  const colocar = (nodo, off) => {
+    const r = document.createRange();
+    r.setStart(nodo, off); r.collapse(true);
+    sel.removeAllRanges(); sel.addRange(r);
+  };
+
+  // Cursor directamente en la hoja (sin párrafo) → insertar bloques tal cual
+  if (!bloque || bloque.nodeType !== 1 || !/^(P|H[1-6]|LI|DIV|BLOCKQUOTE)$/.test(bloque.tagName)) {
+    const ultimo = bloques[bloques.length - 1];
+    const frag = document.createDocumentFragment();
+    bloques.forEach(b => frag.appendChild(b));
+    range.insertNode(frag);
+    colocar(ultimo, ultimo.childNodes.length);
+    return true;
+  }
+
+  // Un solo párrafo pegado → se inserta en línea, dentro del párrafo actual
+  if (bloques.length === 1 && esP(bloques[0])) {
+    quitarBrSueltos(bloque);
+    const r2 = sel.getRangeAt(0);
+    if (!bloque.contains(r2.startContainer) && r2.startContainer !== bloque) colocar(bloque, bloque.childNodes.length);
+    const frag = document.createDocumentFragment();
+    while (bloques[0].firstChild) frag.appendChild(bloques[0].firstChild);
+    const ultimo = frag.lastChild;
+    sel.getRangeAt(0).insertNode(frag);
+    if (ultimo) {
+      if (ultimo.nodeType === Node.TEXT_NODE) colocar(ultimo, ultimo.length);
+      else colocar(ultimo.parentNode, Array.prototype.indexOf.call(ultimo.parentNode.childNodes, ultimo) + 1);
+    }
+    return true;
+  }
+
+  // Varios bloques → partir el párrafo actual en el cursor
+  const rCola = document.createRange();
+  rCola.setStart(range.startContainer, range.startOffset);
+  rCola.setEnd(bloque, bloque.childNodes.length);
+  const cola = bloque.cloneNode(false);
+  cola.removeAttribute('data-cont');
+  cola.removeAttribute('data-frag');
+  cola.removeAttribute('id');
+  cola.appendChild(rCola.extractContents());
+  quitarBrSueltos(bloque);
+
+  let resto = bloques.slice();
+  if (esP(resto[0])) {
+    while (resto[0].firstChild) bloque.appendChild(resto[0].firstChild);
+    resto = resto.slice(1);
+  }
+  let ref = bloque;
+  resto.forEach(b => { ref.after(b); ref = b; });
+
+  // El texto que estaba tras el cursor continúa al final de lo pegado
+  const tieneCola = !sinTexto(cola);
+  const destino = (resto.length && esP(ref)) ? ref : null;
+  if (tieneCola && destino) {
+    const punto = destino.childNodes.length;
+    while (cola.firstChild) destino.appendChild(cola.firstChild);
+    colocar(destino, punto);
+  } else if (tieneCola) {
+    ref.after(cola);
+    colocar(cola, 0);
+  } else {
+    colocar(ref, ref.childNodes.length);
+  }
+  return true;
 }
 
 // ── PEGADO: convertir el portapapeles en párrafos limpios y paginables ──
@@ -6164,6 +6327,109 @@ function inicializarSeleccionContinua() {
 }
 
 // ── MANEJO DE COPIA LIMPIA MULTI-HOJA ──
+// Partes de un rango que caen dentro del cuerpo (.a4-page-content) de cada hoja
+function subrangosPorHoja(range) {
+  const container = document.getElementById('a4-pages-container');
+  if (!container) return [];
+  const partes = [];
+  container.querySelectorAll('.a4-page-content').forEach(c => {
+    if (!range.intersectsNode(c)) return;
+    const sub = document.createRange();
+    sub.selectNodeContents(c);
+    if (range.compareBoundaryPoints(Range.START_TO_START, sub) > 0) sub.setStart(range.startContainer, range.startOffset);
+    if (range.compareBoundaryPoints(Range.END_TO_END, sub) < 0) sub.setEnd(range.endContainer, range.endOffset);
+    if (!sub.collapsed) partes.push({ content: c, sub });
+  });
+  return partes;
+}
+
+function datosPortapapelesHojas(range) {
+  const partes = subrangosPorHoja(range);
+  const html = [], text = [];
+  partes.forEach(({ sub }) => {
+    const div = document.createElement('div');
+    div.appendChild(sub.cloneContents());
+    html.push(div.innerHTML);
+    text.push(sub.toString());
+  });
+  const t = text.join('\n');
+  return t.trim() ? { text: t, html: html.join('') } : null;
+}
+
+// Selección actual si abarca más de una hoja (si no, null)
+function seleccionMultiHoja() {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || sel.isCollapsed) return null;
+  const range = sel.getRangeAt(0);
+  const container = document.getElementById('a4-pages-container');
+  if (!container || !container.contains(range.commonAncestorContainer)) return null;
+  const hojas = Array.from(container.querySelectorAll('.a4-page-content')).filter(c => range.intersectsNode(c));
+  return hojas.length > 1 ? range : null;
+}
+
+/* Borra una selección que cruza hojas SOLO dentro del cuerpo de cada hoja
+   (antes range.deleteContents() eliminaba también pies, encabezados, marca de
+   agua y hasta hojas completas) y une los párrafos de los extremos como Word. */
+function borrarSeleccionMultiHoja(range) {
+  const partes = subrangosPorHoja(range);
+  if (partes.length < 2) return false;
+  const container = document.getElementById('a4-pages-container');
+  const primera = partes[0], ultima = partes[partes.length - 1];
+  const bloqueEn = (content, nodo) => {
+    if (!content.contains(nodo) || nodo === content) return null;
+    let n = nodo;
+    while (n && n.parentNode !== content) n = n.parentNode;
+    return n && n.nodeType === 1 ? n : null;
+  };
+  const bloqueIni = bloqueEn(primera.content, primera.sub.startContainer);
+  const bloqueFin = bloqueEn(ultima.content, ultima.sub.endContainer);
+  const idxHoja = Array.from(container.querySelectorAll('.a4-page-content')).indexOf(primera.content);
+
+  for (let k = partes.length - 1; k >= 0; k--) partes[k].sub.deleteContents();
+
+  const unible = el => el && el.isConnected && /^(P|H[1-6]|LI|DIV|BLOCKQUOTE)$/.test(el.tagName) && !el.classList.contains('word-signature-block');
+  let caretNodo = null, caretOff = 0;
+  if (unible(bloqueIni)) {
+    caretNodo = bloqueIni;
+    caretOff = bloqueIni.childNodes.length;
+    if (unible(bloqueFin) && bloqueFin !== bloqueIni) {
+      while (bloqueFin.firstChild) bloqueIni.appendChild(bloqueFin.firstChild);
+      bloqueFin.remove();
+    }
+    if (!bloqueIni.textContent && !bloqueIni.querySelector('br, img')) {
+      bloqueIni.appendChild(document.createElement('br'));
+      caretOff = 0;
+    }
+  } else {
+    caretNodo = primera.content;
+    caretOff = primera.content.childNodes.length;
+  }
+
+  primera.content.focus({ preventScroll: true });
+  const r = document.createRange();
+  r.setStart(caretNodo, Math.min(caretOff, caretNodo.childNodes.length));
+  r.collapse(true);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(r);
+
+  reflujarDocumento(Math.max(0, idxHoja));
+  return true;
+}
+
+// Cortar (Ctrl+X) una selección que cruza hojas
+document.addEventListener('cut', (e) => {
+  const range = seleccionMultiHoja();
+  if (!range) return;
+  const datos = datosPortapapelesHojas(range);
+  if (datos && e.clipboardData) {
+    e.clipboardData.setData('text/plain', datos.text);
+    e.clipboardData.setData('text/html', datos.html);
+  }
+  e.preventDefault();
+  borrarSeleccionMultiHoja(range);
+});
+
 document.addEventListener('copy', (e) => {
   const sel = window.getSelection();
   if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
@@ -6178,23 +6444,10 @@ document.addEventListener('copy', (e) => {
     if (startEl && startEl.closest('.a4-page-header, .a4-page-footer')) return;
 
     // Tomar solo la parte del rango que cae dentro del cuerpo de cada hoja
-    const htmlParts = [];
-    const textParts = [];
-    container.querySelectorAll('.a4-page-content').forEach(c => {
-      if (!range.intersectsNode(c)) return;
-      const sub = document.createRange();
-      sub.selectNodeContents(c);
-      if (range.compareBoundaryPoints(Range.START_TO_START, sub) > 0) sub.setStart(range.startContainer, range.startOffset);
-      if (range.compareBoundaryPoints(Range.END_TO_END, sub) < 0) sub.setEnd(range.endContainer, range.endOffset);
-      const div = document.createElement('div');
-      div.appendChild(sub.cloneContents());
-      htmlParts.push(div.innerHTML);
-      textParts.push(sub.toString());
-    });
-    const selectedText = textParts.join('\n');
-    if (selectedText.trim()) {
-      e.clipboardData.setData('text/plain', selectedText);
-      e.clipboardData.setData('text/html', htmlParts.join(''));
+    const datos = datosPortapapelesHojas(range);
+    if (datos) {
+      e.clipboardData.setData('text/plain', datos.text);
+      e.clipboardData.setData('text/html', datos.html);
       e.preventDefault();
       mostrarNotificacionToast('📋 Texto de las hojas copiado al portapapeles');
     }
@@ -6467,13 +6720,6 @@ async function insertarNotaAlPieLegal() {
   const sheet = activeContent.closest('.a4-page-sheet');
   if (!sheet) return;
 
-  let footnotesSec = sheet.querySelector('.word-footnotes-section');
-  if (!footnotesSec) {
-    footnotesSec = document.createElement('div');
-    footnotesSec.className = 'word-footnotes-section';
-    activeContent.appendChild(footnotesSec);
-  }
-
   const currentCount = sheet.querySelectorAll('.word-footnote-item').length + 1;
   const rNota = await qPrompt(`Nota al pie [${currentCount}]`, [
     { label: 'Texto de la nota al pie', valor: 'Ley Aplicable del Código Civil Peruano y jurisprudencia vinculante.' }
@@ -6481,14 +6727,25 @@ async function insertarNotaAlPieLegal() {
   const textoNota = rNota && rNota[0].trim();
   if (!textoNota) return;
 
-  activeContent.focus();
-  const refHtml = `<sup class="word-footnote-ref" contenteditable="false" title="Nota al pie ${currentCount}: ${textoNota}">[${currentCount}]</sup>`;
-  document.execCommand('insertHTML', false, refHtml);
+  // Crear la sección de notas solo al confirmar (antes quedaba vacía al cancelar)
+  let footnotesSec = sheet.querySelector('.word-footnotes-section');
+  if (!footnotesSec) {
+    footnotesSec = document.createElement('div');
+    footnotesSec.className = 'word-footnotes-section';
+    activeContent.appendChild(footnotesSec);
+  }
+
+  asegurarFocoEn(activeContent);
+  const notaSegura = qdlgEscapar(textoNota);
+  const refHtml = `<p><sup class="word-footnote-ref" contenteditable="false" title="Nota al pie ${currentCount}: ${notaSegura}">[${currentCount}]</sup></p>`;
+  if (!insertarHtmlEnCursor(activeContent, refHtml)) {
+    document.execCommand('insertHTML', false, refHtml);
+  }
 
   const item = document.createElement('div');
   item.className = 'word-footnote-item';
   item.contentEditable = "true";
-  item.innerHTML = `<sup>${currentCount}</sup> ${textoNota}`;
+  item.innerHTML = `<sup>${currentCount}</sup> ${notaSegura}`;
   footnotesSec.appendChild(item);
 
   repaginarDocumentoCompleto();
@@ -6525,13 +6782,8 @@ async function insertarClausulaLegalSiguiente() {
 
   const activeContent = obtenerPaginaActiva();
   if (activeContent) {
-    activeContent.focus();
-    const html = `
-      <p style="text-align:justify; margin:12pt 0; text-indent:1.27cm;">
-        <strong>CLÁUSULA ${numero.toUpperCase()} — ${(titulo || '').toUpperCase()}:</strong> Las partes convienen de común acuerdo que...
-      </p>
-    `;
-    document.execCommand('insertHTML', false, html);
+    const html = `<p style="text-align:justify; margin:12pt 0; text-indent:1.27cm;"><strong>CLÁUSULA ${qdlgEscapar(numero.toUpperCase())} — ${qdlgEscapar((titulo || '').toUpperCase())}:</strong> Las partes convienen de común acuerdo que...</p>`;
+    insertarBloqueTrasCursor(activeContent, html);
     repaginarDocumentoCompleto();
   }
 }
@@ -6932,13 +7184,10 @@ async function insertarClausulaLegal() {
   const numClausula = rClaus && rClaus[0].trim();
   if (!numClausula) return;
   const tituloClausula = rClaus[1];
-  const clausulaHtml = `
-    <p><strong>${numClausula.toUpperCase()} — ${(tituloClausula || '').toUpperCase()}:</strong> Las partes acuerdan expresamente que...</p>
-  `;
+  const clausulaHtml = `<p><strong>${qdlgEscapar(numClausula.toUpperCase())} — ${qdlgEscapar((tituloClausula || '').toUpperCase())}:</strong> Las partes acuerdan expresamente que...</p>`;
   const activeContent = obtenerPaginaActiva();
   if (activeContent) {
-    activeContent.focus();
-    document.execCommand('insertHTML', false, clausulaHtml);
+    insertarBloqueTrasCursor(activeContent, clausulaHtml);
     repaginarDocumentoCompleto();
   }
 }
@@ -6976,8 +7225,7 @@ async function insertarTablaWord() {
   tablaHtml += '</table>';
   const activeContent = obtenerPaginaActiva();
   if (activeContent) {
-    activeContent.focus();
-    document.execCommand('insertHTML', false, tablaHtml);
+    insertarBloqueTrasCursor(activeContent, tablaHtml);
     repaginarDocumentoCompleto();
   }
 }
@@ -7045,9 +7293,7 @@ function abrirModalAtajosWord() {
 }
 
 // ── MOTOR DE AUTOGUARDADO EN SEGUNDO PLANO (CADA 30 SEGUNDOS) ──
-function iniciarAutoguardadoWord() {
-  if (autoSaveTimer) clearInterval(autoSaveTimer);
-  autoSaveTimer = setInterval(() => {
+function guardarAutoguardadoWord() {
     const title = document.getElementById('word-doc-title')?.value.trim() || 'Documento_Legal';
     const docType = document.getElementById('word-doc-type')?.value || 'Contrato Legal';
     const html = obtenerHtmlCompletoDocumento();
@@ -7067,7 +7313,34 @@ function iniciarAutoguardadoWord() {
       badge.textContent = `✓ Autoguardado local (${hora})`;
       badge.style.color = '#6ee7b7';
     }
-  }, 30000);
+}
+
+function iniciarAutoguardadoWord() {
+  if (autoSaveTimer) clearInterval(autoSaveTimer);
+  autoSaveTimer = setInterval(guardarAutoguardadoWord, 30000);
+  // Guardar también al cerrar/recargar la pestaña o al cambiar de ventana
+  window.addEventListener('beforeunload', guardarAutoguardadoWord);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') guardarAutoguardadoWord();
+  });
+}
+
+// Recupera el documento autoguardado (antes nunca se restauraba: al recargar
+// se cargaba siempre la plantilla por defecto y se perdía lo escrito)
+function restaurarAutoguardadoWord() {
+  let auto = null;
+  try { auto = JSON.parse(localStorage.getItem('odacl_word_autosave') || 'null'); } catch (e) {}
+  if (!auto || !auto.html || auto.html.length < 20) return false;
+  document.getElementById('word-doc-title').value = auto.titulo || 'Documento_Legal';
+  const tipoSel = document.getElementById('word-doc-type');
+  if (tipoSel && auto.tipo) tipoSel.value = auto.tipo;
+  switchDocSubView('editor');
+  setTimeout(() => {
+    cargarHtmlEnPaginasA4(auto.html);
+    const hora = auto.timestamp ? new Date(auto.timestamp).toLocaleString('es-PE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+    mostrarNotificacionToast(`↺ Documento recuperado del autoguardado ${hora}`);
+  }, 40);
+  return true;
 }
 
 // Guardar documento en la Nube (Cloudinary & Base de Datos PostgreSQL Neon)
@@ -7645,8 +7918,10 @@ function renderCatalogoPlantillas() {
 
 // Carga inicial del editor
 function initDocLegal() {
-  // Precargar con el contrato oficial de desarrollo de software
-  cargarPlantillaSeleccionada('desarrollo_software');
+  // Recuperar el último documento en edición; si no hay, precargar el contrato oficial
+  if (!restaurarAutoguardadoWord()) {
+    cargarPlantillaSeleccionada('desarrollo_software');
+  }
   renderCloudDocuments();
   renderCatalogoPlantillas();
   iniciarAutoguardadoWord();
