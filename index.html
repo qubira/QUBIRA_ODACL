@@ -522,6 +522,16 @@
       display: inline-flex; align-items: center; gap: 4px; background: #f8fafc;
       padding: 4px 7px; border-radius: 8px; border: 1px solid #e2e8f0;
     }
+    /* Grupos cuyos controles se aplican a todas las hojas del documento */
+    .word-tool-group.global { background: #eff6ff; border-color: #bfdbfe; }
+    .chip-global {
+      display: inline-flex; align-items: center; gap: 3px; white-space: nowrap;
+      font-size: 10px; font-weight: 800; letter-spacing: .3px; text-transform: uppercase;
+      color: #1d4ed8; background: #dbeafe; border: 1px solid #93c5fd;
+      padding: 2px 7px; border-radius: 999px; cursor: help;
+    }
+    .word-tool-group.global.aplicado { animation: globalFlash .9s ease; }
+    @keyframes globalFlash { 0% { box-shadow: 0 0 0 0 rgba(37,99,235,.55); } 100% { box-shadow: 0 0 0 10px rgba(37,99,235,0); } }
     .word-btn {
       width: 32px; height: 32px; border-radius: 6px; display: inline-flex;
       align-items: center; justify-content: center; font-size: 13px; font-weight: 700;
@@ -2229,9 +2239,10 @@
                       </select>
                     </div>
 
-                    <!-- Fuente y Tamaño -->
-                    <div class="word-tool-group">
-                      <select id="word-font-family" class="word-select" onchange="ejecutarFormatoWord('fontName', this.value)" title="Tipo de fuente">
+                    <!-- Fuente y Tamaño: se aplican a TODO el documento -->
+                    <div class="word-tool-group global">
+                      <span class="chip-global" title="Este control cambia TODAS las hojas del documento">🌐 Todo el documento</span>
+                      <select id="word-font-family" class="word-select" onchange="cambiarFuenteGlobal(this.value)" title="Tipo de fuente de todo el documento (todas las hojas)">
                         <option value="Times New Roman" selected>Times New Roman (APA 7)</option>
                         <option value="Arial">Arial (APA 7)</option>
                         <option value="Georgia">Georgia (APA 7)</option>
@@ -2239,7 +2250,7 @@
                         <option value="Courier New">Courier New</option>
                       </select>
 
-                      <select id="word-font-size" class="word-select" onchange="cambiarTamanoFuente(this.value)" title="Tamaño de fuente">
+                      <select id="word-font-size" class="word-select" onchange="cambiarTamanoFuente(this.value)" title="Tamaño de letra de todo el documento (todas las hojas)">
                         <option value="2">10 pt</option>
                         <option value="3" selected>12 pt (APA 7)</option>
                         <option value="4">14 pt</option>
@@ -2248,8 +2259,8 @@
                         <option value="7">32 pt</option>
                       </select>
 
-                      <button type="button" class="word-btn" onclick="aumentarTamanoFuente()" title="Aumentar tamaño de fuente (A▲)">A▲</button>
-                      <button type="button" class="word-btn" onclick="reducirTamanoFuente()" title="Disminuir tamaño de fuente (A▼)">A▼</button>
+                      <button type="button" class="word-btn" onclick="aumentarTamanoFuente()" title="Aumentar el tamaño de letra de todo el documento (A▲)">A▲</button>
+                      <button type="button" class="word-btn" onclick="reducirTamanoFuente()" title="Disminuir el tamaño de letra de todo el documento (A▼)">A▼</button>
                     </div>
 
                     <!-- Estilos B, I, U, S, X2, X1 -->
@@ -2374,19 +2385,25 @@
                 <div class="word-tab-panel" id="ribbon-tab-disposicion">
                   <div class="word-toolbar" style="border-bottom:none; flex-wrap:wrap; gap:8px;">
                     <!-- Estándar APA 7 -->
-                    <div class="word-tool-group">
+                    <div class="word-tool-group global">
+                      <span class="chip-global" title="Este control cambia TODAS las hojas del documento">🌐 Todo el documento</span>
                       <button type="button" class="btn btn-outline btn-sm apa7-active-btn" id="btn-toggle-apa7" onclick="toggleFormatoApa7()" title="Activar/desactivar estándar oficial APA 7 (Times New Roman 12pt, Márgenes 2.54cm, Doble Espacio 2.0, Núm. Superior Derecho)">
                         📐 APA 7 Activo
                       </button>
-                      <button type="button" class="btn btn-outline btn-sm" onclick="aplicarSangriaApa()" title="Sangría de primera línea APA 7 (1.27 cm / 0.5 pulg)">
+                    </div>
+
+                    <!-- Sangría: párrafo donde está el cursor -->
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-outline btn-sm" onclick="aplicarSangriaApa()" title="Sangría de primera línea APA 7 (1.27 cm) en el párrafo donde está el cursor">
                         ⇥ Sangría 1.27 cm
                       </button>
                     </div>
 
-                    <!-- Interlineado y Márgenes -->
-                    <div class="word-tool-group">
+                    <!-- Interlineado y Márgenes: TODO el documento -->
+                    <div class="word-tool-group global">
+                      <span class="chip-global" title="Este control cambia TODAS las hojas del documento">🌐 Todo el documento</span>
                       <span style="font-size:11px; font-weight:700; color:#64748b;">Interlineado:</span>
-                      <select id="word-line-height" class="word-select" onchange="cambiarInterlineado(this.value)" title="Espaciado de línea (Interlineado)">
+                      <select id="word-line-height" class="word-select" onchange="cambiarInterlineado(this.value)" title="Interlineado de todo el documento (todas las hojas)">
                         <option value="2.0" selected>Doble (2.0 APA 7)</option>
                         <option value="1.5">Espacio 1.5 (Legal)</option>
                         <option value="1.15">Espacio 1.15</option>
@@ -2394,7 +2411,7 @@
                       </select>
 
                       <span style="font-size:11px; font-weight:700; color:#64748b; margin-left:4px;">Márgenes:</span>
-                      <select id="word-margins" class="word-select" onchange="cambiarMargenes(this.value)" title="Márgenes de hoja A4">
+                      <select id="word-margins" class="word-select" onchange="cambiarMargenes(this.value)" title="Márgenes de todas las hojas A4">
                         <option value="apa7" selected>Márgenes APA 7 (2.54 cm / 1")</option>
                         <option value="normal">Márgenes Estándar (2.5 cm)</option>
                         <option value="estrecho">Márgenes Estrechos (1.27 cm)</option>
@@ -2402,7 +2419,8 @@
                     </div>
 
                     <!-- Orientación de Hoja -->
-                    <div class="word-tool-group">
+                    <div class="word-tool-group global">
+                      <span class="chip-global" title="Este control cambia TODAS las hojas del documento">🌐 Todo el documento</span>
                       <span style="font-size:11px; font-weight:700; color:#64748b;">Orientación:</span>
                       <select id="word-page-orientation" class="word-select" onchange="cambiarOrientacionHoja(this.value)" title="Orientación del papel A4">
                         <option value="portrait" selected>Vertical (A4 Legal)</option>
@@ -2411,7 +2429,8 @@
                     </div>
 
                     <!-- Marca de Agua (Watermark) -->
-                    <div class="word-tool-group">
+                    <div class="word-tool-group global">
+                      <span class="chip-global" title="Este control cambia TODAS las hojas del documento">🌐 Todo el documento</span>
                       <span style="font-size:11px; font-weight:700; color:#64748b;">Marca de Agua:</span>
                       <select id="word-watermark-select" class="word-select" onchange="aplicarMarcaDeAgua(this.value)" title="Marca de agua diagonal en hojas A4">
                         <option value="ninguna">Sin marca de agua</option>
@@ -2553,8 +2572,8 @@
                 <button type="button" class="float-btn" onclick="ejecutarFormatoWord('bold')" title="Negrita (Ctrl+B)"><b>B</b></button>
                 <button type="button" class="float-btn" onclick="ejecutarFormatoWord('italic')" title="Cursiva (Ctrl+I)"><i>I</i></button>
                 <button type="button" class="float-btn" onclick="ejecutarFormatoWord('underline')" title="Subrayado (Ctrl+U)"><u>U</u></button>
-                <button type="button" class="float-btn" onclick="aumentarTamanoFuente()" title="Aumentar tamaño">A▲</button>
-                <button type="button" class="float-btn" onclick="reducirTamanoFuente()" title="Reducir tamaño">A▼</button>
+                <button type="button" class="float-btn" onclick="cambiarTamanoSeleccion(1)" title="Aumentar tamaño solo del texto seleccionado">A▲</button>
+                <button type="button" class="float-btn" onclick="cambiarTamanoSeleccion(-1)" title="Reducir tamaño solo del texto seleccionado">A▼</button>
                 <button type="button" class="float-btn" onclick="abrirModalInsertarEnlace()" title="Insertar enlace (Ctrl+K)">🔗</button>
                 <button type="button" class="float-btn" onclick="ejecutarFormatoWord('removeFormat')" title="Limpiar formato">🧹</button>
               </div>
@@ -4378,16 +4397,8 @@ function crearElementoHojaA4(pageNumber, runningHead = '') {
     </div>
   `;
 
-  if (orientacionActual === 'landscape') {
-    sheet.style.width = '297mm';
-    sheet.style.height = '210mm';
-    sheet.style.minHeight = '210mm';
-    const c = sheet.querySelector('.a4-page-content');
-    if (c) {
-      c.style.height = '159.2mm';
-      c.style.maxHeight = '159.2mm';
-    }
-  }
+  // Heredar márgenes, orientación, fuente, tamaño e interlineado del documento
+  aplicarFormatoGlobalAHoja(sheet);
 
   conectarEventosHoja(sheet);
   return sheet;
@@ -4405,7 +4416,8 @@ function conectarEventosHoja(sheetEl) {
 
   // Aplicar formato activo
   content.style.lineHeight = interlineadoActual;
-  content.style.fontFamily = document.getElementById('word-font-family')?.value || "'Times New Roman', Georgia, serif";
+  content.style.fontFamily = pilaFuente(fuenteGlobal);
+  content.style.fontSize = tamanoFuenteGlobalPt + 'pt';
 
   content.addEventListener('scroll', () => {
     if (content.scrollTop) content.scrollTop = 0;
@@ -5824,6 +5836,21 @@ function cargarHtmlEnPaginasA4(html) {
     }
   }
 
+  // Recuperar el formato global guardado con el documento (si lo tiene)
+  if (cleanHtml.includes('a4-page-export')) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = cleanHtml;
+    const f = tmp.querySelector('.a4-page-export[data-tamano]');
+    if (f) {
+      fuenteGlobal = f.dataset.fuente || fuenteGlobal;
+      tamanoFuenteGlobalPt = parseFloat(f.dataset.tamano) || tamanoFuenteGlobalPt;
+      interlineadoActual = f.dataset.interlineado || interlineadoActual;
+      margenActual = MARGENES_MM[f.dataset.margen] ? f.dataset.margen : margenActual;
+      orientacionActual = f.dataset.orientacion === 'landscape' ? 'landscape' : 'portrait';
+      sincronizarControlesFormatoGlobal();
+    }
+  }
+
   container.innerHTML = '';
   const sheet1 = crearElementoHojaA4(1);
   container.appendChild(sheet1);
@@ -5850,7 +5877,7 @@ function obtenerHtmlCompletoDocumento() {
   const contents = container.querySelectorAll('.a4-page-content');
   const pages = [];
   contents.forEach((c, idx) => {
-    pages.push(`<div class="a4-page-export" data-page="${idx+1}">${c.innerHTML}</div>`);
+    pages.push(`<div class="a4-page-export" data-page="${idx+1}" data-fuente="${fuenteGlobal}" data-tamano="${tamanoFuenteGlobalPt}" data-interlineado="${interlineadoActual}" data-margen="${margenActual}" data-orientacion="${orientacionActual}">${c.innerHTML}</div>`);
   });
   return pages.join('\n<!-- a4-page-break -->\n<div class="a4-page-break" style="page-break-after:always; break-after:page;"></div>\n');
 }
@@ -6512,28 +6539,127 @@ function ejecutarFormatoWord(command, value = null) {
   if (activeContent) manejarInputEnPagina(activeContent);
 }
 
+// ══════════ FORMATO GLOBAL DEL DOCUMENTO (todas las hojas) ══════════
+// Fuente, tamaño, interlineado, márgenes y orientación se aplican a TODO el
+// documento, como "Diseño > Formato del documento" en Word. Las hojas nuevas
+// heredan estos valores y se guardan junto con el documento.
+let fuenteGlobal = 'Times New Roman';
+let tamanoFuenteGlobalPt = 12;
+const TAMANOS_FUENTE_PT = { 2: 10, 3: 12, 4: 14, 5: 18, 6: 24, 7: 32 };
+const MARGENES_MM = { apa7: 25.4, normal: 25, estrecho: 12.7 };
+
+function pilaFuente(nombre) {
+  if (nombre === 'Times New Roman') return "'Times New Roman', Georgia, serif";
+  if (nombre === 'Courier New') return "'Courier New', monospace";
+  if (nombre === 'Georgia') return "Georgia, serif";
+  return `'${nombre}', Arial, sans-serif`;
+}
+
+function valorSelectTamano(pt) {
+  const e = Object.entries(TAMANOS_FUENTE_PT).find(([, v]) => v === pt);
+  return e ? e[0] : '3';
+}
+
+// Aplica el formato global a una hoja (también a las hojas nuevas)
+function aplicarFormatoGlobalAHoja(sheet) {
+  if (!sheet) return;
+  const m = MARGENES_MM[margenActual] || 25.4;
+  const horizontal = orientacionActual === 'landscape';
+  const ancho = horizontal ? 297 : 210;
+  const alto = horizontal ? 210 : 297;
+  // min/max explícitos: el CSS fija 210×297 y antes impedía la hoja horizontal
+  ['width', 'minWidth', 'maxWidth'].forEach(k => { sheet.style[k] = ancho + 'mm'; });
+  ['height', 'minHeight', 'maxHeight'].forEach(k => { sheet.style[k] = alto + 'mm'; });
+  sheet.style.padding = m + 'mm';
+  const c = sheet.querySelector('.a4-page-content');
+  if (c) {
+    const altoUtil = (alto - 2 * m).toFixed(1) + 'mm';
+    c.style.height = altoUtil;
+    c.style.minHeight = altoUtil;
+    c.style.maxHeight = altoUtil;
+    c.style.fontFamily = pilaFuente(fuenteGlobal);
+    c.style.fontSize = tamanoFuenteGlobalPt + 'pt';
+    c.style.lineHeight = interlineadoActual;
+  }
+}
+
+// Repagina en ambos sentidos: empuja lo que sobra y sube lo que cabe
+function reajustarDocumentoCompleto() {
+  repaginarDocumentoCompleto();
+  reflujarDocumento(0);
+}
+
+function sincronizarControlesFormatoGlobal() {
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+  set('word-font-family', fuenteGlobal);
+  set('word-font-size', valorSelectTamano(tamanoFuenteGlobalPt));
+  set('word-line-height', interlineadoActual);
+  set('word-margins', margenActual);
+  set('word-page-orientation', orientacionActual);
+  const ruler = document.getElementById('word-ruler-wrapper');
+  if (ruler) ruler.style.width = orientacionActual === 'landscape' ? '297mm' : '210mm';
+}
+
+// Aplica el formato a todas las hojas, reacomoda y avisa al usuario
+function aplicarFormatoGlobalDocumento(mensaje) {
+  const sheets = document.querySelectorAll('#a4-pages-container .a4-page-sheet');
+  sheets.forEach(aplicarFormatoGlobalAHoja);
+  sincronizarControlesFormatoGlobal();
+  reajustarDocumentoCompleto();
+  const n = document.querySelectorAll('#a4-pages-container .a4-page-sheet').length;
+  if (mensaje) mostrarNotificacionToast(`✓ ${mensaje} · aplicado a todo el documento (${n} ${n === 1 ? 'hoja' : 'hojas'})`);
+  document.querySelectorAll('.word-tool-group.global').forEach(g => {
+    g.classList.remove('aplicado'); void g.offsetWidth; g.classList.add('aplicado');
+  });
+  const cloudStatus = document.getElementById('word-cloud-status');
+  if (cloudStatus) { cloudStatus.innerHTML = '● Cambios sin guardar en Cloudinary'; cloudStatus.style.color = '#fbbf24'; }
+}
+
+// Quita tamaños/fuentes puestos a mano en partes del texto, para que el
+// cambio global se vea en todo el documento (como Ctrl+A en Word)
+function limpiarFormatoInterno(propiedad) {
+  document.querySelectorAll('#a4-pages-container .a4-page-content').forEach(c => {
+    if (propiedad === 'fontSize') {
+      c.querySelectorAll('font[size]').forEach(f => f.removeAttribute('size'));
+      c.querySelectorAll('[style*="font-size"]').forEach(el => { el.style.fontSize = ''; });
+    } else if (propiedad === 'fontFamily') {
+      c.querySelectorAll('font[face]').forEach(f => f.removeAttribute('face'));
+      c.querySelectorAll('[style*="font-family"]').forEach(el => { el.style.fontFamily = ''; });
+    }
+    // <font>/<span> que quedaron sin atributos: conservar solo su contenido
+    c.querySelectorAll('font:not([size]):not([face]):not([color]), span:not([class]):not([style]), span[style=""]').forEach(el => {
+      el.replaceWith(...Array.from(el.childNodes));
+    });
+  });
+}
+
+function cambiarFuenteGlobal(nombre) {
+  fuenteGlobal = nombre || 'Times New Roman';
+  limpiarFormatoInterno('fontFamily');
+  aplicarFormatoGlobalDocumento(`Fuente ${fuenteGlobal}`);
+}
+
 function cambiarTamanoFuente(val) {
-  ejecutarFormatoWord('fontSize', val);
+  tamanoFuenteGlobalPt = TAMANOS_FUENTE_PT[val] || 12;
+  limpiarFormatoInterno('fontSize');
+  aplicarFormatoGlobalDocumento(`Tamaño ${tamanoFuenteGlobalPt} pt`);
 }
 
 function aumentarTamanoFuente() {
-  const select = document.getElementById('word-font-size');
-  let current = parseInt(select?.value || '3', 10);
-  if (current < 7) {
-    current++;
-    if (select) select.value = current;
-    cambiarTamanoFuente(current);
-  }
+  const actual = parseInt(valorSelectTamano(tamanoFuenteGlobalPt), 10);
+  if (actual < 7) cambiarTamanoFuente(actual + 1);
 }
 
 function reducirTamanoFuente() {
-  const select = document.getElementById('word-font-size');
-  let current = parseInt(select?.value || '3', 10);
-  if (current > 1) {
-    current--;
-    if (select) select.value = current;
-    cambiarTamanoFuente(current);
-  }
+  const actual = parseInt(valorSelectTamano(tamanoFuenteGlobalPt), 10);
+  if (actual > 2) cambiarTamanoFuente(actual - 1);
+}
+
+// Mini barra flotante: cambia SOLO el texto seleccionado (p. ej. un título)
+let tamanoSeleccionActual = 3;
+function cambiarTamanoSeleccion(delta) {
+  tamanoSeleccionActual = Math.max(1, Math.min(7, tamanoSeleccionActual + delta));
+  ejecutarFormatoWord('fontSize', tamanoSeleccionActual);
 }
 
 function aumentarSangria() {
@@ -6814,41 +6940,8 @@ async function insertarClausulaLegalSiguiente() {
 
 // ── CAMBIAR ORIENTACIÓN DE HOJA (VERTICAL / HORIZONTAL) ──
 function cambiarOrientacionHoja(orientacion) {
-  orientacionActual = orientacion;
-  const container = document.getElementById('a4-pages-container');
-  const ruler = document.getElementById('word-ruler-wrapper');
-  if (!container) return;
-  const sheets = container.querySelectorAll('.a4-page-sheet');
-
-  sheets.forEach(sheet => {
-    const content = sheet.querySelector('.a4-page-content');
-    if (orientacion === 'landscape') {
-      sheet.style.width = '297mm';
-      sheet.style.height = '210mm';
-      sheet.style.minHeight = '210mm';
-      if (content) {
-        content.style.height = '159.2mm';
-        content.style.maxHeight = '159.2mm';
-      }
-    } else {
-      sheet.style.width = '210mm';
-      sheet.style.height = '297mm';
-      sheet.style.minHeight = '297mm';
-      if (content) {
-        content.style.height = '246.2mm';
-        content.style.maxHeight = '246.2mm';
-      }
-    }
-  });
-
-  if (ruler) {
-    ruler.style.width = orientacion === 'landscape' ? '297mm' : '210mm';
-  }
-
-  const sel = document.getElementById('word-page-orientation');
-  if (sel && sel.value !== orientacion) sel.value = orientacion;
-
-  repaginarDocumentoCompleto();
+  orientacionActual = orientacion === 'landscape' ? 'landscape' : 'portrait';
+  aplicarFormatoGlobalDocumento(orientacionActual === 'landscape' ? 'Hojas en horizontal' : 'Hojas en vertical');
 }
 
 // ── MODO REVISIÓN LEGAL (TRACK CHANGES / AUDITORÍA) ──
@@ -7068,64 +7161,31 @@ function aplicarConfiguracionApa7(activar) {
       btn.innerHTML = '📐 APA 7 Activo';
     }
     interlineadoActual = '2.0';
-    document.getElementById('word-line-height').value = '2.0';
-    document.getElementById('word-font-family').value = 'Times New Roman';
-    document.getElementById('word-font-size').value = '3'; // 12pt
-    document.getElementById('word-margins').value = 'apa7';
-
-    contents.forEach(c => {
-      c.style.fontFamily = "'Times New Roman', Georgia, serif";
-      c.style.fontSize = "12pt";
-      c.style.lineHeight = "2.0";
-    });
+    fuenteGlobal = 'Times New Roman';
+    tamanoFuenteGlobalPt = 12;
+    margenActual = 'apa7';
+    limpiarFormatoInterno('fontSize');
+    limpiarFormatoInterno('fontFamily');
   } else {
     if (btn) {
       btn.className = 'btn btn-outline btn-sm';
       btn.innerHTML = '📐 Activar APA 7';
     }
     interlineadoActual = '1.5';
-    document.getElementById('word-line-height').value = '1.5';
-    contents.forEach(c => {
-      c.style.lineHeight = "1.5";
-    });
   }
-  repaginarDocumentoCompleto();
+  aplicarFormatoGlobalDocumento(activar ? 'Formato APA 7 (Times New Roman 12 pt, doble espacio, márgenes 2.54 cm)' : 'Formato APA 7 desactivado (interlineado 1.5)');
 }
 
 function cambiarInterlineado(val) {
   interlineadoActual = val;
-  const container = document.getElementById('a4-pages-container');
-  if (container) {
-    container.querySelectorAll('.a4-page-content').forEach(c => {
-      c.style.lineHeight = val;
-    });
-  }
-  repaginarDocumentoCompleto();
+  const nombres = { '2.0': 'Doble', '1.5': '1.5', '1.15': '1.15', '1.0': 'Simple' };
+  aplicarFormatoGlobalDocumento(`Interlineado ${nombres[val] || val}`);
 }
 
 function cambiarMargenes(tipo) {
-  margenActual = tipo;
-  const container = document.getElementById('a4-pages-container');
-  if (!container) return;
-  const sheets = container.querySelectorAll('.a4-page-sheet');
-
-  sheets.forEach(sheet => {
-    if (tipo === 'estrecho') {
-      sheet.style.padding = '12.7mm';
-      const c = sheet.querySelector('.a4-page-content');
-      if (c) { c.style.height = '271.6mm'; c.style.maxHeight = '271.6mm'; }
-    } else if (tipo === 'normal') {
-      sheet.style.padding = '25mm';
-      const c = sheet.querySelector('.a4-page-content');
-      if (c) { c.style.height = '247mm'; c.style.maxHeight = '247mm'; }
-    } else {
-      // APA 7: 25.4mm
-      sheet.style.padding = '25.4mm';
-      const c = sheet.querySelector('.a4-page-content');
-      if (c) { c.style.height = '246.2mm'; c.style.maxHeight = '246.2mm'; }
-    }
-  });
-  repaginarDocumentoCompleto();
+  margenActual = MARGENES_MM[tipo] ? tipo : 'apa7';
+  const nombres = { apa7: 'Márgenes APA 7 (2.54 cm)', normal: 'Márgenes estándar (2.5 cm)', estrecho: 'Márgenes estrechos (1.27 cm)' };
+  aplicarFormatoGlobalDocumento(nombres[margenActual]);
 }
 
 function aplicarSangriaApa() {
@@ -7536,8 +7596,8 @@ function descargarDocumentoWord() {
           margin-top: 4pt;
         }
         body {
-          font-family: 'Times New Roman', Georgia, serif;
-          font-size: 12pt;
+          font-family: ${pilaFuente(fuenteGlobal)};
+          font-size: ${tamanoFuenteGlobalPt}pt;
           line-height: ${interlineadoActual};
           color: #0f172a;
           text-align: justify;
