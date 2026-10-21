@@ -1111,6 +1111,8 @@
        imprimible: sin esto, al partir un párrafo justo en la última línea
        ese margen "desbordaba" y el párrafo entero saltaba de hoja. */
     .a4-page-content > :last-child { margin-bottom: 0 !important; }
+    /* Continuación de un párrafo partido entre hojas: sin sangría inicial */
+    .a4-page-content > [data-cont="1"] { text-indent: 0 !important; }
     .a4-page-content.apa-indent p {
       text-indent: 1.27cm; /* Sangría de primera línea APA 7 (0.5 in) */
     }
@@ -4386,8 +4388,21 @@ function conectarEventosHoja(sheetEl) {
   });
 
   let inputTimer = null;
-  content.addEventListener('input', () => {
+  content.addEventListener('input', (e) => {
     if (content._pegando) return; // el pegado repagina por su cuenta
+    const tipoInput = e && e.inputType ? e.inputType : '';
+    // Enter dentro de un párrafo partido: el párrafo nuevo ya no es continuación
+    if (tipoInput === 'insertParagraph') {
+      const s = window.getSelection();
+      let n = s && s.rangeCount ? s.getRangeAt(0).startContainer : null;
+      while (n && n.parentNode !== content) n = n.parentNode;
+      if (n && n.nodeType === 1) { delete n.dataset.cont; delete n.dataset.frag; }
+    }
+    // Al borrar, subir el contenido de las hojas siguientes
+    if (tipoInput.startsWith('delete')) {
+      const idx = parseInt(sheetEl.dataset.page, 10) - 1;
+      programarReflujo(Math.max(0, idx - 1));
+    }
     // Si no sobrepasa la altura imprimible, no interrumpir la escritura en absoluto
     if (content.scrollHeight <= content.clientHeight + 2) {
       actualizarEstadisticasWord();
@@ -4480,7 +4495,7 @@ function conectarEventosHoja(sheetEl) {
           if (startContent && endContent && startContent !== endContent) {
             e.preventDefault();
             range.deleteContents();
-            repaginarDocumentoCompleto();
+            reflujarDocumento(0);
             return;
           }
         }
@@ -4508,7 +4523,7 @@ function conectarEventosHoja(sheetEl) {
   content.addEventListener('keyup', (e) => {
     if (e.key === 'Backspace' || e.key === 'Delete') {
       const pageIndex = parseInt(sheetEl.dataset.page, 10);
-      absorberContenidoSiguiente(pageIndex - 1);
+      programarReflujo(Math.max(0, pageIndex - 2));
     }
   });
 
@@ -5029,7 +5044,10 @@ function dividirElementoDesbordante(el, content, nextContent, targetH, allowFall
     range.setEndAfter(el.lastChild);
     const tailFrag = range.extractContents();
 
+    // Identificar el párrafo de origen para poder volver a unir sus partes al borrar
+    if (!el.dataset.frag) el.dataset.frag = 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
     const twin = el.cloneNode(false);
+    twin.dataset.cont = '1';
     twin.appendChild(tailFrag);
 
     if (!twin.textContent.trim()) {
@@ -5182,84 +5200,149 @@ function desbordarPagina(pageIndex, allowFallback = true) {
   }
 }
 
-// Absorber contenido de la hoja siguiente al borrar texto (Backspace/Delete)
-function absorberContenidoSiguiente(pageIndex) {
+// ── REFLUJO HACIA ARRIBA: al borrar, el contenido de las hojas siguientes sube
+//    a rellenar el espacio libre (línea por línea, como en Word) ──
+function esContinuacionDe(cont, origen) {
+  return !!(cont && origen && cont.nodeType === 1 && origen.nodeType === 1 &&
+    cont.dataset.cont === '1' && cont.dataset.frag && cont.dataset.frag === origen.dataset.frag);
+}
+
+function unirContinuacion(origen, cont) {
+  while (cont.firstChild) origen.appendChild(cont.firstChild);
+  cont.remove();
+  origen.normalize();
+}
+
+// Dentro de una hoja, volver a unir partes contiguas de un mismo párrafo
+function fusionarContinuaciones(content) {
+  Array.from(content.children).forEach(child => {
+    if (child.isConnected && esContinuacionDe(child, child.previousElementSibling)) {
+      unirContinuacion(child.previousElementSibling, child);
+    }
+  });
+}
+
+function hojaVacia(content) {
+  return !content || (!content.textContent.trim() && !content.querySelector('img, table, hr, .word-signature-block'));
+}
+
+function reflujarDocumento(desdeIndex = 0) {
   const container = document.getElementById('a4-pages-container');
   if (!container) return;
-  const sheets = container.querySelectorAll('.a4-page-sheet');
-  const sheet = sheets[pageIndex];
-  const nextSheet = sheets[pageIndex + 1];
-  if (!sheet || !nextSheet) return;
+  const primera = container.querySelector('.a4-page-content');
+  if (!primera || primera.clientHeight < 100) return;
 
-  const content = sheet.querySelector('.a4-page-content');
-  const nextContent = nextSheet.querySelector('.a4-page-content');
-  if (!content || !nextContent) return;
+  const caret = guardarCaret();
+  let i = Math.max(0, desdeIndex);
+  let safety = 0;
 
-  if (nextContent.innerHTML.trim() === '' || nextContent.children.length === 0) {
-    nextSheet.remove();
-    actualizarNumerosDePagina();
-    actualizarEstadisticasWord();
-    return;
-  }
+  while (safety++ < 600) {
+    const sheets = container.querySelectorAll('.a4-page-sheet');
+    if (i >= sheets.length - 1) break;
+    const content = sheets[i].querySelector('.a4-page-content');
+    const nextSheet = sheets[i + 1];
+    const next = nextSheet.querySelector('.a4-page-content');
+    if (!content || !next) { i++; continue; }
+    // Respetar saltos de página insertados manualmente (Ctrl+Enter)
+    if (nextSheet.dataset.saltoManual === '1') { i++; continue; }
 
-  const targetH = content.clientHeight || (orientacionActual === 'landscape' ? 602 : 930);
+    const targetH = content.clientHeight || (orientacionActual === 'landscape' ? 602 : 930);
+    normalizarBloquesContenido(next);
+    fusionarContinuaciones(content);
 
-  // Intentar traer elementos que quepan en el espacio disponible de content
-  let count = 0;
-  while (nextContent.firstChild && count < 40) {
-    const first = nextContent.firstChild;
-    content.appendChild(first);
-    if (content.scrollHeight > targetH + 2) {
-      // Excedió el límite de la hoja A4, devolver a nextContent y detener
-      nextContent.insertBefore(first, nextContent.firstChild);
-      break;
+    // Traer bloques de la hoja siguiente mientras haya espacio
+    let guard = 0;
+    while (next.firstChild && content.scrollHeight <= targetH + 2 && guard++ < 500) {
+      const first = next.firstChild;
+      if (first.nodeType === Node.TEXT_NODE && !first.nodeValue.trim()) { first.remove(); continue; }
+      const last = content.lastElementChild;
+      if (esContinuacionDe(first, last)) {
+        unirContinuacion(last, first);
+      } else {
+        content.appendChild(first);
+      }
     }
-    count++;
+    // Si lo traído no cabe completo, partirlo en la línea exacta
+    if (content.scrollHeight > targetH + 2) {
+      desbordarPagina(i, true);
+    }
+
+    const nx = container.querySelectorAll('.a4-page-sheet')[i + 1];
+    if (nx && hojaVacia(nx.querySelector('.a4-page-content')) && nx.dataset.saltoManual !== '1') {
+      nx.remove();
+      continue; // volver a intentar con la nueva hoja siguiente
+    }
+    i++;
   }
 
-  if (nextContent.innerHTML.trim() === '' || nextContent.children.length === 0) {
-    nextSheet.remove();
+  // Quitar hojas vacías al final (siempre queda al menos una)
+  const all = container.querySelectorAll('.a4-page-sheet');
+  for (let k = all.length - 1; k > 0; k--) {
+    if (hojaVacia(all[k].querySelector('.a4-page-content'))) all[k].remove();
+    else break;
   }
 
+  restaurarCaret(caret);
+  resetearScrollHojas();
   actualizarNumerosDePagina();
   actualizarEstadisticasWord();
 }
 
-// Retroceder de hoja al pulsar Backspace al inicio de una página
+let reflujoTimer = null;
+function programarReflujo(desdeIndex = 0) {
+  clearTimeout(reflujoTimer);
+  reflujoTimer = setTimeout(() => reflujarDocumento(desdeIndex), 60);
+}
+
+// (Compatibilidad) Absorber contenido de la hoja siguiente
+function absorberContenidoSiguiente(pageIndex) {
+  reflujarDocumento(pageIndex);
+}
+
+// Retroceder de hoja al pulsar Backspace al inicio de una página:
+// el primer bloque se une al final de la hoja anterior y se borra el carácter
+// previo (o se unen los párrafos), igual que en Word.
 function retrocederPagina(sheetEl) {
   const container = document.getElementById('a4-pages-container');
   const sheets = Array.from(container.querySelectorAll('.a4-page-sheet'));
   const idx = sheets.indexOf(sheetEl);
   if (idx <= 0) return;
-
-  const prevSheet = sheets[idx - 1];
-  const prevContent = prevSheet.querySelector('.a4-page-content');
+  const prevContent = sheets[idx - 1].querySelector('.a4-page-content');
   const currentContent = sheetEl.querySelector('.a4-page-content');
+  delete sheetEl.dataset.saltoManual;
 
-  if (currentContent.innerHTML.trim() === '' || currentContent.children.length === 0) {
+  normalizarBloquesContenido(currentContent);
+  const first = currentContent.firstElementChild;
+  if (!first) {
     sheetEl.remove();
     colocarCursorAlFinal(prevContent);
-    actualizarNumerosDePagina();
-    actualizarEstadisticasWord();
+    reflujarDocumento(Math.max(0, idx - 1));
     return;
   }
 
-  const targetH = prevContent.clientHeight || (orientacionActual === 'landscape' ? 602 : 930);
-  while (currentContent.firstChild) {
-    const first = currentContent.firstChild;
+  const last = prevContent.lastElementChild;
+  const sel = window.getSelection();
+  const range = document.createRange();
+  if (esContinuacionDe(first, last)) {
+    // Mismo párrafo partido: unir y borrar el último carácter de la hoja anterior
+    const marcador = document.createTextNode('');
+    last.appendChild(marcador);
+    unirContinuacion(last, first);
+    prevContent.focus({ preventScroll: true });
+    range.setStart(marcador, 0);
+  } else {
+    // Párrafo distinto: llevarlo al final de la hoja anterior y unir párrafos
     prevContent.appendChild(first);
-    if (prevContent.scrollHeight > targetH + 2) {
-      currentContent.insertBefore(first, currentContent.firstChild);
-      break;
-    }
+    prevContent.focus({ preventScroll: true });
+    range.setStart(first, 0);
   }
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  document.execCommand('delete');
 
-  colocarCursorAlFinal(prevContent);
-  if (currentContent.innerHTML.trim() === '' || currentContent.children.length === 0) {
-    sheetEl.remove();
-  }
-  actualizarNumerosDePagina();
-  actualizarEstadisticasWord();
+  if (hojaVacia(currentContent)) sheetEl.remove();
+  reflujarDocumento(Math.max(0, idx - 1));
 }
 
 // Inserción manual de Salto de Página (Ctrl + Enter o botón)
@@ -5287,6 +5370,7 @@ function insertarSaltoDePagina() {
 
   const pageNum = parseInt(currentSheet.dataset.page, 10);
   const nextSheet = crearElementoHojaA4(pageNum + 1);
+  nextSheet.dataset.saltoManual = '1';
 
   if (currentSheet.nextSibling) {
     container.insertBefore(nextSheet, currentSheet.nextSibling);
@@ -5452,6 +5536,11 @@ function cargarHtmlEnPaginasA4(html) {
 
   const content1 = sheet1.querySelector('.a4-page-content');
   content1.innerHTML = cleanHtml;
+  // Documentos guardados: quitar envoltorios/separadores de hoja exportados
+  content1.querySelectorAll('.a4-page-break').forEach(n => n.remove());
+  content1.querySelectorAll('.a4-page-export').forEach(n => n.replaceWith(...Array.from(n.childNodes)));
+  Array.from(content1.childNodes).forEach(n => { if (n.nodeType === Node.COMMENT_NODE) n.remove(); });
+  fusionarContinuaciones(content1);
 
   // Repaginar automáticamente todo el contenido en hojas A4
   repaginarDocumentoCompleto();
