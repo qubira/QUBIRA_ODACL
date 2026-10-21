@@ -4509,8 +4509,19 @@ function conectarEventosHoja(sheetEl) {
       return;
     }
 
+    // Supr al final de una hoja: unir con el inicio de la hoja siguiente
+    if (e.key === 'Delete' && !e.ctrlKey && !e.metaKey && esCaretAlFinal(content)) {
+      const sheets = Array.from(document.querySelectorAll('#a4-pages-container .a4-page-sheet'));
+      const siguiente = sheets[sheets.indexOf(sheetEl) + 1];
+      if (siguiente) {
+        e.preventDefault();
+        retrocederPagina(siguiente, 'forwardDelete');
+        return;
+      }
+    }
+
     // Al presionar Backspace al principio de una hoja > 1, merge con la anterior
-    if (e.key === 'Backspace') {
+    if (e.key === 'Backspace' && !e.ctrlKey && !e.metaKey) {
       const pageIndex = parseInt(sheetEl.dataset.page, 10);
       if (pageIndex > 1 && esCaretAlInicio(content)) {
         e.preventDefault();
@@ -4724,15 +4735,47 @@ function restaurarEncabezadoApa7() {
 }
 
 // Detección de posición del cursor
+// Bloque de primer nivel de la hoja que contiene el nodo
+function bloqueDeHoja(element, node) {
+  let n = node;
+  while (n && n.parentNode !== element) n = n.parentNode;
+  return n;
+}
+
+// Cursor (sin selección) al inicio del PRIMER bloque de la hoja.
+// Antes bastaba con no tener texto delante, así que en la 3.ª línea vacía de
+// una hoja se consideraba "inicio" y Backspace movía bloques a la hoja anterior.
 function esCaretAlInicio(element) {
   const sel = window.getSelection();
-  if (!sel || !sel.rangeCount) return false;
+  if (!sel || !sel.rangeCount || !sel.isCollapsed) return false;
   const range = sel.getRangeAt(0);
   if (!element.contains(range.startContainer)) return false;
-  const preRange = range.cloneRange();
-  preRange.selectNodeContents(element);
-  preRange.setEnd(range.startContainer, range.startOffset);
-  return preRange.toString().length === 0;
+  if (range.startContainer === element) return range.startOffset === 0;
+  const bloque = bloqueDeHoja(element, range.startContainer);
+  let primero = element.firstChild;
+  while (primero && primero.nodeType === Node.TEXT_NODE && !primero.nodeValue.trim()) primero = primero.nextSibling;
+  if (!bloque || bloque !== primero) return false;
+  const pre = document.createRange();
+  pre.setStart(bloque, 0);
+  pre.setEnd(range.startContainer, range.startOffset);
+  return pre.toString().length === 0;
+}
+
+// Cursor (sin selección) al final del ÚLTIMO bloque de la hoja
+function esCaretAlFinal(element) {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || !sel.isCollapsed) return false;
+  const range = sel.getRangeAt(0);
+  if (!element.contains(range.startContainer)) return false;
+  if (range.startContainer === element) return range.startOffset >= element.childNodes.length;
+  const bloque = bloqueDeHoja(element, range.startContainer);
+  let ultimo = element.lastChild;
+  while (ultimo && ultimo.nodeType === Node.TEXT_NODE && !ultimo.nodeValue.trim()) ultimo = ultimo.previousSibling;
+  if (!bloque || bloque !== ultimo) return false;
+  const post = document.createRange();
+  post.setStart(range.startContainer, range.startOffset);
+  post.setEnd(bloque, bloque.childNodes.length);
+  return post.toString().length === 0;
 }
 
 function colocarCursorAlInicio(element) {
@@ -4776,6 +4819,13 @@ function obtenerPaginaActiva() {
 }
 
 // ── SISTEMA DE PRESERVACIÓN Y RESTAURACIÓN DE CURSOR GLOBAL ──
+/* Guarda la posición del cursor de dos formas:
+   1) referencia directa al nodo + offset (se usa si el nodo sigue en el
+      documento tras mover/partir hojas: es exacta incluso en párrafos vacíos);
+   2) desplazamiento global en caracteres + "afinidad" (si el cursor estaba
+      al inicio de un bloque) como respaldo cuando el nodo se partió o unió.
+   Antes solo existía (2) y fallaba con el cursor en un párrafo vacío o entre
+   bloques: lo mandaba al final de la hoja ("el cursor salta a otro lado"). */
 function guardarCaret() {
   const sel = window.getSelection();
   if (!sel || !sel.rangeCount) return null;
@@ -4792,22 +4842,66 @@ function guardarCaret() {
   const allContents = container.querySelectorAll('.a4-page-content');
   let globalOffset = 0;
   for (const c of allContents) {
-    if (c === activeContent) {
-      const walker = document.createTreeWalker(c, NodeFilter.SHOW_TEXT, null, false);
-      let textNode;
-      while ((textNode = walker.nextNode())) {
-        if (textNode === range.startContainer) {
-          globalOffset += range.startOffset;
-          return { globalOffset };
-        }
-        globalOffset += textNode.length;
-      }
-      return { globalOffset };
-    } else {
-      globalOffset += (c.textContent || '').length;
-    }
+    if (c === activeContent) break;
+    globalOffset += (c.textContent || '').length;
   }
-  return { globalOffset };
+  let localOffset = 0;
+  try {
+    const pre = document.createRange();
+    pre.setStart(activeContent, 0);
+    pre.setEnd(range.startContainer, range.startOffset);
+    localOffset = pre.toString().length;
+  } catch (e) {}
+
+  // ¿El cursor está al inicio de su bloque? (para no devolverlo al final del bloque anterior)
+  let adelante = false;
+  try {
+    let bloque = range.startContainer;
+    while (bloque && bloque.parentNode !== activeContent) bloque = bloque.parentNode;
+    if (bloque) {
+      const r2 = document.createRange();
+      r2.setStart(bloque, 0);
+      r2.setEnd(range.startContainer, range.startOffset);
+      adelante = r2.toString().length === 0;
+    }
+  } catch (e) {}
+
+  return {
+    globalOffset: globalOffset + localOffset,
+    node: range.startContainer,
+    offset: range.startOffset,
+    adelante
+  };
+}
+
+function colocarRangoColapsado(node, offset) {
+  const range = document.createRange();
+  range.setStart(node, offset);
+  range.collapse(true);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// Desplaza el área de trabajo lo mínimo necesario para que el cursor sea visible
+function asegurarCaretVisible() {
+  const ws = document.getElementById('word-workspace');
+  const sel = window.getSelection();
+  if (!ws || !sel || !sel.rangeCount) return;
+  let rect = sel.getRangeAt(0).getBoundingClientRect();
+  if (!rect || (!rect.top && !rect.bottom)) {
+    const n = sel.anchorNode;
+    const el = n && (n.nodeType === 1 ? n : n.parentElement);
+    if (!el) return;
+    rect = el.getBoundingClientRect();
+  }
+  const wsRect = ws.getBoundingClientRect();
+  const margen = 60;
+  if (rect.bottom > wsRect.bottom - margen) {
+    ws.scrollTop += rect.bottom - wsRect.bottom + margen;
+  } else if (rect.top < wsRect.top + margen) {
+    ws.scrollTop -= wsRect.top + margen - rect.top;
+  }
 }
 
 function restaurarCaret(saved) {
@@ -4815,46 +4909,49 @@ function restaurarCaret(saved) {
   const container = document.getElementById('a4-pages-container');
   if (!container) return;
 
+  // 1) Nodo original aún presente y offset válido → posición exacta
+  const n = saved.node;
+  if (n && n.isConnected && container.contains(n)) {
+    const max = n.nodeType === Node.TEXT_NODE ? n.length : n.childNodes.length;
+    const host = (n.nodeType === 1 ? n : n.parentElement)?.closest('.a4-page-content');
+    if (host && saved.offset <= max) {
+      try {
+        host.focus({ preventScroll: true });
+        colocarRangoColapsado(n, saved.offset);
+        asegurarCaretVisible();
+        return;
+      } catch (e) {}
+    }
+  }
+
+  // 2) Respaldo por desplazamiento global de caracteres
   const allContents = container.querySelectorAll('.a4-page-content');
   let remaining = saved.globalOffset;
-
   for (let i = 0; i < allContents.length; i++) {
     const c = allContents[i];
     const cLen = (c.textContent || '').length;
-    if (remaining <= cLen || i === allContents.length - 1) {
-      c.focus({ preventScroll: true });
-      const walker = document.createTreeWalker(c, NodeFilter.SHOW_TEXT, null, false);
-      let textNode;
-      let lastNode = null;
-      while ((textNode = walker.nextNode())) {
-        lastNode = textNode;
-        if (remaining <= textNode.length) {
-          try {
-            const range = document.createRange();
-            range.setStart(textNode, Math.max(0, remaining));
-            range.collapse(true);
-            const sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-            return;
-          } catch (e) {}
-        }
-        remaining -= textNode.length;
+    const esUltima = i === allContents.length - 1;
+    const aqui = saved.adelante ? (remaining < cLen) : (remaining <= cLen);
+    if (!aqui && !esUltima) { remaining -= cLen; continue; }
+
+    c.focus({ preventScroll: true });
+    const walker = document.createTreeWalker(c, NodeFilter.SHOW_TEXT, null, false);
+    let textNode;
+    let lastNode = null;
+    while ((textNode = walker.nextNode())) {
+      lastNode = textNode;
+      const cabe = saved.adelante ? (remaining < textNode.length) : (remaining <= textNode.length);
+      if (cabe) {
+        try { colocarRangoColapsado(textNode, Math.max(0, remaining)); asegurarCaretVisible(); return; } catch (e) {}
       }
-      if (lastNode) {
-        try {
-          const range = document.createRange();
-          range.setStart(lastNode, lastNode.length);
-          range.collapse(true);
-          const sel = window.getSelection();
-          sel.removeAllRanges();
-          sel.addRange(range);
-          return;
-        } catch (e) {}
-      }
-      return;
+      remaining -= textNode.length;
     }
-    remaining -= cLen;
+    try {
+      if (lastNode) colocarRangoColapsado(lastNode, lastNode.length);
+      else colocarRangoColapsado(c, c.childNodes.length);
+      asegurarCaretVisible();
+    } catch (e) {}
+    return;
   }
 }
 
@@ -5223,7 +5320,11 @@ function fusionarContinuaciones(content) {
 }
 
 function hojaVacia(content) {
-  return !content || (!content.textContent.trim() && !content.querySelector('img, table, hr, .word-signature-block'));
+  if (!content) return true;
+  if (content.textContent.trim()) return false;
+  if (content.querySelector('img, table, hr, .word-signature-block')) return false;
+  // Más de un párrafo en blanco = líneas vacías intencionales del usuario
+  return content.querySelectorAll('p, div, li, h1, h2, h3, h4').length <= 1 && !content.contains(document.getSelection()?.anchorNode || null);
 }
 
 function reflujarDocumento(desdeIndex = 0) {
@@ -5302,7 +5403,7 @@ function absorberContenidoSiguiente(pageIndex) {
 // Retroceder de hoja al pulsar Backspace al inicio de una página:
 // el primer bloque se une al final de la hoja anterior y se borra el carácter
 // previo (o se unen los párrafos), igual que en Word.
-function retrocederPagina(sheetEl) {
+function retrocederPagina(sheetEl, comando = 'delete') {
   const container = document.getElementById('a4-pages-container');
   const sheets = Array.from(container.querySelectorAll('.a4-page-sheet'));
   const idx = sheets.indexOf(sheetEl);
@@ -5324,14 +5425,20 @@ function retrocederPagina(sheetEl) {
   const sel = window.getSelection();
   const range = document.createRange();
   if (esContinuacionDe(first, last)) {
-    // Mismo párrafo partido: unir y borrar el último carácter de la hoja anterior
-    const marcador = document.createTextNode('');
-    last.appendChild(marcador);
-    unirContinuacion(last, first);
+    // Mismo párrafo partido: unir y borrar el carácter junto a la unión
+    // (Backspace = el anterior, Supr = el siguiente)
+    const puntoUnion = last.childNodes.length;
+    while (first.firstChild) last.appendChild(first.firstChild);
+    first.remove();
     prevContent.focus({ preventScroll: true });
-    range.setStart(marcador, 0);
+    range.setStart(last, puntoUnion);
+  } else if (comando === 'forwardDelete' && last) {
+    // Supr al final de la hoja: unir el párrafo siguiente al final del actual
+    prevContent.appendChild(first);
+    prevContent.focus({ preventScroll: true });
+    range.setStart(last, last.childNodes.length);
   } else {
-    // Párrafo distinto: llevarlo al final de la hoja anterior y unir párrafos
+    // Backspace al inicio: llevar el párrafo al final de la hoja anterior y unir párrafos
     prevContent.appendChild(first);
     prevContent.focus({ preventScroll: true });
     range.setStart(first, 0);
@@ -5339,7 +5446,7 @@ function retrocederPagina(sheetEl) {
   range.collapse(true);
   sel.removeAllRanges();
   sel.addRange(range);
-  document.execCommand('delete');
+  document.execCommand(comando);
 
   if (hojaVacia(currentContent)) sheetEl.remove();
   reflujarDocumento(Math.max(0, idx - 1));
