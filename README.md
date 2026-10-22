@@ -1,12 +1,12 @@
 # QUBIRA ODACL
 
 **Oficina de Dirección de Asuntos Corporativos y Legales (ODACL)**
-Plataforma oficial de gestión legal, gobierno societario, contratos corporativos, marco normativo peruano y compliance de **QUBIRA S.A.C.**
+Plataforma oficial de gestión legal, gobierno societario, contratos corporativos, marco normativo peruano y compliance de **QUBIRA**
 
 ---
 
 ## 🏛️ Identidad Corporativa
-- **Razón Social:** QUBIRA S.A.C.
+- **Razón Social:** QUBIRA
 - **RUC:** 10764275981
 - **Condición:** ACTIVO / HABIDO
 - **Representación Legal:** Melani A. Luyo R. & Abraham Aranda Cerna
@@ -28,7 +28,7 @@ Plataforma oficial de gestión legal, gobierno societario, contratos corporativo
    - D.L. 728 & Ley 31572 (Régimen Laboral y Teletrabajo)
    - Ley N° 29783 (Seguridad y Salud en el Trabajo)
    - Ley N° 29571 (Código de Protección y Defensa del Consumidor)
-4. **Gestión de Contratos Corporativos:** Catálogo de contratos y visualizador del **Modelo Oficial de 14 Cláusulas** de Qubira S.A.C., con soporte de impresión oficial y copia rápida.
+4. **Gestión de Contratos Corporativos:** Catálogo de contratos y visualizador del **Modelo Oficial de 14 Cláusulas** de Qubira, con soporte de impresión oficial y copia rápida.
 5. **Doc. Legal (Editor Microsoft Word con Medidas A4, Formato APA 7 & Nube Cloudinary):**
    - **Medidas Oficiales A4:** 210 mm × 297 mm en lienzo visual físico continuo con fondo gris profesional.
    - **Estándar Oficial APA 7 (7ma Edición):**
