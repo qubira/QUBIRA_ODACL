@@ -1206,6 +1206,10 @@
       font-family: 'Inter', sans-serif; font-size: 11px; page-break-inside: avoid;
     }
     .signature-line { border-top: 1px solid #334155; padding-top: 6px; margin-top: 48px; }
+    /* Firmas editables: se indica al pasar el cursor */
+    .a4-page-content .signature-line { cursor: text; border-radius: 2px; transition: background .15s, box-shadow .15s; }
+    .a4-page-content .signature-line:hover { background: rgba(219, 234, 254, 0.55); box-shadow: 0 0 0 1px #93c5fd; }
+    .a4-page-content .signature-line:focus-within { background: rgba(219, 234, 254, 0.35); }
 
     /* Status Bar Fija en la base del editor */
     .word-statusbar {
@@ -5953,6 +5957,9 @@ function cargarHtmlEnPaginasA4(html) {
 
   const content1 = sheet1.querySelector('.a4-page-content');
   content1.innerHTML = cleanHtml;
+  // Las firmas insertadas antes quedaban bloqueadas (contenteditable="false"): hacerlas editables
+  content1.querySelectorAll('.word-signature-block[contenteditable], .word-signature-block [contenteditable="false"]').forEach(el => el.removeAttribute('contenteditable'));
+  content1.querySelectorAll('.signature-line').forEach(el => { el.title = 'Haz clic para editar la firma'; });
   // Documentos guardados: quitar envoltorios/separadores de hoja exportados
   content1.querySelectorAll('.a4-page-break').forEach(n => n.remove());
   content1.querySelectorAll('.a4-page-export').forEach(n => n.replaceWith(...Array.from(n.childNodes)));
@@ -7485,7 +7492,7 @@ function insertarCuadroFirmas() {
   if (!activeContent) return;
 
   const firmas = `
-    <div class="word-signature-block" contenteditable="false">
+    <div class="word-signature-block">
       <div>
         <div class="signature-line">
           <strong>QUBIRA S.A.C.</strong><br>
@@ -7502,8 +7509,9 @@ function insertarCuadroFirmas() {
       </div>
     </div>
   `;
-  activeContent.focus();
-  document.execCommand('insertHTML', false, firmas);
+  // Bloque limpio tras el párrafo actual (insertHTML lo desarmaba y metía
+  // "QUBIRA S.A.C." dentro del párrafo anterior)
+  insertarBloqueTrasCursor(activeContent, firmas.trim());
   repaginarDocumentoCompleto();
 }
 
