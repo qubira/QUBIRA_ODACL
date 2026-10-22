@@ -1816,29 +1816,42 @@
               </div>
               <div class="card-subtitle">Datos oficiales de constitución, representación, partidas registrales y órganos societarios</div>
             </div>
-            <button class="btn btn-gold btn-sm" onclick="window.print()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-              <span>Imprimir Ficha Registral</span>
-            </button>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <span id="soc-actualizado" style="font-size:11px;color:var(--text-muted)"></span>
+              <button class="btn btn-outline btn-sm" onclick="editarInfoSocietaria()" title="Los contratos de ODN toman estos datos">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                <span>Editar ficha</span>
+              </button>
+              <button class="btn btn-gold btn-sm" onclick="window.print()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                <span>Imprimir Ficha Registral</span>
+              </button>
+            </div>
           </div>
           <div class="card-body">
             <div class="details-grid">
               <div class="detail-item">
                 <div class="detail-k">Razón Social</div>
-                <div class="detail-v">QUBIRA</div>
-                <div class="detail-note">Sociedad Anónima Cerrada (Ley 26887)</div>
+                <div class="detail-v" data-soc="razon_social">QUBIRA</div>
+                <div class="detail-note" data-soc="tipo_sociedad">Sociedad Anónima Cerrada (Ley 26887)</div>
               </div>
 
               <div class="detail-item">
                 <div class="detail-k">Número de RUC Oficial</div>
-                <div class="detail-v" style="color:var(--gold);">10764275981</div>
-                <div class="detail-note">Estado: ACTIVO | Condición: HABIDO</div>
+                <div class="detail-v" style="color:var(--gold);" data-soc="ruc">10764275981</div>
+                <div class="detail-note">Estado: <span data-soc="estado_ruc">ACTIVO</span> | Condición: <span data-soc="condicion_ruc">HABIDO</span></div>
               </div>
 
               <div class="detail-item">
                 <div class="detail-k">Domicilio Legal Corporativo</div>
-                <div class="detail-v">Lima, República del Perú</div>
+                <div class="detail-v" data-soc="domicilio">Lima, República del Perú</div>
                 <div class="detail-note">Sede central de operaciones y notificaciones legales</div>
+              </div>
+
+              <div class="detail-item">
+                <div class="detail-k">Distrito Legal</div>
+                <div class="detail-v" data-soc="distrito">Ancón</div>
+                <div class="detail-note">Provincia <span data-soc="provincia">Lima</span> · Departamento <span data-soc="departamento">Lima</span></div>
               </div>
 
               <div class="detail-item">
@@ -1855,19 +1868,19 @@
 
               <div class="detail-item">
                 <div class="detail-k">Correo Electrónico Oficial</div>
-                <div class="detail-v">qubirasac@gmail.com</div>
+                <div class="detail-v" data-soc="correo">qubirasac@gmail.com</div>
                 <div class="detail-note">Canal institucional de notificaciones</div>
               </div>
 
               <div class="detail-item">
                 <div class="detail-k">Portal Web Corporativo</div>
-                <div class="detail-v">www.qubira.vercel.app</div>
+                <div class="detail-v" data-soc="web">www.qubira.vercel.app</div>
                 <div class="detail-note">Plataforma y ecosistema de servicios</div>
               </div>
 
               <div class="detail-item">
                 <div class="detail-k">Régimen Tributario</div>
-                <div class="detail-v">Régimen MYPE Tributario SUNAT</div>
+                <div class="detail-v" data-soc="regimen">Régimen MYPE Tributario SUNAT</div>
                 <div class="detail-note">Comprobantes electrónicos (Factura / Boleta)</div>
               </div>
             </div>
@@ -3315,6 +3328,7 @@ document.getElementById('btn-logout').addEventListener('click', () => {
 
 // 2. Control de Pestañas (Tabs)
 function switchTab(tabId) {
+  if (tabId === 'societario') cargarInfoSocietaria();
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.toggle('active', item.dataset.tab === tabId);
   });
@@ -8243,6 +8257,57 @@ Object.entries(PLANTILLAS_LEGALES).forEach(([k, p]) => { PLANTILLAS_CONTENIDO_OR
 
 function tokenOdacl() {
   return localStorage.getItem('qodacl_token') || localStorage.getItem('qubira_token') || '';
+}
+
+// ══════════ INFORMACIÓN SOCIETARIA (fuente oficial para los contratos de ODN) ══════════
+let _infoSocietaria = null;
+const CAMPOS_SOCIETARIA = [
+  ['razon_social', 'Razón social'], ['tipo_sociedad', 'Tipo de sociedad'], ['ruc', 'Número de RUC'],
+  ['estado_ruc', 'Estado del RUC'], ['condicion_ruc', 'Condición del RUC'], ['domicilio', 'Domicilio legal corporativo'],
+  ['distrito', 'Distrito legal'], ['provincia', 'Provincia'], ['departamento', 'Departamento'],
+  ['correo', 'Correo electrónico oficial'], ['web', 'Portal web corporativo'], ['regimen', 'Régimen tributario'],
+];
+
+function pintarInfoSocietaria(info) {
+  if (!info) return;
+  document.querySelectorAll('[data-soc]').forEach(el => {
+    const v = info[el.dataset.soc];
+    if (v !== undefined && v !== null && v !== '') el.textContent = v;
+  });
+  const act = document.getElementById('soc-actualizado');
+  if (act) act.textContent = info.updated_at
+    ? `Actualizado ${new Date(info.updated_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' })}${info.actualizado_por ? ' por ' + info.actualizado_por : ''}`
+    : '';
+}
+
+async function cargarInfoSocietaria() {
+  try {
+    const { info } = await apiOdacl('/info-societaria');
+    _infoSocietaria = info;
+    pintarInfoSocietaria(info);
+  } catch (e) { /* se muestra la ficha base */ }
+}
+
+async function editarInfoSocietaria() {
+  const actual = _infoSocietaria || {};
+  const campos = CAMPOS_SOCIETARIA.map(([k, label]) => ({
+    label, valor: actual[k] ?? (document.querySelector(`[data-soc="${k}"]`)?.textContent.trim() || '')
+  }));
+  const valores = await qPrompt('Editar ficha registral de QUBIRA', campos, {
+    mensaje: 'Estos datos se usan automáticamente en los contratos que genera ODN (razón social, RUC, domicilio y distrito de QUBIRA).',
+    aceptar: 'Guardar ficha'
+  });
+  if (!valores) return;
+  const cuerpo = {};
+  CAMPOS_SOCIETARIA.forEach(([k], i) => { cuerpo[k] = String(valores[i] ?? '').trim(); });
+  try {
+    const { info } = await apiOdacl('/info-societaria', { method: 'PUT', body: JSON.stringify(cuerpo) });
+    _infoSocietaria = info;
+    pintarInfoSocietaria(info);
+    qAlert('✓ Ficha registral actualizada. Los contratos de ODN ya usan estos datos.');
+  } catch (e) {
+    qAlert('No se pudo guardar la ficha: ' + e.message);
+  }
 }
 
 async function apiOdacl(ruta, opciones = {}) {
