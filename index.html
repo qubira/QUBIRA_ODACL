@@ -2180,7 +2180,7 @@
 
           <!-- Sub-navigation tabs: Editor Word / Documentos Cloudinary / Plantillas -->
           <div class="doc-nav-tabs">
-            <button class="doc-tab-btn doc-tab-gestion" data-doc-view="gestion" onclick="switchDocSubView('gestion')" title="Casos supuestos: qué documentos usar en cada situación">
+            <button class="doc-tab-btn doc-tab-gestion active" data-doc-view="gestion" onclick="switchDocSubView('gestion')" title="Casos supuestos: qué documentos usar en cada situación">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
               <span>Gestión</span>
             </button>
@@ -2189,7 +2189,7 @@
               <span>Nube</span>
               <span class="nav-badge" id="cloud-doc-count" style="background:#2563eb; color:#fff;">0</span>
             </button>
-            <button class="doc-tab-btn active" data-doc-view="contratos" onclick="switchDocSubView('contratos')">
+            <button class="doc-tab-btn" data-doc-view="contratos" onclick="switchDocSubView('contratos')">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line></svg>
               <span>Contratos</span>
               <span class="nav-badge" id="cnt-contratos" style="background:#1f3864; color:#fff;">0</span>
@@ -2758,7 +2758,7 @@
           </div>
 
           <!-- SUBVIEW 5: GESTIÓN (casos supuestos → documentos) -->
-          <div class="doc-subview" id="subview-gestion">
+          <div class="doc-subview active" id="subview-gestion">
             <div class="gestion-cabecera" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
               <div>
                 <h3 style="font-size:17px; font-weight:800; color:var(--text);">🧭 Gestión documental por caso</h3>
@@ -2776,7 +2776,7 @@
           </div>
 
           <!-- SUBVIEW 3: CATÁLOGO DE PLANTILLAS -->
-          <div class="doc-subview active" id="subview-templates">
+          <div class="doc-subview" id="subview-templates">
             <div style="margin-bottom:18px;">
               <h3 style="font-size:17px; font-weight:800; color:var(--text);" id="catalogo-titulo">Contratos</h3>
               <p style="font-size:12.5px; color:#64748b; margin-top:2px;" id="catalogo-sub">Seleccione una plantilla legal preconfigurada para cargarla directamente en el editor Word</p>
@@ -3523,7 +3523,11 @@ function switchTab(tabId) {
 }
 
 document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => switchTab(item.dataset.tab));
+  item.addEventListener('click', () => {
+    switchTab(item.dataset.tab);
+    // Doc. Legal siempre abre primero Gestión (qué documento usar en cada caso)
+    if (item.dataset.tab === 'doc-legal') switchDocSubView('gestion');
+  });
 });
 
 // Botones rápidos del topbar
@@ -4651,7 +4655,7 @@ function grupoDePlantilla(clave, p) {
   return 'contratos';
 }
 let _grupoCatalogo = 'contratos';
-let _ultimaVistaCatalogo = 'contratos';
+let _ultimaVistaCatalogo = 'gestion';
 
 function switchDocSubView(subview) {
   if (subview !== 'editor' && document.getElementById('subview-editor')?.classList.contains('active')) {
