@@ -303,6 +303,56 @@
       font-weight: 700; padding: 3px 9px; border-radius: 999px; text-transform: uppercase;
     }
     .status-vigente { background: #d1fae5; color: #065f46; }
+    .doc-nav-tabs { flex-wrap: nowrap; gap: 5px !important; overflow-x: auto; scrollbar-width: thin; }
+    .doc-nav-tabs .doc-tab-btn { flex: none; white-space: nowrap; }
+    .doc-nav-tabs .doc-tab-btn { font-size: 12px; padding: 7px 8px; gap: 5px; }
+    .doc-nav-tabs .doc-tab-btn svg { width: 15px; height: 15px; }
+    .doc-nav-tabs .doc-tab-btn .nav-badge { margin-left: 0; }
+
+    .doc-tab-btn.doc-tab-gestion { border-color: #c7a14a; color: #8a6514; }
+    .doc-tab-btn.doc-tab-gestion.active { background: linear-gradient(135deg, #b8862b, #8a6514); color: #fff; border-color: transparent; }
+    .gestion-layout { display: grid; grid-template-columns: minmax(240px, 320px) 1fr; gap: 18px; align-items: start; }
+    @media (max-width: 900px) { .gestion-layout { grid-template-columns: 1fr; } }
+    .gestion-lista { display: flex; flex-direction: column; gap: 6px; position: sticky; top: 12px; max-height: calc(100vh - 140px); overflow: auto; padding-right: 2px; }
+    .gestion-caso { display: flex; gap: 10px; align-items: center; text-align: left; background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; cursor: pointer; font: inherit; transition: .15s; }
+    .gestion-caso:hover { border-color: #93c5fd; background: #f8fbff; }
+    .gestion-caso.activo { border-color: #1f3864; background: #eef2ff; box-shadow: inset 3px 0 0 #1f3864; }
+    .gestion-caso-ico { font-size: 20px; width: 30px; text-align: center; flex: none; }
+    .gestion-caso b { display: block; font-size: 13px; color: var(--text); line-height: 1.3; }
+    .gestion-caso small { font-size: 11px; color: #64748b; }
+    .gestion-panel { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 18px; min-height: 200px; }
+    .gestion-panel-head { display: flex; gap: 14px; align-items: flex-start; padding-bottom: 14px; border-bottom: 1px solid var(--border); margin-bottom: 14px; flex-wrap: wrap; }
+    .gestion-panel-ico { font-size: 30px; width: 52px; height: 52px; display: grid; place-items: center; background: #eef2ff; border-radius: 12px; flex: none; }
+    .gestion-panel-head h4 { font-size: 16px; font-weight: 800; color: var(--text); margin: 0; }
+    .gestion-panel-head p { font-size: 12.5px; color: #475569; margin: 4px 0 0; }
+    .gestion-resumen { font-size: 11px; font-weight: 700; color: #1f3864; margin-top: 6px; }
+    .gestion-docs { display: flex; flex-direction: column; gap: 10px; }
+    .gestion-doc { display: flex; gap: 12px; align-items: center; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; background: #f8fafc; flex-wrap: wrap; }
+    .gestion-doc.faltante { background: #fef2f2; border-color: #fecaca; }
+    .gestion-doc-num { width: 26px; height: 26px; border-radius: 50%; background: #1f3864; color: #fff; font-size: 12px; font-weight: 800; display: grid; place-items: center; flex: none; }
+    .gestion-doc-info { flex: 1; min-width: 220px; }
+    .gestion-doc-info b { display: block; font-size: 13.5px; color: var(--text); margin-top: 4px; }
+    .gestion-doc-info small { display: block; font-size: 11.5px; color: #64748b; margin-top: 2px; }
+    .gestion-doc-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .gestion-chip { font-size: 9.5px; font-weight: 800; letter-spacing: .3px; text-transform: uppercase; border-radius: 999px; padding: 2px 8px; background: #e2e8f0; color: #334155; }
+    .gestion-chip.g-contratos { background: #dbeafe; color: #1e40af; }
+    .gestion-chip.g-anexos { background: #e0e7ff; color: #1f3864; }
+    .gestion-chip.g-acuerdos { background: #dcfce7; color: #166534; }
+    .gestion-chip.g-politicas { background: #fae8ff; color: #86198f; }
+    .gestion-chip.g-terminos { background: #ffedd5; color: #9a3412; }
+    .gestion-chip.req-obligatorio { background: #1f3864; color: #fff; }
+    .gestion-chip.req-opcional { background: #fef3c7; color: #92400e; }
+    .gestion-chip.req-borrador { background: #e0f2fe; color: #075985; }
+    .gestion-doc-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+    .gestion-vacio { font-size: 12.5px; color: #64748b; text-align: center; padding: 22px 10px; }
+    .caso-docs-editor { max-height: 46vh; overflow: auto; border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; }
+    .caso-docs-grupo-t { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; color: #1f3864; margin: 10px 0 4px; }
+    .caso-doc-fila { display: grid; grid-template-columns: 1fr 120px 1fr; gap: 8px; align-items: center; padding: 5px 6px; border-radius: 8px; }
+    .caso-doc-fila label { font-size: 12.5px; color: #334155; display: flex; gap: 8px; align-items: center; cursor: pointer; }
+    .caso-doc-fila select, .caso-doc-fila input[type=text] { font-size: 12px; padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 6px; opacity: .45; pointer-events: none; }
+    .caso-doc-fila.marcado { background: #eef2ff; }
+    .caso-doc-fila.marcado select, .caso-doc-fila.marcado input[type=text] { opacity: 1; pointer-events: auto; }
+    @media (max-width: 700px) { .caso-doc-fila { grid-template-columns: 1fr; } }
     .origen-chip { display: inline-block; margin-top: 3px; font-size: 9.5px; font-weight: 800; letter-spacing: .3px; text-transform: uppercase; border-radius: 999px; padding: 1px 7px; }
     .origen-chip.comercial { background: #e0f2fe; color: #075985; }
     .origen-chip.odacl { background: #fef3c7; color: #92400e; }
@@ -1430,7 +1480,9 @@
     body.word-fullscreen-mode .doc-nav-tabs,
     body.word-fullscreen-mode .card-header,
     body.word-fullscreen-mode #subview-cloud,
-    body.word-fullscreen-mode #subview-templates {
+    body.word-fullscreen-mode #subview-templates,
+    body.word-fullscreen-mode #subview-anexos,
+    body.word-fullscreen-mode #subview-gestion {
       display: none !important;
     }
     body.word-fullscreen-mode .main-content {
@@ -1532,7 +1584,7 @@
         color: #000000 !important;
       }
       .sidebar, .topbar, .doc-nav-tabs, .word-ribbon, .word-statusbar, .btn, .modal-overlay,
-      #subview-cloud, #subview-templates, .no-print, .cloud-badge-ok {
+      #subview-cloud, #subview-templates, #subview-anexos, #subview-gestion, .no-print, .cloud-badge-ok {
         display: none !important;
       }
       .main, .content, #tab-doc-legal, .doc-legal-container, #subview-editor, .word-workspace {
@@ -1626,24 +1678,20 @@
       <div class="nav-item" data-tab="societario" title="Información Societaria">
         <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
         <span>Información Societaria</span>
-        <span class="nav-badge">RUC</span>
       </div>
       <div class="nav-item" data-tab="leyes" title="Marco Normativo Perú">
         <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
         <span>Marco Normativo Perú</span>
-        <span class="nav-badge">8 Leyes</span>
       </div>
 
       <div class="nav-label">Instrumentos Jurídicos</div>
       <div class="nav-item" data-tab="contratos" title="Contratos Corporativos">
         <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="12" y2="14"></line></svg>
         <span>Contratos Corporativos</span>
-        <span class="nav-badge">14 Cláusulas</span>
       </div>
       <div class="nav-item" data-tab="doc-legal" title="Doc. Legal">
         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
         <span>Doc. Legal</span>
-        <span class="nav-badge" style="background:#2563eb; color:#fff;">Word &bull; Nube</span>
       </div>
       <div class="nav-item" data-tab="asesoria" title="Asesoría & Dictámenes">
         <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -2129,17 +2177,37 @@
           <div class="doc-nav-tabs">
             <button class="doc-tab-btn" data-doc-view="cloud" onclick="switchDocSubView('cloud')">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
-              <span>Documentos en Nube (Cloudinary)</span>
+              <span>Nube</span>
               <span class="nav-badge" id="cloud-doc-count" style="background:#2563eb; color:#fff;">0</span>
             </button>
-            <button class="doc-tab-btn active" data-doc-view="templates" onclick="switchDocSubView('templates')">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-              <span>Catálogo de Plantillas Legales (<span id="catalogo-count">11</span>)</span>
+            <button class="doc-tab-btn active" data-doc-view="contratos" onclick="switchDocSubView('contratos')">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="13" y2="17"></line></svg>
+              <span>Contratos</span>
+              <span class="nav-badge" id="cnt-contratos" style="background:#1f3864; color:#fff;">0</span>
             </button>
             <button class="doc-tab-btn" data-doc-view="anexos" onclick="switchDocSubView('anexos')">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
               <span>Anexos de Contratos</span>
               <span class="nav-badge" id="anexos-count" style="background:#1f3864; color:#fff;">0</span>
+            </button>
+            <button class="doc-tab-btn" data-doc-view="acuerdos" onclick="switchDocSubView('acuerdos')">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6"></path><path d="M8 12l3 3 5-6"></path><path d="M4 8V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"></path></svg>
+              <span>Acuerdos</span>
+              <span class="nav-badge" id="cnt-acuerdos" style="background:#1f3864; color:#fff;">0</span>
+            </button>
+            <button class="doc-tab-btn" data-doc-view="politicas" onclick="switchDocSubView('politicas')">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span>Política de Privacidad</span>
+              <span class="nav-badge" id="cnt-politicas" style="background:#1f3864; color:#fff;">0</span>
+            </button>
+            <button class="doc-tab-btn" data-doc-view="terminos" onclick="switchDocSubView('terminos')">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"></rect><line x1="8" y1="8" x2="16" y2="8"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="8" y1="16" x2="12" y2="16"></line></svg>
+              <span>Términos y Condiciones</span>
+              <span class="nav-badge" id="cnt-terminos" style="background:#1f3864; color:#fff;">0</span>
+            </button>
+            <button class="doc-tab-btn doc-tab-gestion" data-doc-view="gestion" onclick="switchDocSubView('gestion')" title="Casos supuestos: qué documentos usar en cada situación">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+              <span>Gestión</span>
             </button>
           </div>
 
@@ -2684,11 +2752,29 @@
             <div id="anexos-grupos"></div>
           </div>
 
+          <!-- SUBVIEW 5: GESTIÓN (casos supuestos → documentos) -->
+          <div class="doc-subview" id="subview-gestion">
+            <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
+              <div>
+                <h3 style="font-size:17px; font-weight:800; color:var(--text);">🧭 Gestión documental por caso</h3>
+                <p style="font-size:12.5px; color:#64748b; margin-top:2px;">Elige la situación y verás qué documentos necesitas, listos para imprimir o editar en Word.</p>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <input type="search" id="gestion-buscar" placeholder="¿Qué necesitas hacer? Ej. practicante, app, cliente…" oninput="renderGestion()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-width:280px">
+                <button class="btn btn-gold btn-sm" onclick="editarCasoGestion()">+ Nuevo caso</button>
+              </div>
+            </div>
+            <div class="gestion-layout">
+              <div class="gestion-lista" id="gestion-lista"></div>
+              <div class="gestion-panel" id="gestion-panel"></div>
+            </div>
+          </div>
+
           <!-- SUBVIEW 3: CATÁLOGO DE PLANTILLAS -->
           <div class="doc-subview active" id="subview-templates">
             <div style="margin-bottom:18px;">
-              <h3 style="font-size:17px; font-weight:800; color:var(--text);">Catálogo de Plantillas Legales Corporativas</h3>
-              <p style="font-size:12.5px; color:#64748b; margin-top:2px;">Seleccione una plantilla legal preconfigurada para cargarla directamente en el editor Word</p>
+              <h3 style="font-size:17px; font-weight:800; color:var(--text);" id="catalogo-titulo">Contratos</h3>
+              <p style="font-size:12.5px; color:#64748b; margin-top:2px;" id="catalogo-sub">Seleccione una plantilla legal preconfigurada para cargarla directamente en el editor Word</p>
             </div>
             <div class="templates-grid" id="templates-grid-cards">
               <!-- Render dinámico de las 11 plantillas -->
@@ -2700,6 +2786,43 @@
 
     </div>
   </main>
+
+  <!-- ═════════ MODAL: CASO DE GESTIÓN ═════════ -->
+  <div class="modal-overlay" id="modal-caso-gestion">
+    <div class="modal-box large">
+      <div class="modal-head">
+        <div>
+          <h3 id="caso-modal-titulo">Nuevo caso</h3>
+          <p style="font-size:12px; color:#64748b; margin-top:2px;">Describe la situación y marca los documentos que se deben usar.</p>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modal-caso-gestion')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="caso-id">
+        <div class="form-row">
+          <div class="form-group" style="max-width:110px">
+            <label>Ícono</label>
+            <input type="text" id="caso-icono" maxlength="4" placeholder="📄" style="text-align:center;font-size:18px">
+          </div>
+          <div class="form-group">
+            <label>Caso supuesto *</label>
+            <input type="text" id="caso-titulo" placeholder="Ej. Contratar a un diseñador independiente">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <input type="text" id="caso-descripcion" placeholder="¿Cuándo se presenta esta situación?">
+        </div>
+        <label style="font-size:12px;font-weight:700;color:#334155;display:block;margin:6px 0">Documentos necesarios</label>
+        <div id="caso-documentos" class="caso-docs-editor"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" id="caso-eliminar" style="margin-right:auto;color:#b91c1c;display:none" onclick="eliminarCasoGestion()">Eliminar caso</button>
+        <button type="button" class="btn btn-outline" onclick="cerrarModal('modal-caso-gestion')">Cancelar</button>
+        <button type="button" class="btn btn-gold" onclick="guardarCasoGestion()">Guardar caso</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ═════════ MODAL: MODELO DE CONTRATO OFICIAL (14 CLÁUSULAS) ═════════ -->
   <div class="modal-overlay" id="modal-modelo-contrato">
@@ -4489,18 +4612,49 @@ const PLANTILLAS_LEGALES = {
 };
 
 // Sub-navegación dentro de Doc. Legal
+// Secciones del catálogo (cada plantilla va a la suya)
+const GRUPOS_CATALOGO = {
+  contratos: { titulo: 'Contratos', sub: 'Contratos con clientes, personal y proveedores. Ábrelos en el editor Word.', nuevo: 'Nueva plantilla de contrato', tipo: 'Contrato' },
+  acuerdos: { titulo: 'Acuerdos', sub: 'Acuerdos de confidencialidad, niveles de servicio y convenios.', nuevo: 'Nuevo acuerdo', tipo: 'Acuerdo' },
+  politicas: { titulo: 'Política de Privacidad', sub: 'Políticas de tratamiento de datos personales (Ley N.° 29733).', nuevo: 'Nueva política', tipo: 'Política de Privacidad' },
+  terminos: { titulo: 'Términos y Condiciones', sub: 'Condiciones de uso de la web y de las apps.', nuevo: 'Nuevos términos y condiciones', tipo: 'Términos y Condiciones' },
+};
+const GRUPO_PLANTILLA = {
+  sla_servicio: 'acuerdos', acuerdo_nda: 'acuerdos', servicios_preprofesionales: 'acuerdos',
+  politica_privacidad: 'politicas', politica_privacidad_app: 'politicas',
+  terminos_condiciones: 'terminos', terminos_usuarios_app: 'terminos',
+};
+function grupoDePlantilla(clave, p) {
+  if (p.padre) return 'anexos';
+  if (GRUPOS_CATALOGO[p.grupo]) return p.grupo;
+  if (GRUPO_PLANTILLA[clave]) return GRUPO_PLANTILLA[clave];
+  const t = `${p.tipo || ''} ${p.titulo || ''}`;
+  if (/pol[ií]tica/i.test(t)) return 'politicas';
+  if (/t[ée]rminos/i.test(t)) return 'terminos';
+  if (/^\s*(acuerdo|convenio)\b|\bNDA\b/i.test(p.titulo || '')) return 'acuerdos';
+  return 'contratos';
+}
+let _grupoCatalogo = 'contratos';
+let _ultimaVistaCatalogo = 'contratos';
+
 function switchDocSubView(subview) {
   if (subview !== 'editor' && document.getElementById('subview-editor')?.classList.contains('active')) {
     guardarAutoguardadoWord();
   }
+  // «templates» vuelve a la última sección abierta (Contratos, Acuerdos, Gestión…)
+  if (subview === 'templates') subview = _ultimaVistaCatalogo || 'contratos';
+  if (GRUPOS_CATALOGO[subview]) _grupoCatalogo = subview;
+  if (GRUPOS_CATALOGO[subview] || subview === 'gestion' || subview === 'anexos') _ultimaVistaCatalogo = subview;
+  const panel = GRUPOS_CATALOGO[subview] ? 'templates' : subview;
   document.querySelectorAll('.doc-tab-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.docView === subview);
   });
   document.querySelectorAll('.doc-subview').forEach(s => {
-    s.classList.toggle('active', s.id === 'subview-' + subview);
+    s.classList.toggle('active', s.id === 'subview-' + panel);
   });
   if (subview === 'cloud') renderCloudDocuments();
-  if (subview === 'templates') renderCatalogoPlantillas();
+  if (panel === 'templates') renderCatalogoPlantillas();
+  if (subview === 'gestion') cargarCasosGestion();
   if (subview === 'anexos') renderAnexos();
   if (subview === 'editor') {
     setTimeout(() => {
@@ -6854,7 +7008,7 @@ function cargarPlantillaSeleccionada(key) {
   const kEl = document.querySelector('.editor-contexto-k');
   if (kEl) kEl.textContent = p.padre ? `📎 Editando anexo · ${PLANTILLAS_LEGALES[p.padre]?.titulo || ''}` : '📄 Editando plantilla';
   const volver = document.querySelector('.editor-contexto button');
-  if (volver) volver.textContent = p.padre ? '← Anexos' : '← Catálogo';
+  if (volver) volver.textContent = _ultimaVistaCatalogo === 'gestion' ? '← Gestión' : p.padre ? '← Anexos' : '← ' + (GRUPOS_CATALOGO[grupoDePlantilla(key, p)]?.titulo || 'Catálogo');
   const borrador = leerBorrador(key);
   firmaBaseDocumento = '';
 
@@ -7962,7 +8116,8 @@ function migrarAutoguardadoAnterior() {
 
 function volverAlCatalogo() {
   guardarAutoguardadoWord();
-  switchDocSubView(PLANTILLAS_LEGALES[plantillaEnEdicion]?.padre ? 'anexos' : 'templates');
+  // Desde Gestión se vuelve a Gestión; si no, a la sección de la plantilla
+  switchDocSubView(_ultimaVistaCatalogo === 'gestion' ? 'gestion' : PLANTILLAS_LEGALES[plantillaEnEdicion]?.padre ? 'anexos' : 'templates');
 }
 
 async function descartarBorrador(key) {
@@ -8684,7 +8839,7 @@ function aplicarPlantillasOficiales(lista) {
       PLANTILLAS_LEGALES[t.clave] = {
         titulo: t.titulo || t.clave, tipo: t.tipo_documento || 'Contrato Legal',
         categoria: t.categoria || 'Contrato', badge: t.badge || 'NUEVA PLANTILLA',
-        descripcion: t.descripcion || 'Plantilla creada por ODACL.', contenido: t.contenido_html, agregado: true, creada: true
+        descripcion: t.descripcion || 'Plantilla creada por ODACL.', contenido: t.contenido_html, agregado: true, creada: true, grupo: t.grupo || null
       };
     }
   });
@@ -8904,7 +9059,15 @@ function renderCatalogoPlantillas() {
   const container = document.getElementById('templates-grid-cards');
   if (!container) return;
 
-  const entries = Object.entries(PLANTILLAS_LEGALES).filter(([, p]) => !p.padre);
+  const todas = Object.entries(PLANTILLAS_LEGALES).filter(([, p]) => !p.padre);
+  Object.keys(GRUPOS_CATALOGO).forEach(g => {
+    const el = document.getElementById('cnt-' + g);
+    if (el) el.textContent = todas.filter(([k, p]) => grupoDePlantilla(k, p) === g).length;
+  });
+  const grupo = GRUPOS_CATALOGO[_grupoCatalogo];
+  const tit = document.getElementById('catalogo-titulo'); if (tit) tit.textContent = grupo.titulo;
+  const sub = document.getElementById('catalogo-sub'); if (sub) sub.textContent = grupo.sub;
+  const entries = todas.filter(([k, p]) => grupoDePlantilla(k, p) === _grupoCatalogo);
   container.innerHTML = entries.map(([key, p]) => `
     <div class="template-card ${p.oficial ? 'oficial' : ''}">
       <div>
@@ -8936,11 +9099,153 @@ function renderCatalogoPlantillas() {
       </button>
     </div>
   `).join('') + `
-    <button type="button" class="anexo-agregar plantilla-agregar" onclick="crearPlantillaContrato()">
-      <span>＋</span><b>Nueva plantilla de contrato</b><small>Se crea con el membrete QUBIRA y se edita en el editor Word</small>
+    <button type="button" class="anexo-agregar plantilla-agregar" onclick="crearPlantillaContrato('${_grupoCatalogo}')">
+      <span>＋</span><b>${grupo.nuevo}</b><small>Se crea con el membrete QUBIRA y se edita en el editor Word</small>
     </button>`;
-  const cnt = document.getElementById('catalogo-count');
-  if (cnt) cnt.textContent = entries.length;
+}
+
+// ══════════ GESTIÓN: CASOS SUPUESTOS → DOCUMENTOS ══════════
+let CASOS_GESTION = null;
+let _casoSeleccionado = null;
+const NOMBRE_GRUPO = { contratos: 'Contrato', anexos: 'Anexo', acuerdos: 'Acuerdo', politicas: 'Política de Privacidad', terminos: 'Términos y Condiciones' };
+
+async function cargarCasosGestion(forzar) {
+  if (CASOS_GESTION && !forzar) { renderGestion(); return; }
+  const lista = document.getElementById('gestion-lista');
+  if (lista && !CASOS_GESTION) lista.innerHTML = '<div class="gestion-vacio">Cargando casos…</div>';
+  try {
+    const { casos } = await apiOdacl('/gestion-casos');
+    CASOS_GESTION = casos || [];
+  } catch (e) {
+    CASOS_GESTION = null;
+    if (lista) lista.innerHTML = `<div class="gestion-vacio">⚠ No se pudieron cargar los casos.<br><small>${qdlgEscapar(e.message)}</small></div>`;
+    document.getElementById('gestion-panel').innerHTML = '';
+    return;
+  }
+  renderGestion();
+}
+
+function textoCaso(c) {
+  return [c.titulo, c.descripcion, ...(c.documentos || []).map(d => PLANTILLAS_LEGALES[d.clave]?.titulo || '')].join(' ')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+function renderGestion() {
+  const lista = document.getElementById('gestion-lista');
+  if (!lista || !CASOS_GESTION) return;
+  const q = (document.getElementById('gestion-buscar')?.value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  const casos = CASOS_GESTION.filter(c => !q || q.split(/\s+/).every(w => textoCaso(c).includes(w)));
+  if (!casos.some(c => c.id === _casoSeleccionado)) _casoSeleccionado = casos[0]?.id ?? null;
+  lista.innerHTML = casos.length ? casos.map(c => `<button type="button" class="gestion-caso ${c.id === _casoSeleccionado ? 'activo' : ''}" onclick="seleccionarCasoGestion(${c.id})">
+      <span class="gestion-caso-ico">${qdlgEscapar(c.icono || '📄')}</span>
+      <span><b>${qdlgEscapar(c.titulo)}</b><small>${(c.documentos || []).length} documentos</small></span>
+    </button>`).join('') : `<div class="gestion-vacio">${q ? 'Ningún caso coincide con la búsqueda.' : 'Aún no hay casos. Crea el primero con «+ Nuevo caso».'}</div>`;
+  renderPanelCaso();
+}
+
+function seleccionarCasoGestion(id) { _casoSeleccionado = id; renderGestion(); }
+
+function renderPanelCaso() {
+  const panel = document.getElementById('gestion-panel');
+  const c = (CASOS_GESTION || []).find(x => x.id === _casoSeleccionado);
+  if (!panel) return;
+  if (!c) { panel.innerHTML = ''; return; }
+  const docs = c.documentos || [];
+  const fila = (d, i) => {
+    const pl = PLANTILLAS_LEGALES[d.clave];
+    if (!pl) return `<div class="gestion-doc faltante"><div class="gestion-doc-num">${i + 1}</div><div class="gestion-doc-info"><b>Plantilla no disponible</b><small>«${qdlgEscapar(d.clave)}» fue eliminada. Edita el caso para reemplazarla.</small></div></div>`;
+    const g = grupoDePlantilla(d.clave, pl);
+    const b = leerBorrador(d.clave);
+    return `<div class="gestion-doc">
+      <div class="gestion-doc-num">${i + 1}</div>
+      <div class="gestion-doc-info">
+        <div class="gestion-doc-chips"><span class="gestion-chip g-${g}">${NOMBRE_GRUPO[g]}</span>
+          <span class="gestion-chip ${d.requisito === 'si_aplica' ? 'req-opcional' : 'req-obligatorio'}">${d.requisito === 'si_aplica' ? 'Si aplica' : 'Obligatorio'}</span>
+          ${b ? '<span class="gestion-chip req-borrador">✎ Borrador</span>' : ''}</div>
+        <b>${qdlgEscapar(pl.titulo)}</b>
+        <small>${qdlgEscapar(d.nota || pl.descripcion || '')}</small>
+      </div>
+      <div class="gestion-doc-acciones">
+        <button type="button" class="btn btn-outline btn-sm" onclick="imprimirPlantilla('${d.clave}')">🖨 Imprimir</button>
+        <button type="button" class="btn btn-gold btn-sm" onclick="cargarPlantillaSeleccionada('${d.clave}')">${b ? 'Continuar editando →' : 'Abrir y Editar en Word →'}</button>
+      </div>
+    </div>`;
+  };
+  const obligatorios = docs.filter(d => d.requisito !== 'si_aplica').length;
+  panel.innerHTML = `<div class="gestion-panel-head">
+      <div class="gestion-panel-ico">${qdlgEscapar(c.icono || '📄')}</div>
+      <div style="flex:1;min-width:0"><h4>${qdlgEscapar(c.titulo)}</h4>
+        ${c.descripcion ? `<p>${qdlgEscapar(c.descripcion)}</p>` : ''}
+        <div class="gestion-resumen">${obligatorios} obligatorio${obligatorios === 1 ? '' : 's'} · ${docs.length - obligatorios} si aplica</div></div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="editarCasoGestion(${c.id})">✏️ Editar caso</button>
+    </div>
+    <div class="gestion-docs">${docs.length ? docs.map(fila).join('') : '<div class="gestion-vacio">Este caso aún no tiene documentos. Usa «Editar caso» para agregarlos.</div>'}</div>`;
+}
+
+// Imprimir una plantilla: se abre en el editor (con su membrete) y se lanza la impresión
+function imprimirPlantilla(clave) {
+  cargarPlantillaSeleccionada(clave);
+  setTimeout(() => { try { imprimirOExportarPdf(); } catch (e) { window.print(); } }, 900);
+}
+
+function editarCasoGestion(id) {
+  const c = id ? (CASOS_GESTION || []).find(x => x.id === id) : null;
+  document.getElementById('caso-id').value = c?.id || '';
+  document.getElementById('caso-icono').value = c?.icono || '📄';
+  document.getElementById('caso-titulo').value = c?.titulo || '';
+  document.getElementById('caso-descripcion').value = c?.descripcion || '';
+  document.getElementById('caso-modal-titulo').textContent = c ? 'Editar caso' : 'Nuevo caso';
+  document.getElementById('caso-eliminar').style.display = c ? '' : 'none';
+  const sel = new Map((c?.documentos || []).map(d => [d.clave, d]));
+  const orden = ['contratos', 'anexos', 'acuerdos', 'politicas', 'terminos'];
+  const todas = Object.entries(PLANTILLAS_LEGALES).map(([k, p]) => [k, p, grupoDePlantilla(k, p)]);
+  document.getElementById('caso-documentos').innerHTML = orden.map(g => {
+    const items = todas.filter(([, , gg]) => gg === g);
+    if (!items.length) return '';
+    return `<div class="caso-docs-grupo"><div class="caso-docs-grupo-t">${g === 'anexos' ? 'Anexos de Contratos' : GRUPOS_CATALOGO[g].titulo}</div>${items.map(([k, p]) => {
+      const d = sel.get(k);
+      return `<div class="caso-doc-fila ${d ? 'marcado' : ''}" data-clave="${k}">
+        <label><input type="checkbox" ${d ? 'checked' : ''} onchange="this.closest('.caso-doc-fila').classList.toggle('marcado', this.checked)"> ${qdlgEscapar(p.titulo)}</label>
+        <select><option value="obligatorio">Obligatorio</option><option value="si_aplica" ${d?.requisito === 'si_aplica' ? 'selected' : ''}>Si aplica</option></select>
+        <input type="text" placeholder="Nota (opcional): cuándo o cómo usarlo" value="${qdlgEscapar(d?.nota || '')}">
+      </div>`;
+    }).join('')}</div>`;
+  }).join('');
+  abrirModal('modal-caso-gestion');
+  setTimeout(() => document.getElementById('caso-titulo').focus(), 60);
+}
+
+async function guardarCasoGestion() {
+  const id = document.getElementById('caso-id').value;
+  const titulo = document.getElementById('caso-titulo').value.trim();
+  if (!titulo) { qAlert('Escribe el caso supuesto.', { tipo: 'warning' }); return; }
+  // Los marcados conservan su orden anterior; los nuevos van al final
+  const previo = id ? ((CASOS_GESTION || []).find(x => x.id === +id)?.documentos || []).map(d => d.clave) : [];
+  const documentos = Array.from(document.querySelectorAll('#caso-documentos .caso-doc-fila')).filter(f => f.querySelector('input[type=checkbox]').checked)
+    .map(f => ({ clave: f.dataset.clave, requisito: f.querySelector('select').value, nota: f.querySelector('input[type=text]').value.trim() }))
+    .sort((a, b) => { const ia = previo.indexOf(a.clave), ib = previo.indexOf(b.clave); return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib); });
+  if (!documentos.length) { qAlert('Marca al menos un documento para este caso.', { tipo: 'warning' }); return; }
+  const datos = { titulo, descripcion: document.getElementById('caso-descripcion').value.trim(), icono: document.getElementById('caso-icono').value.trim() || '📄', documentos };
+  try {
+    const r = await apiOdacl(id ? `/gestion-casos/${id}` : '/gestion-casos', { method: id ? 'PUT' : 'POST', body: JSON.stringify(datos) });
+    cerrarModal('modal-caso-gestion');
+    _casoSeleccionado = r.caso.id;
+    await cargarCasosGestion(true);
+    mostrarNotificacionToast(id ? '✓ Caso actualizado' : '✓ Caso creado');
+  } catch (e) { qAlert('No se pudo guardar el caso: ' + e.message, { tipo: 'error' }); }
+}
+
+async function eliminarCasoGestion() {
+  const id = document.getElementById('caso-id').value;
+  if (!id) return;
+  const ok = await qConfirm('¿Eliminar este caso de Gestión?', { titulo: 'Eliminar caso', tipo: 'warning', aceptar: 'Eliminar', peligro: true });
+  if (!ok) return;
+  try {
+    await apiOdacl(`/gestion-casos/${id}`, { method: 'DELETE' });
+    cerrarModal('modal-caso-gestion');
+    _casoSeleccionado = null;
+    await cargarCasosGestion(true);
+  } catch (e) { qAlert('No se pudo eliminar: ' + e.message, { tipo: 'error' }); }
 }
 
 // ── Nueva plantilla de contrato (queda para todo el equipo y en Comercial) ──
@@ -8952,13 +9257,14 @@ function claveDesdeTitulo(titulo) {
   return clave;
 }
 
-async function crearPlantillaContrato() {
+async function crearPlantillaContrato(grupo = 'contratos') {
+  const g = GRUPOS_CATALOGO[grupo] || GRUPOS_CATALOGO.contratos;
   const r = await qDialogo({
-    tipo: 'question', titulo: 'Nueva plantilla de contrato',
-    mensaje: 'La plantilla se agrega al Catálogo para todo el equipo legal y queda disponible en Comercial para generar contratos.',
+    tipo: 'question', titulo: g.nuevo,
+    mensaje: `Se agrega a «${g.titulo}» para todo el equipo legal${grupo === 'contratos' ? ' y queda disponible en Comercial para generar contratos' : ''}.`,
     campos: [
-      { label: 'Título de la plantilla *', valor: '' },
-      { label: 'Tipo de contrato *', valor: '' },
+      { label: 'Título *', valor: '' },
+      { label: 'Tipo de documento *', valor: grupo === 'contratos' ? '' : g.tipo },
       { label: 'Categoría (ej. Civil & Mercantil)', valor: '' },
       { label: 'Descripción breve', valor: '' },
     ],
@@ -8979,7 +9285,7 @@ async function crearPlantillaContrato() {
     await apiOdacl(`/templates/${encodeURIComponent(clave)}`, {
       method: 'PUT',
       body: JSON.stringify({ titulo, tipo_documento: tipo, contenido_html: contenido, origen_titulo: 'Nueva plantilla', origen_version: 1,
-        categoria: categoria || 'Contrato', descripcion: descripcion || `Plantilla de ${tipo} creada por ODACL.`, badge: 'NUEVA PLANTILLA' })
+        categoria: categoria || g.tipo, descripcion: descripcion || `Plantilla de ${tipo} creada por ODACL.`, badge: 'NUEVA PLANTILLA', grupo })
     });
     await cargarPlantillasOficiales();
     mostrarNotificacionToast(`✓ Plantilla «${titulo}» creada`);
