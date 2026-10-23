@@ -303,6 +303,11 @@
       font-weight: 700; padding: 3px 9px; border-radius: 999px; text-transform: uppercase;
     }
     .status-vigente { background: #d1fae5; color: #065f46; }
+    .origen-chip { display: inline-block; margin-top: 3px; font-size: 9.5px; font-weight: 800; letter-spacing: .3px; text-transform: uppercase; border-radius: 999px; padding: 1px 7px; }
+    .origen-chip.comercial { background: #e0f2fe; color: #075985; }
+    .origen-chip.odacl { background: #fef3c7; color: #92400e; }
+    .contrato-lectura { font-family: 'Times New Roman', serif; font-size: 13.5px; line-height: 1.6; color: #0f172a; }
+    .contrato-lectura .a4-page-export { margin-bottom: 18px; }
     .status-revision { background: #fef3c7; color: #92400e; }
     .status-resuelto { background: #dbeafe; color: #1e40af; }
     .status-riesgo-bajo { background: #d1fae5; color: #065f46; }
@@ -1690,7 +1695,7 @@
 
       <div class="topbar-right">
         <span class="badge-pill badge-ruc">🏛️ RUC: 10764275981</span>
-        <span class="badge-pill badge-compliance">✓ Compliance 100%</span>
+        <span class="badge-pill badge-compliance" id="badge-compliance">• Compliance…</span>
         <button class="btn btn-gold btn-sm" id="btn-top-nueva-consulta">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           <span>+ Nueva Consulta</span>
@@ -1713,9 +1718,9 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="16" y2="10"></line></svg>
             </div>
             <div>
-              <div class="stat-num" id="metric-contratos">18</div>
+              <div class="stat-num" id="metric-contratos">—</div>
               <div class="stat-label">Contratos Corporativos</div>
-              <div class="stat-sub">18 Vigentes &bull; 0 Litigios</div>
+              <div class="stat-sub" id="metric-contratos-sub">Cargando…</div>
             </div>
           </div>
 
@@ -1735,9 +1740,9 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
             </div>
             <div>
-              <div class="stat-num">98.4%</div>
+              <div class="stat-num" id="metric-compliance">—</div>
               <div class="stat-label">Índice de Cumplimiento Legal</div>
-              <div class="stat-sub">Auditoría Interna Favorable</div>
+              <div class="stat-sub">Promedio de los indicadores de Compliance</div>
             </div>
           </div>
 
@@ -1746,9 +1751,9 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
             </div>
             <div>
-              <div class="stat-num" id="metric-consultas">12</div>
+              <div class="stat-num" id="metric-consultas">—</div>
               <div class="stat-label">Asesorías & Dictámenes</div>
-              <div class="stat-sub">100% Dictaminadas</div>
+              <div class="stat-sub" id="metric-consultas-sub">Cargando…</div>
             </div>
           </div>
         </div>
@@ -1811,29 +1816,11 @@
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                   <span>Agenda y Vencimientos</span>
                 </div>
-                <div class="card-subtitle">Plazos tributarios y corporativos</div>
+                <div class="card-subtitle">Contratos por vencer y consultas pendientes</div>
               </div>
             </div>
             <div class="card-body">
-              <div style="display:flex; flex-direction:column; gap:14px;">
-                <div style="padding:12px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:10px; border-left:4px solid var(--gold);">
-                  <div style="font-weight:700; font-size:13px; color:var(--text);">Registro de Banco de Datos Personales</div>
-                  <div style="font-size:11.5px; color:#64748b; margin-top:2px;">Dirección General de Transparencia y Datos Personales (MINJUS).</div>
-                  <div style="font-size:11px; font-weight:700; color:#b45309; margin-top:6px;">📅 Actualización periódica &bull; Estado: Al día</div>
-                </div>
-
-                <div style="padding:12px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:10px; border-left:4px solid #10b981;">
-                  <div style="font-weight:700; font-size:13px; color:var(--text);">Declaración Mensual Impuestos SUNAT</div>
-                  <div style="font-size:11.5px; color:#64748b; margin-top:2px;">Cronograma tributario RUC 10764275981 (Dígito 1).</div>
-                  <div style="font-size:11px; font-weight:700; color:#059669; margin-top:6px;">📅 Declaración y pago sin observaciones</div>
-                </div>
-
-                <div style="padding:12px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:10px; border-left:4px solid #3b82f6;">
-                  <div style="font-weight:700; font-size:13px; color:var(--text);">Custodia de Secretos y NDAs con Devs</div>
-                  <div style="font-size:11.5px; color:#64748b; margin-top:2px;">Revisión de acuerdos de confidencialidad para nuevos colaboradores de software.</div>
-                  <div style="font-size:11px; font-weight:700; color:#1d4ed8; margin-top:6px;">📅 100% de ingenieros con NDA firmado</div>
-                </div>
-              </div>
+              <div style="display:flex; flex-direction:column; gap:14px;" id="agenda-legal"></div>
             </div>
           </div>
         </div>
@@ -1991,7 +1978,8 @@
               <button class="btn btn-outline btn-sm" onclick="abrirModeloContratoModal()">
                 📄 Ver Modelo Oficial de 14 Cláusulas
               </button>
-              <button class="btn btn-gold btn-sm" onclick="abrirModalNuevoContrato()">
+              <input type="search" placeholder="Buscar contrato…" oninput="filtrarContratos(this.value)" style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-size:12.5px;min-width:190px">
+              <button class="btn btn-gold btn-sm" onclick="abrirModalNuevoContrato()" title="Contratos que no salen de Comercial (NDA, proveedores, locación…)">
                 + Registrar Contrato
               </button>
             </div>
@@ -2006,7 +1994,7 @@
                     <th>Tipo</th>
                     <th>Monto Pactado</th>
                     <th>Forma de Pago</th>
-                    <th>Vigencia</th>
+                    <th>Vigencia (inicio → fin)</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                   </tr>
@@ -2071,53 +2059,12 @@
             </div>
           </div>
           <div class="card-body">
-            <!-- Compliance meters -->
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:18px; margin-bottom:28px;">
-              <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:16px;">
-                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px;">
-                  <span>Protección de Datos (Ley 29733)</span>
-                  <span style="color:#059669;">98%</span>
-                </div>
-                <div style="background:#e2e8f0; height:8px; border-radius:4px; margin-top:8px; overflow:hidden;">
-                  <div style="background:#059669; width:98%; height:100%;"></div>
-                </div>
-                <div style="font-size:11px; color:#64748b; margin-top:6px;">Cláusulas de privacidad y consentimiento activo.</div>
-              </div>
-
-              <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:16px;">
-                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px;">
-                  <span>Propiedad Intelectual (D.L. 822)</span>
-                  <span style="color:#059669;">100%</span>
-                </div>
-                <div style="background:#e2e8f0; height:8px; border-radius:4px; margin-top:8px; overflow:hidden;">
-                  <div style="background:#059669; width:100%; height:100%;"></div>
-                </div>
-                <div style="font-size:11px; color:#64748b; margin-top:6px;">Cesión expresa de código de programadores.</div>
-              </div>
-
-              <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:16px;">
-                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px;">
-                  <span>Tributario & Detracciones TI</span>
-                  <span style="color:#059669;">99%</span>
-                </div>
-                <div style="background:#e2e8f0; height:8px; border-radius:4px; margin-top:8px; overflow:hidden;">
-                  <div style="background:#059669; width:99%; height:100%;"></div>
-                </div>
-                <div style="font-size:11px; color:#64748b; margin-top:6px;">Detracción del 12% controlada en facturación.</div>
-              </div>
-
-              <div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:16px;">
-                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px;">
-                  <span>Seguridad de la Información (Ley 30096)</span>
-                  <span style="color:#059669;">96%</span>
-                </div>
-                <div style="background:#e2e8f0; height:8px; border-radius:4px; margin-top:8px; overflow:hidden;">
-                  <div style="background:#059669; width:96%; height:100%;"></div>
-                </div>
-                <div style="font-size:11px; color:#64748b; margin-top:6px;">2FA y variables de entorno en producción.</div>
-              </div>
+            <!-- Indicadores calculados con datos reales -->
+            <div id="compliance-meters" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:18px; margin-bottom:22px;"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <div style="font-size:13px;font-weight:800;color:var(--text)">Matriz de riesgos legales</div>
+              <button class="btn btn-gold btn-sm" onclick="editarRiesgo()">+ Agregar riesgo</button>
             </div>
-
             <!-- Risk Matrix Table -->
             <div class="table-responsive">
               <table class="data-table">
@@ -2130,6 +2077,7 @@
                     <th>Medida de Control Implementada</th>
                     <th>Responsable</th>
                     <th>Nivel</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody id="risk-matrix-table-body">
@@ -2847,52 +2795,68 @@
     <div class="modal-box">
       <div class="modal-head">
         <div>
-          <h3>📝 Registrar Nuevo Contrato en el Catálogo</h3>
+          <h3 id="ncon-titulo">📝 Registrar contrato externo</h3>
           <p style="font-size:12px; color:#64748b; margin-top:2px;">Control legal corporativo de obligaciones y plazos</p>
         </div>
         <button class="modal-close" onclick="cerrarModal('modal-nuevo-contrato')">&times;</button>
       </div>
       <div class="modal-body">
         <form id="form-nuevo-contrato" onsubmit="guardarNuevoContrato(event)">
+          <input type="hidden" id="ncon-id">
           <div class="form-row">
             <div class="form-group">
-              <label>Código de Contrato</label>
-              <input type="text" id="ncon-codigo" value="CONT-2026-000002-WEB" required>
+              <label>Código de contrato (opcional)</label>
+              <input type="text" id="ncon-codigo" placeholder="Se asigna EXT-AAAA-NNN si lo dejas vacío">
             </div>
             <div class="form-group">
-              <label>Cliente / Contraparte</label>
+              <label>Contraparte *</label>
               <input type="text" id="ncon-cliente" placeholder="Razón social o nombre" required>
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Tipo de Contrato</label>
-              <select id="ncon-tipo">
-                <option value="Desarrollo de Software">Desarrollo de Software (14 Cláusulas)</option>
-                <option value="Acuerdo NDA">Acuerdo de Confidencialidad (NDA)</option>
-                <option value="Licenciamiento SaaS">Licenciamiento SaaS Cloud</option>
-                <option value="Locación de Servicios TI">Locación de Servicios Desarrollador</option>
-                <option value="SLA & Soporte">SLA & Soporte Correctivo</option>
-              </select>
+              <label>Tipo de contrato</label>
+              <input type="text" id="ncon-tipo" list="ncon-tipos" placeholder="Ej. Acuerdo de Confidencialidad (NDA)">
+              <datalist id="ncon-tipos">
+                <option value="Acuerdo de Confidencialidad (NDA)"><option value="Locación de Servicios TI"><option value="Contrato con Proveedor"><option value="Licenciamiento SaaS"><option value="SLA & Soporte"><option value="Contrato de Trabajo"><option value="Convenio de Prácticas">
+              </datalist>
             </div>
             <div class="form-group">
-              <label>Monto Total (S/.)</label>
-              <input type="number" step="0.01" id="ncon-monto" placeholder="1500.00" required>
+              <label>Monto y moneda</label>
+              <div style="display:flex;gap:6px">
+                <select id="ncon-moneda" style="width:90px"><option value="PEN">S/</option><option value="USD">$</option><option value="EUR">€</option></select>
+                <input type="number" step="0.01" min="0" id="ncon-monto" placeholder="0.00">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Forma de pago</label>
+            <input type="text" id="ncon-pago" placeholder="Ej. Mensual recurrente / Sin contraprestación">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fecha de inicio</label>
+              <input type="date" id="ncon-fecha" required>
+            </div>
+            <div class="form-group">
+              <label>Fecha de fin (vigencia)</label>
+              <input type="date" id="ncon-fin">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Fecha de Suscripción</label>
-              <input type="date" id="ncon-fecha" required>
+              <label>Estado</label>
+              <select id="ncon-estado"><option value="borrador">Borrador</option><option value="pendiente_firma">Pendiente de firma</option><option value="vigente" selected>Vigente</option><option value="finalizado">Finalizado</option><option value="cancelado">Cancelado</option></select>
             </div>
             <div class="form-group">
-              <label>Duración / Plazo (Días)</label>
-              <input type="number" id="ncon-plazo" value="30" required>
+              <label>Notas</label>
+              <input type="text" id="ncon-notas" placeholder="Observaciones (opcional)">
             </div>
           </div>
           <div class="modal-footer" style="padding:16px 0 0; background:none;">
+            <button type="button" class="btn btn-outline" id="ncon-eliminar" style="margin-right:auto;color:#b91c1c;display:none" onclick="eliminarContratoExterno()">Eliminar</button>
             <button type="button" class="btn btn-outline" onclick="cerrarModal('modal-nuevo-contrato')">Cancelar</button>
-            <button type="submit" class="btn btn-gold">Registrar en Inventario</button>
+            <button type="submit" class="btn btn-gold">Guardar contrato</button>
           </div>
         </form>
       </div>
@@ -3188,7 +3152,9 @@ function qDialogo(opts) {
           ${campos.map((c, i) => `
             <div class="qdlg-field">
               <label for="qdlg-campo-${i}">${qdlgEscapar(c.label)}</label>
-              ${c.tipo === 'select'
+              ${c.tipo === 'textarea'
+                ? `<textarea id="qdlg-campo-${i}" rows="5" style="width:100%;resize:vertical;font:inherit;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px">${qdlgEscapar(c.valor ?? '')}</textarea>`
+                : c.tipo === 'select'
                 ? `<select id="qdlg-campo-${i}">${(c.opciones || []).map(o => `<option value="${qdlgEscapar(o.valor)}" ${o.valor === c.valor ? 'selected' : ''}>${qdlgEscapar(o.texto)}</option>`).join('')}</select>`
                 : `<input id="qdlg-campo-${i}" type="${c.tipo || 'text'}" value="${qdlgEscapar(c.valor ?? '')}" ${c.tipo === 'number' ? 'min="1" max="50"' : ''}>`}
             </div>`).join('')}
@@ -3200,7 +3166,7 @@ function qDialogo(opts) {
       </div>`;
     document.body.appendChild(overlay);
 
-    const inputs = Array.from(overlay.querySelectorAll('.qdlg-field input, .qdlg-field select'));
+    const inputs = Array.from(overlay.querySelectorAll('.qdlg-field input, .qdlg-field select, .qdlg-field textarea'));
     const cerrar = (aceptado) => {
       document.removeEventListener('keydown', onKey, true);
       const valores = inputs.map(inp => inp.value);
@@ -3221,7 +3187,7 @@ function qDialogo(opts) {
     };
     const onKey = (e) => {
       if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); cerrar(false); }
-      else if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); cerrar(true); }
+      else if (e.key === 'Enter' && (e.target.tagName !== 'TEXTAREA' || e.ctrlKey)) { e.preventDefault(); e.stopPropagation(); cerrar(true); }
     };
     document.addEventListener('keydown', onKey, true);
     overlay.addEventListener('click', (e) => {
@@ -3627,75 +3593,85 @@ function verDetalleLey(leyId) {
 /* ============================================================
    4. BASE DE DATOS DE CONTRATOS & MODELO OFICIAL (14 CLÁUSULAS)
    ============================================================ */
-let CONTRATOS_DATA = [
-  {
-    codigo: 'CONT-2026-000001-WEB',
-    cliente: 'THE TWENTIES (Eduardo A. Merino Mendoza)',
-    tipo: 'Desarrollo de Software Web',
-    monto: 1500.00,
-    formaPago: '50% Inicial (S/ 750) / 50% Final (S/ 750)',
-    fecha: '10/02/2026',
-    plazo: '30 días calendario',
-    vencimiento: '10/03/2026',
-    estado: 'Vigente'
-  },
-  {
-    codigo: 'CONT-2026-000002-NDA',
-    cliente: 'CORPORACIÓN DIGITAL DEL VALLE S.A.C.',
-    tipo: 'Acuerdo de Confidencialidad (NDA)',
-    monto: 0.00,
-    formaPago: 'Acuerdo de Secreto Comercial',
-    fecha: '15/01/2026',
-    plazo: '2 años',
-    vencimiento: '15/01/2028',
-    estado: 'Vigente'
-  },
-  {
-    codigo: 'CONT-2026-000003-SLA',
-    cliente: 'INVERSIONES & TEXTILES LIMA E.I.R.L.',
-    tipo: 'SLA Mantenimiento y Cloud',
-    monto: 650.00,
-    formaPago: 'Mensual recurrente',
-    fecha: '01/02/2026',
-    plazo: '12 meses',
-    vencimiento: '01/02/2027',
-    estado: 'Vigente'
-  },
-  {
-    codigo: 'CONT-2026-000004-LOC',
-    cliente: 'ING. CARLOS GUTIÉRREZ (Desarrollador Senior)',
-    tipo: 'Locación TI con Cesión Patrimonial',
-    monto: 2800.00,
-    formaPago: 'Por entregables de Sprint',
-    fecha: '05/02/2026',
-    plazo: '60 días',
-    vencimiento: '05/04/2026',
-    estado: 'Vigente'
-  }
-];
+// Contratos reales: los generados en Comercial y los registrados por ODACL (API)
+let CONTRATOS_DATA = [];
+let CONSULTAS_DATA = [];
+let RIESGOS_DATA = [];
+let _filtroContratos = '';
+
+const fmtFechaCorta = f => { if (!f) return '—'; const d = new Date(String(f).slice(0, 10) + 'T00:00:00'); return isNaN(d) ? '—' : d.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' }); };
+const simboloMoneda = m => ({ PEN: 'S/', USD: '$', EUR: '€' }[String(m || 'PEN').toUpperCase()] || (m || 'S/'));
+const diasHasta = f => { if (!f) return null; const d = new Date(String(f).slice(0, 10) + 'T00:00:00'); return Math.round((d - new Date(new Date().toDateString())) / 86400000); };
+const ESTADOS_CONTRATO = { borrador: ['Borrador', 'status-riesgo-medio'], pendiente_firma: ['Pendiente de firma', 'status-riesgo-medio'], vigente: ['Vigente', 'status-vigente'],
+  finalizado: ['Finalizado', 'status-resuelto'], cancelado: ['Cancelado', 'status-riesgo-alto'], vencido: ['Vencido', 'status-riesgo-alto'] };
+
+// Estado real: un contrato vigente con fecha de fin pasada figura como vencido
+function estadoContrato(c) {
+  const e = String(c.estado || 'vigente').toLowerCase();
+  if (e === 'vigente' && c.fecha_fin && diasHasta(c.fecha_fin) < 0) return 'vencido';
+  return ESTADOS_CONTRATO[e] ? e : 'vigente';
+}
+
+async function cargarDatosLegales() {
+  const [c, q, r] = await Promise.allSettled([apiOdacl('/contratos'), apiOdacl('/consultas'), apiOdacl('/riesgos')]);
+  CONTRATOS_DATA = c.status === 'fulfilled' ? (c.value.contratos || []) : [];
+  CONSULTAS_DATA = q.status === 'fulfilled' ? (q.value.consultas || []) : [];
+  RIESGOS_DATA = r.status === 'fulfilled' ? (r.value.riesgos || []) : [];
+  window._errorDatosLegales = [c, q, r].some(x => x.status !== 'fulfilled');
+  renderContratos(); renderConsultas(); renderRiesgos(); renderIndicadoresLegales(); renderAgendaLegal();
+}
+
+function filaVacia(cols, texto) {
+  return `<tr><td colspan="${cols}" style="text-align:center;padding:26px;color:#64748b;font-size:13px">${window._errorDatosLegales ? '⚠ No se pudo conectar con el servidor. Revisa tu sesión e intenta de nuevo.' : texto}</td></tr>`;
+}
 
 function renderContratos() {
   const tbody = document.getElementById('contracts-table-body');
   const dashTbody = document.getElementById('dashboard-recent-contracts');
+  const q = _filtroContratos.trim().toLowerCase();
+  const lista = CONTRATOS_DATA.filter(c => !q || [c.codigo, c.contraparte, c.tipo, c.producto_nombre].join(' ').toLowerCase().includes(q));
+  const fila = (c, corto) => {
+    const est = estadoContrato(c);
+    const [txtEst, clsEst] = ESTADOS_CONTRATO[est];
+    const d = diasHasta(c.fecha_fin);
+    const alerta = est === 'vigente' && d !== null && d <= 30 ? `<div style="font-size:10.5px;font-weight:700;color:#b45309">vence en ${d} ${d === 1 ? 'día' : 'días'}</div>` : '';
+    const monto = Number(c.monto) > 0 ? `${simboloMoneda(c.moneda)} ${Number(c.monto).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'N/A';
+    const origen = c.origen === 'comercial' ? '<span class="origen-chip comercial">Comercial</span>' : '<span class="origen-chip odacl">ODACL</span>';
+    const acciones = c.origen === 'comercial'
+      ? `<button class="btn btn-outline btn-sm" onclick="verContratoComercial('${qdlgEscapar(c.id)}')" ${c.tiene_documento ? '' : 'disabled title="Contrato sin documento generado"'}>Ver contrato</button>`
+      : `<button class="btn btn-outline btn-sm" onclick="abrirModalNuevoContrato('${qdlgEscapar(c.id)}')">Editar</button>`;
+    return `<tr>
+      <td><strong style="color:var(--primary); font-family:'JetBrains Mono',monospace;">${qdlgEscapar(c.codigo || c.id)}</strong>${corto ? '' : '<br>' + origen}</td>
+      <td><strong>${qdlgEscapar(c.contraparte || '—')}</strong>${c.producto_nombre ? `<div style="font-size:11px;color:#64748b">${qdlgEscapar(c.producto_nombre)}</div>` : ''}</td>
+      <td><span style="font-size:12px; color:#475569;">${qdlgEscapar(c.tipo || '—')}</span></td>
+      ${corto ? `<td>${fmtFechaCorta(c.fecha_fin)}${alerta}</td><td><strong>${monto}</strong></td>`
+        : `<td><strong>${monto}</strong></td><td><span style="font-size:11.5px; color:#64748b;">${qdlgEscapar(c.forma_pago || '—')}</span></td><td style="white-space:nowrap">${fmtFechaCorta(c.fecha_inicio)} → ${fmtFechaCorta(c.fecha_fin)}${alerta}</td>`}
+      <td><span class="status-badge ${clsEst}">${txtEst}</span></td>
+      <td>${acciones}</td>
+    </tr>`;
+  };
+  if (tbody) tbody.innerHTML = lista.length ? lista.map(c => fila(c, false)).join('') : filaVacia(8, q ? 'Ningún contrato coincide con la búsqueda.' : 'Aún no hay contratos. Los que se generen en Comercial aparecerán aquí; los externos se registran con «+ Registrar Contrato».');
+  if (dashTbody) dashTbody.innerHTML = CONTRATOS_DATA.length ? CONTRATOS_DATA.slice(0, 6).map(c => fila(c, true)).join('') : filaVacia(7, 'Aún no hay contratos registrados.');
+  const vig = CONTRATOS_DATA.filter(c => estadoContrato(c) === 'vigente').length;
+  const porVencer = CONTRATOS_DATA.filter(c => estadoContrato(c) === 'vigente' && diasHasta(c.fecha_fin) !== null && diasHasta(c.fecha_fin) <= 30).length;
+  const m = document.getElementById('metric-contratos'); if (m) m.textContent = CONTRATOS_DATA.length;
+  const ms = document.getElementById('metric-contratos-sub'); if (ms) ms.textContent = `${vig} vigentes · ${porVencer} por vencer (30 días)`;
+}
 
-  const rows = CONTRATOS_DATA.map(c => `
-    <tr>
-      <td><strong style="color:var(--primary); font-family:'JetBrains Mono',monospace;">${c.codigo}</strong></td>
-      <td><strong>${c.cliente}</strong></td>
-      <td><span style="font-size:12px; color:#475569;">${c.tipo}</span></td>
-      <td><strong>${c.monto > 0 ? ('S/ ' + c.monto.toFixed(2)) : 'N/A'}</strong></td>
-      <td><span style="font-size:11.5px; color:#64748b;">${c.formaPago}</span></td>
-      <td>${c.vencimiento}</td>
-      <td><span class="status-badge status-vigente">${c.estado}</span></td>
-      <td>
-        <button class="btn btn-outline btn-sm" onclick="abrirModeloContratoModal()">Ver Cláusulas</button>
-      </td>
-    </tr>
-  `).join('');
+function filtrarContratos(v) { _filtroContratos = v; renderContratos(); }
 
-  if (tbody) tbody.innerHTML = rows;
-  if (dashTbody) dashTbody.innerHTML = rows;
-  document.getElementById('metric-contratos').textContent = CONTRATOS_DATA.length;
+// Lee el documento del contrato generado en Comercial
+async function verContratoComercial(id) {
+  try {
+    const { contrato } = await apiOdacl(`/contratos/${encodeURIComponent(id)}/documento`);
+    const cont = document.getElementById('modal-contract-body');
+    const tit = document.querySelector('#modal-modelo-contrato .modal-head h3');
+    const sub = document.querySelector('#modal-modelo-contrato .modal-head p');
+    if (tit) tit.textContent = `📄 ${contrato.plantilla_titulo || 'Contrato'}`;
+    if (sub) sub.textContent = `${contrato.cliente_nombre || ''} • N° ${contrato.id}`;
+    cont.innerHTML = `<div class="contrato-lectura">${contrato.contenido_html || '<p>El contrato no tiene documento generado.</p>'}</div>`;
+    abrirModal('modal-modelo-contrato');
+  } catch (e) { qAlert('No se pudo abrir el contrato: ' + e.message, { tipo: 'error' }); }
 }
 
 const CLAUSULAS_MODELO_OFICIAL = [
@@ -3716,6 +3692,10 @@ const CLAUSULAS_MODELO_OFICIAL = [
 ];
 
 function abrirModeloContratoModal() {
+  const tit = document.querySelector('#modal-modelo-contrato .modal-head h3');
+  const sub = document.querySelector('#modal-modelo-contrato .modal-head p');
+  if (tit) tit.textContent = '📄 Modelo Oficial de Contrato (14 Cláusulas)';
+  if (sub) sub.textContent = 'Contrato de Prestación de Servicios de Desarrollo de Software';
   const container = document.getElementById('modal-contract-body');
   container.innerHTML = `
     <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
@@ -3761,62 +3741,28 @@ function copiarContratoCompleto() {
 /* ============================================================
    5. ASESORÍA LEGAL & CONSULTAS JURÍDICAS
    ============================================================ */
-let CONSULTAS_DATA = [
-  {
-    radicado: 'ODACL-2026-001',
-    asunto: 'Tratamiento de imágenes en Cloudinary y Ley 29733',
-    area: 'OTI / TI',
-    fecha: '12/02/2026',
-    urgencia: 'Alta',
-    estado: 'Dictaminado',
-    dictamen: 'Procedente con cifrado SSL y aviso de privacidad al usuario.'
-  },
-  {
-    radicado: 'ODACL-2026-002',
-    asunto: 'Cesión de derechos de código en desarrollo a medida',
-    area: 'ODN / Comercial',
-    fecha: '18/02/2026',
-    urgencia: 'Media',
-    estado: 'Dictaminado',
-    dictamen: 'Se aplica Cláusula Duodécima: la cesión opera contra pago del 100%.'
-  },
-  {
-    radicado: 'ODACL-2026-003',
-    asunto: 'Aplicación de la detracción del 12% en servicios TI',
-    area: 'OPP / Finanzas',
-    fecha: '20/02/2026',
-    urgencia: 'Media',
-    estado: 'Dictaminado',
-    dictamen: 'Conforme a R.S. 183-2004/SUNAT, todo servicio de software mayor a S/ 700 está afecto al SPOT 12%.'
-  },
-  {
-    radicado: 'ODACL-2026-004',
-    asunto: 'Cláusula de confidencialidad para nuevos devs en remoto',
-    area: 'RRHH',
-    fecha: '22/02/2026',
-    urgencia: 'Alta',
-    estado: 'Dictaminado',
-    dictamen: 'Obligatoria firma de NDA y asignación de equipo con variables seguras.'
-  }
-];
+const ESTADOS_CONSULTA = { pendiente: ['Pendiente', 'status-riesgo-medio'], en_analisis: ['En análisis', 'status-resuelto'], dictaminado: ['Dictaminado', 'status-vigente'], archivado: ['Archivado', 'status-resuelto'] };
+const AREAS = { OTI: 'OTI / TI', ODN: 'ODN / Comercial', RRHH: 'RRHH', ADG: 'Administración General', OPP: 'OPP / Finanzas' };
 
 function renderConsultas() {
   const tbody = document.getElementById('advisory-table-body');
-  if (!tbody) return;
-  tbody.innerHTML = CONSULTAS_DATA.map(c => `
-    <tr>
-      <td><strong style="color:var(--gold); font-family:'JetBrains Mono',monospace;">${c.radicado}</strong></td>
-      <td><strong>${c.asunto}</strong></td>
-      <td><span style="font-size:12px; color:#475569;">${c.area}</span></td>
-      <td>${c.fecha}</td>
-      <td>
-        <span class="status-badge ${c.urgencia === 'Alta' ? 'status-riesgo-alto' : 'status-riesgo-medio'}">${c.urgencia}</span>
-      </td>
-      <td><span class="status-badge status-resuelto">${c.estado}</span></td>
-      <td><span style="font-size:12px; color:#334155;">${c.dictamen}</span></td>
-    </tr>
-  `).join('');
-  document.getElementById('metric-consultas').textContent = CONSULTAS_DATA.length;
+  if (tbody) tbody.innerHTML = CONSULTAS_DATA.length ? CONSULTAS_DATA.map(c => {
+    const [txtEst, clsEst] = ESTADOS_CONSULTA[c.estado] || ESTADOS_CONSULTA.pendiente;
+    const urg = c.urgencia === 'Crítica' || c.urgencia === 'Alta' ? 'status-riesgo-alto' : 'status-riesgo-medio';
+    return `<tr>
+      <td><strong style="color:var(--gold); font-family:'JetBrains Mono',monospace;">${qdlgEscapar(c.radicado)}</strong></td>
+      <td><strong>${qdlgEscapar(c.asunto)}</strong>${c.solicitante ? `<div style="font-size:11px;color:#64748b">Por ${qdlgEscapar(c.solicitante)}</div>` : ''}</td>
+      <td><span style="font-size:12px; color:#475569;">${qdlgEscapar(AREAS[c.area] || c.area || '—')}</span></td>
+      <td>${fmtFechaCorta(c.created_at)}</td>
+      <td><span class="status-badge ${urg}">${qdlgEscapar(c.urgencia || 'Media')}</span></td>
+      <td><span class="status-badge ${clsEst}">${txtEst}</span></td>
+      <td><span style="font-size:12px; color:#334155;">${c.dictamen ? qdlgEscapar(c.dictamen.length > 140 ? c.dictamen.slice(0, 140) + '…' : c.dictamen) : '<i style="color:#94a3b8">Sin dictamen</i>'}</span>
+        <div style="margin-top:6px"><button class="btn btn-outline btn-sm" onclick="dictaminarConsulta(${c.id})">${c.estado === 'dictaminado' ? 'Ver / editar dictamen' : '⚖️ Dictaminar'}</button></div></td>
+    </tr>`;
+  }).join('') : filaVacia(7, 'No hay consultas. Las áreas las registran con «+ Redactar Nueva Consulta».');
+  const m = document.getElementById('metric-consultas'); if (m) m.textContent = CONSULTAS_DATA.length;
+  const pend = CONSULTAS_DATA.filter(c => c.estado !== 'dictaminado' && c.estado !== 'archivado').length;
+  const ms = document.getElementById('metric-consultas-sub'); if (ms) ms.textContent = CONSULTAS_DATA.length ? `${pend} pendientes · ${CONSULTAS_DATA.length - pend} atendidas` : 'Sin consultas registradas';
 }
 
 function abrirModalNuevaConsulta() {
@@ -3824,129 +3770,197 @@ function abrirModalNuevaConsulta() {
   abrirModal('modal-nueva-consulta');
 }
 
-function guardarNuevaConsulta(e) {
+async function guardarNuevaConsulta(e) {
   e.preventDefault();
-  const asunto = document.getElementById('consulta-asunto').value.trim();
-  const area = document.getElementById('consulta-area').value;
-  const urgencia = document.getElementById('consulta-urgencia').value;
-  const detalle = document.getElementById('consulta-detalle').value.trim();
-
-  const num = CONSULTAS_DATA.length + 1;
-  const nuevoRadicado = 'ODACL-2026-' + String(num).padStart(3, '0');
-  const hoy = new Date().toLocaleDateString('es-PE');
-
-  CONSULTAS_DATA.unshift({
-    radicado: nuevoRadicado,
-    asunto: asunto,
-    area: area,
-    fecha: hoy,
-    urgencia: urgencia,
-    estado: 'En Análisis',
-    dictamen: 'Registrado en mesa de partes ODACL. En revisión por asesor legal.'
-  });
-
-  renderConsultas();
-  cerrarModal('modal-nueva-consulta');
-  qAlert(`✓ Consulta legal ${nuevoRadicado} radicada con éxito.`);
+  const datos = {
+    asunto: document.getElementById('consulta-asunto').value.trim(),
+    area: document.getElementById('consulta-area').value,
+    urgencia: document.getElementById('consulta-urgencia').value,
+    detalle: document.getElementById('consulta-detalle').value.trim(),
+  };
+  try {
+    const { consulta } = await apiOdacl('/consultas', { method: 'POST', body: JSON.stringify(datos) });
+    cerrarModal('modal-nueva-consulta');
+    await cargarDatosLegales();
+    qAlert(`✓ Consulta legal ${consulta.radicado} registrada en la mesa de partes de ODACL.`);
+  } catch (err) { qAlert('No se pudo registrar la consulta: ' + err.message, { tipo: 'error' }); }
 }
 
-function abrirModalNuevoContrato() {
-  document.getElementById('form-nuevo-contrato').reset();
-  document.getElementById('ncon-fecha').valueAsDate = new Date();
+async function dictaminarConsulta(id) {
+  const c = CONSULTAS_DATA.find(x => x.id === id);
+  if (!c) return;
+  const r = await qDialogo({
+    tipo: 'question', titulo: `Dictamen · ${c.radicado}`,
+    mensaje: `${c.asunto}\n\nÁrea: ${AREAS[c.area] || c.area || '—'} · Urgencia: ${c.urgencia || 'Media'}${c.detalle ? '\n\nConsulta:\n' + c.detalle : ''}`,
+    campos: [
+      { label: 'Estado', tipo: 'select', valor: c.estado === 'pendiente' ? 'dictaminado' : c.estado, opciones: Object.entries(ESTADOS_CONSULTA).map(([v, [t]]) => ({ valor: v, texto: t })) },
+      { label: 'Dictamen / opinión legal', tipo: 'textarea', valor: c.dictamen || '' },
+    ],
+    aceptar: 'Guardar dictamen', cancelar: 'Cancelar'
+  });
+  if (!r.aceptado) return;
+  try {
+    await apiOdacl(`/consultas/${id}`, { method: 'PUT', body: JSON.stringify({ estado: r.valores[0], dictamen: r.valores[1] }) });
+    await cargarDatosLegales();
+    mostrarNotificacionToast('✓ Dictamen guardado');
+  } catch (err) { qAlert('No se pudo guardar el dictamen: ' + err.message, { tipo: 'error' }); }
+}
+
+// Contratos registrados por ODACL (NDA, proveedores, locación…)
+function abrirModalNuevoContrato(id) {
+  const f = document.getElementById('form-nuevo-contrato');
+  f.reset();
+  const c = id ? CONTRATOS_DATA.find(x => x.id === id && x.origen === 'odacl') : null;
+  const set = (k, v) => { const el = document.getElementById(k); if (el) el.value = v ?? ''; };
+  set('ncon-id', c?.id || '');
+  set('ncon-codigo', c?.codigo || '');
+  set('ncon-cliente', c?.contraparte || '');
+  set('ncon-tipo', c?.tipo || '');
+  set('ncon-moneda', c?.moneda || 'PEN');
+  set('ncon-monto', c ? Number(c.monto) : '');
+  set('ncon-pago', c?.forma_pago || '');
+  set('ncon-fecha', c?.fecha_inicio ? String(c.fecha_inicio).slice(0, 10) : new Date().toISOString().slice(0, 10));
+  set('ncon-fin', c?.fecha_fin ? String(c.fecha_fin).slice(0, 10) : '');
+  set('ncon-estado', c?.estado || 'vigente');
+  set('ncon-notas', c?.notas || '');
+  document.getElementById('ncon-titulo').textContent = c ? `✏️ Editar contrato ${c.codigo || c.id}` : '📝 Registrar contrato externo';
+  document.getElementById('ncon-eliminar').style.display = c ? '' : 'none';
   abrirModal('modal-nuevo-contrato');
 }
 
-function guardarNuevoContrato(e) {
+async function guardarNuevoContrato(e) {
   e.preventDefault();
-  const codigo = document.getElementById('ncon-codigo').value.trim();
-  const cliente = document.getElementById('ncon-cliente').value.trim();
-  const tipo = document.getElementById('ncon-tipo').value;
-  const monto = parseFloat(document.getElementById('ncon-monto').value) || 0;
-  const fecha = document.getElementById('ncon-fecha').value;
-  const plazo = parseInt(document.getElementById('ncon-plazo').value) || 30;
+  const v = id => document.getElementById(id).value.trim();
+  const id = v('ncon-id');
+  const datos = { codigo: v('ncon-codigo'), contraparte: v('ncon-cliente'), tipo: v('ncon-tipo'), moneda: v('ncon-moneda'), monto: parseFloat(v('ncon-monto')) || 0,
+    forma_pago: v('ncon-pago'), fecha_inicio: v('ncon-fecha'), fecha_fin: v('ncon-fin'), estado: v('ncon-estado'), notas: v('ncon-notas') };
+  if (datos.fecha_fin && datos.fecha_inicio && datos.fecha_fin < datos.fecha_inicio) { qAlert('La fecha de fin no puede ser anterior a la de inicio.', { tipo: 'warning' }); return; }
+  try {
+    const r = await apiOdacl(id ? `/contratos-externos/${encodeURIComponent(id)}` : '/contratos-externos', { method: id ? 'PUT' : 'POST', body: JSON.stringify(datos) });
+    cerrarModal('modal-nuevo-contrato');
+    await cargarDatosLegales();
+    mostrarNotificacionToast(`✓ Contrato ${r.contrato.codigo || r.contrato.id} ${id ? 'actualizado' : 'registrado'}`);
+  } catch (err) { qAlert('No se pudo guardar el contrato: ' + err.message, { tipo: 'error' }); }
+}
 
-  CONTRATOS_DATA.unshift({
-    codigo: codigo,
-    cliente: cliente,
-    tipo: tipo,
-    monto: monto,
-    formaPago: '50% Inicial / 50% Final',
-    fecha: fecha,
-    plazo: `${plazo} días`,
-    vencimiento: 'A determinar',
-    estado: 'Vigente'
-  });
-
-  renderContratos();
-  cerrarModal('modal-nuevo-contrato');
-  qAlert(`✓ Contrato ${codigo} incorporado al inventario corporativo.`);
+async function eliminarContratoExterno() {
+  const id = document.getElementById('ncon-id').value;
+  if (!id) return;
+  const ok = await qConfirm('¿Eliminar este contrato del registro de ODACL?', { titulo: 'Eliminar contrato', tipo: 'warning', aceptar: 'Eliminar', peligro: true });
+  if (!ok) return;
+  try {
+    await apiOdacl(`/contratos-externos/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    cerrarModal('modal-nuevo-contrato');
+    await cargarDatosLegales();
+    mostrarNotificacionToast('Contrato eliminado');
+  } catch (err) { qAlert('No se pudo eliminar: ' + err.message, { tipo: 'error' }); }
 }
 
 /* ============================================================
    6. MATRIZ DE COMPLIANCE & RIESGOS LEGALES
    ============================================================ */
-const RIESGOS_DATA = [
-  {
-    dimension: 'Datos Personales',
-    riesgo: 'Filtración o acceso no autorizado a datos de clientes en la nube',
-    probabilidad: 'Baja',
-    impacto: 'Alto',
-    control: 'Cifrado SSL, variables protegidas, verificación 2FA y bcryptjs',
-    responsable: 'OTI & Legal',
-    nivel: 'Bajo'
-  },
-  {
-    dimension: 'Propiedad Intelectual',
-    riesgo: 'Reclamo de titularidad de código por parte de programador independiente',
-    probabilidad: 'Baja',
-    impacto: 'Crítico',
-    control: 'Contratos con Cláusula de Cesión de Derechos Patrimoniales (D.L. 822)',
-    responsable: 'ODACL / RRHH',
-    nivel: 'Bajo'
-  },
-  {
-    dimension: 'Contratos & Pagos',
-    riesgo: 'Impago de armadas por cliente una vez culminado el software',
-    probabilidad: 'Media',
-    impacto: 'Medio',
-    control: 'Cobro del 50% al inicio y retención de entrega en producción hasta cancelación final',
-    responsable: 'Comercial & ODACL',
-    nivel: 'Bajo'
-  },
-  {
-    dimension: 'Tributario SUNAT',
-    riesgo: 'Omisión de depósito de detracción del 12% en el Banco de la Nación',
-    probabilidad: 'Baja',
-    impacto: 'Medio',
-    control: 'Control cruzado con comprobantes de pago de la OPP y portal SUNAT',
-    responsable: 'Finanzas & Legal',
-    nivel: 'Bajo'
-  },
-  {
-    dimension: 'Seguridad Laboral',
-    riesgo: 'Reclamos por fatiga ergonómica o desnaturalización de teletrabajo',
-    probabilidad: 'Baja',
-    impacto: 'Bajo',
-    control: 'Convenios de teletrabajo según Ley 31572 y pausas activas recomendadas',
-    responsable: 'RRHH',
-    nivel: 'Bajo'
-  }
-];
+const NIVELES_RIESGO = { Bajo: ['Controlado', 'status-riesgo-bajo'], Medio: ['En seguimiento', 'status-riesgo-medio'], Alto: ['Crítico', 'status-riesgo-alto'] };
 
 function renderRiesgos() {
   const tbody = document.getElementById('risk-matrix-table-body');
   if (!tbody) return;
-  tbody.innerHTML = RIESGOS_DATA.map(r => `
-    <tr>
-      <td><strong>${r.dimension}</strong></td>
-      <td>${r.riesgo}</td>
-      <td>${r.probabilidad}</td>
-      <td>${r.impacto}</td>
-      <td><span style="font-size:12px; color:#065f46;">${r.control}</span></td>
-      <td><span style="font-size:11.5px; font-weight:600; color:#475569;">${r.responsable}</span></td>
-      <td><span class="status-badge status-riesgo-bajo">Controlado</span></td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = RIESGOS_DATA.length ? RIESGOS_DATA.map(r => {
+    const [txtNivel, clsNivel] = NIVELES_RIESGO[r.nivel] || NIVELES_RIESGO.Bajo;
+    return `<tr>
+      <td><strong>${qdlgEscapar(r.dimension)}</strong></td>
+      <td>${qdlgEscapar(r.riesgo)}</td>
+      <td>${qdlgEscapar(r.probabilidad || '—')}</td>
+      <td>${qdlgEscapar(r.impacto || '—')}</td>
+      <td><span style="font-size:12px; color:#065f46;">${qdlgEscapar(r.control || '—')}</span></td>
+      <td><span style="font-size:11.5px; font-weight:600; color:#475569;">${qdlgEscapar(r.responsable || '—')}</span></td>
+      <td><span class="status-badge ${clsNivel}">${txtNivel}</span></td>
+      <td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="editarRiesgo(${r.id})">Editar</button> <button class="btn btn-outline btn-sm" style="color:#b91c1c" title="Eliminar riesgo" onclick="eliminarRiesgo(${r.id})">✕</button></td>
+    </tr>`;
+  }).join('') : filaVacia(8, 'La matriz está vacía. Agrega el primer riesgo con «+ Agregar riesgo».');
+}
+
+async function editarRiesgo(id) {
+  const r0 = id ? RIESGOS_DATA.find(x => x.id === id) : null;
+  const sel = (vals, v) => vals.map(x => ({ valor: x, texto: x }));
+  const r = await qDialogo({
+    tipo: 'question', titulo: r0 ? 'Editar riesgo legal' : 'Agregar riesgo legal',
+    campos: [
+      { label: 'Dimensión legal', valor: r0?.dimension || '' },
+      { label: 'Riesgo identificado', tipo: 'textarea', valor: r0?.riesgo || '' },
+      { label: 'Probabilidad', tipo: 'select', valor: r0?.probabilidad || 'Baja', opciones: sel(['Baja', 'Media', 'Alta']) },
+      { label: 'Impacto', tipo: 'select', valor: r0?.impacto || 'Medio', opciones: sel(['Bajo', 'Medio', 'Alto', 'Crítico']) },
+      { label: 'Medida de control implementada', tipo: 'textarea', valor: r0?.control || '' },
+      { label: 'Responsable', valor: r0?.responsable || '' },
+      { label: 'Nivel actual del riesgo', tipo: 'select', valor: r0?.nivel || 'Bajo', opciones: [{ valor: 'Bajo', texto: 'Bajo · Controlado' }, { valor: 'Medio', texto: 'Medio · En seguimiento' }, { valor: 'Alto', texto: 'Alto · Crítico' }] },
+    ],
+    aceptar: r0 ? 'Guardar cambios' : 'Agregar riesgo', cancelar: 'Cancelar'
+  });
+  if (!r.aceptado) return;
+  const [dimension, riesgo, probabilidad, impacto, control, responsable, nivel] = r.valores;
+  if (!dimension.trim() || !riesgo.trim()) { qAlert('Escribe la dimensión y el riesgo.', { tipo: 'warning' }); return; }
+  try {
+    await apiOdacl(r0 ? `/riesgos/${id}` : '/riesgos', { method: r0 ? 'PUT' : 'POST', body: JSON.stringify({ dimension, riesgo, probabilidad, impacto, control, responsable, nivel }) });
+    await cargarDatosLegales();
+    mostrarNotificacionToast(r0 ? '✓ Riesgo actualizado' : '✓ Riesgo agregado');
+  } catch (err) { qAlert('No se pudo guardar el riesgo: ' + err.message, { tipo: 'error' }); }
+}
+
+async function eliminarRiesgo(id) {
+  const ok = await qConfirm('¿Eliminar este riesgo de la matriz?', { titulo: 'Eliminar riesgo', tipo: 'warning', aceptar: 'Eliminar', peligro: true });
+  if (!ok) return;
+  try { await apiOdacl(`/riesgos/${id}`, { method: 'DELETE' }); await cargarDatosLegales(); }
+  catch (err) { qAlert('No se pudo eliminar: ' + err.message, { tipo: 'error' }); }
+}
+
+// Indicadores calculados con los datos reales (no son cifras fijas)
+function indicadoresLegales() {
+  const pct = (a, b) => b ? Math.round(a / b * 100) : null;
+  const com = CONTRATOS_DATA.filter(c => c.origen === 'comercial' && c.estado !== 'borrador' && c.estado !== 'cancelado');
+  const conPlantilla = com.filter(c => c.plantilla_clave).length;
+  const activos = CONTRATOS_DATA.filter(c => !['borrador', 'cancelado', 'finalizado'].includes(String(c.estado)));
+  const alDia = activos.filter(c => estadoContrato(c) !== 'vencido').length;
+  const atendidas = CONSULTAS_DATA.filter(c => c.estado === 'dictaminado' || c.estado === 'archivado').length;
+  const controlados = RIESGOS_DATA.filter(r => r.nivel === 'Bajo').length;
+  return [
+    { titulo: 'Contratos con plantilla oficial ODACL', valor: pct(conPlantilla, com.length), nota: `${conPlantilla} de ${com.length} contratos de Comercial usan una plantilla aprobada.` },
+    { titulo: 'Contratos al día (sin vencer)', valor: pct(alDia, activos.length), nota: `${alDia} de ${activos.length} contratos activos dentro de su vigencia.` },
+    { titulo: 'Consultas legales atendidas', valor: pct(atendidas, CONSULTAS_DATA.length), nota: `${atendidas} de ${CONSULTAS_DATA.length} consultas con dictamen.` },
+    { titulo: 'Riesgos legales controlados', valor: pct(controlados, RIESGOS_DATA.length), nota: `${controlados} de ${RIESGOS_DATA.length} riesgos en nivel bajo.` },
+  ];
+}
+
+function renderIndicadoresLegales() {
+  const ind = indicadoresLegales();
+  const cont = document.getElementById('compliance-meters');
+  const color = v => v === null ? '#94a3b8' : v >= 90 ? '#059669' : v >= 70 ? '#d97706' : '#dc2626';
+  if (cont) cont.innerHTML = ind.map(i => `<div style="background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:16px;">
+      <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px;"><span>${i.titulo}</span><span style="color:${color(i.valor)};">${i.valor === null ? 'Sin datos' : i.valor + '%'}</span></div>
+      <div style="background:#e2e8f0; height:8px; border-radius:4px; margin-top:8px; overflow:hidden;"><div style="background:${color(i.valor)}; width:${i.valor || 0}%; height:100%;"></div></div>
+      <div style="font-size:11px; color:#64748b; margin-top:6px;">${i.nota}</div></div>`).join('');
+  const conDatos = ind.filter(i => i.valor !== null);
+  const global = conDatos.length ? Math.round(conDatos.reduce((a, i) => a + i.valor, 0) / conDatos.length) : null;
+  const badge = document.getElementById('badge-compliance');
+  if (badge) { badge.textContent = global === null ? '• Compliance sin datos' : `${global >= 90 ? '✓' : '⚠'} Compliance ${global}%`; badge.title = 'Promedio de los indicadores de Compliance & Riesgos'; }
+  const st = document.getElementById('metric-compliance'); if (st) st.textContent = global === null ? '—' : global + '%';
+}
+
+// Agenda: contratos por vencer y consultas pendientes (datos reales)
+function renderAgendaLegal() {
+  const cont = document.getElementById('agenda-legal');
+  if (!cont) return;
+  const items = [];
+  CONTRATOS_DATA.forEach(c => {
+    const d = diasHasta(c.fecha_fin);
+    if (estadoContrato(c) === 'vigente' && d !== null && d <= 30) items.push({ orden: d, color: d <= 7 ? '#dc2626' : 'var(--gold)', titulo: `Vence: ${c.contraparte || c.codigo}`, sub: `${c.tipo || 'Contrato'} · N° ${c.codigo || c.id}`, pie: `📅 ${fmtFechaCorta(c.fecha_fin)} · en ${d} ${d === 1 ? 'día' : 'días'}` });
+    if (estadoContrato(c) === 'vencido') items.push({ orden: -100, color: '#dc2626', titulo: `Vencido: ${c.contraparte || c.codigo}`, sub: `${c.tipo || 'Contrato'} · N° ${c.codigo || c.id}`, pie: `📅 Venció el ${fmtFechaCorta(c.fecha_fin)} · renovar o finalizar` });
+  });
+  CONSULTAS_DATA.filter(c => c.estado === 'pendiente' || c.estado === 'en_analisis').forEach(c => items.push({ orden: c.urgencia === 'Crítica' ? -50 : c.urgencia === 'Alta' ? -20 : 10, color: '#3b82f6', titulo: `Consulta ${c.radicado}`, sub: c.asunto, pie: `⚖️ ${c.urgencia || 'Media'} · ${AREAS[c.area] || c.area || ''}` }));
+  items.sort((a, b) => a.orden - b.orden);
+  cont.innerHTML = items.length ? items.slice(0, 8).map(i => `<div style="padding:12px 14px; background:#f8fafc; border:1px solid var(--border); border-radius:10px; border-left:4px solid ${i.color};">
+      <div style="font-weight:700; font-size:13px; color:var(--text);">${qdlgEscapar(i.titulo)}</div>
+      <div style="font-size:11.5px; color:#64748b; margin-top:2px;">${qdlgEscapar(i.sub || '')}</div>
+      <div style="font-size:11px; font-weight:700; color:#475569; margin-top:6px;">${qdlgEscapar(i.pie)}</div></div>`).join('')
+    : '<div style="font-size:12.5px;color:#64748b;text-align:center;padding:18px">✓ Sin vencimientos ni consultas pendientes.</div>';
 }
 
 function copiarPolitica(tipo) {
@@ -9047,9 +9061,7 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 // Inicialización de la aplicación
 (function init() {
   renderLeyes(LEYES_DATA);
-  renderContratos();
-  renderConsultas();
-  renderRiesgos();
+  cargarDatosLegales();
   initDocLegal();
 })();
 </script>
