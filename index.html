@@ -303,6 +303,15 @@
       font-weight: 700; padding: 3px 9px; border-radius: 999px; text-transform: uppercase;
     }
     .status-vigente { background: #d1fae5; color: #065f46; }
+    .lector-voz { position: fixed; bottom: 96px; right: 28px; z-index: 900; display: flex; align-items: center; gap: 6px; background: #0f172a; color: #fff; border-radius: 12px; padding: 8px 10px; box-shadow: 0 10px 30px rgba(0,0,0,.35); font-size: 12.5px; }
+    .lector-voz[hidden] { display: none; }
+    .lector-voz-t { font-weight: 800; margin-right: 4px; white-space: nowrap; }
+    .lector-voz button { background: rgba(255,255,255,.1); color: #fff; border: 0; border-radius: 8px; width: 32px; height: 30px; cursor: pointer; font-size: 14px; }
+    .lector-voz button:hover { background: rgba(255,255,255,.22); }
+    .lector-voz select { background: #1e293b; color: #fff; border: 1px solid #334155; border-radius: 8px; padding: 5px 6px; font-size: 12px; max-width: 190px; }
+    #btn-leer-voz.activo { background: #1e3a8a; color: #fff; border-color: #1e3a8a; }
+    ::highlight(lector-parrafo) { background-color: rgba(253, 224, 71, .28); }
+    ::highlight(lector-palabra) { background-color: #fde047; color: #0f172a; }
     .doc-nav-tabs { flex-wrap: nowrap; gap: 5px !important; overflow-x: auto; scrollbar-width: thin; }
     /* Pestañas fijas al bajar (debajo de la barra superior) */
     .doc-nav-tabs { position: sticky; top: 70px; z-index: 45; background: var(--bg); padding-top: 12px; margin-top: -12px; }
@@ -2385,6 +2394,12 @@
                         🔍 Buscar
                       </button>
                     </div>
+                    <!-- Leer en voz alta (como Word: Revisar › Leer en voz alta) -->
+                    <div class="word-tool-group">
+                      <button type="button" class="btn btn-outline btn-sm" id="btn-leer-voz" onclick="alternarLectorVoz()" title="Leer en voz alta desde el cursor o la selección (Ctrl+Alt+Espacio)" style="font-weight:700;">
+                        🔊 Leer en voz alta
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -2771,6 +2786,19 @@
 
     </div>
   </main>
+
+  <!-- ═════════ LECTOR EN VOZ ALTA ═════════ -->
+  <div id="lector-voz" class="lector-voz" hidden>
+    <span class="lector-voz-t">🔊 Leyendo</span>
+    <button type="button" onclick="lectorAnterior()" title="Párrafo anterior">⏮</button>
+    <button type="button" id="lector-pausa" onclick="lectorPausar()" title="Pausar / reanudar (Ctrl+Alt+Espacio)">⏸</button>
+    <button type="button" onclick="lectorSiguiente()" title="Párrafo siguiente">⏭</button>
+    <button type="button" onclick="detenerLector()" title="Detener lectura">⏹</button>
+    <select id="lector-velocidad" onchange="lectorCambiarAjuste()" title="Velocidad">
+      <option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="1.75">1.75×</option><option value="2">2×</option>
+    </select>
+    <select id="lector-voces" onchange="lectorCambiarAjuste()" title="Voz"></select>
+  </div>
 
   <!-- ═════════ MODAL: CASO DE GESTIÓN ═════════ -->
   <div class="modal-overlay" id="modal-caso-gestion">
@@ -4642,6 +4670,7 @@ function switchDocSubView(subview) {
     guardarAutoguardadoWord();
   }
   // «templates» vuelve a la última sección abierta (Contratos, Acuerdos, Gestión…)
+  if (subview !== 'editor' && lector.activo) detenerLector();
   if (subview === 'templates') subview = _ultimaVistaCatalogo || 'contratos';
   if (GRUPOS_CATALOGO[subview]) _grupoCatalogo = subview;
   if (GRUPOS_CATALOGO[subview] || subview === 'gestion' || subview === 'anexos') _ultimaVistaCatalogo = subview;
@@ -6998,6 +7027,7 @@ function firmaDocumento() {
 
 function cargarPlantillaSeleccionada(key) {
   if (!key || !PLANTILLAS_LEGALES[key]) return;
+  if (lector.activo) detenerLector();
   // Guardar el borrador de la plantilla anterior antes de cambiar
   if (plantillaEnEdicion && plantillaEnEdicion !== key) guardarAutoguardadoWord();
   const p = PLANTILLAS_LEGALES[key];
@@ -8234,6 +8264,212 @@ function flujoContinuoWord(paginas) {
   cont.querySelectorAll('[data-cont], [data-frag]').forEach(e => { e.removeAttribute('data-cont'); e.removeAttribute('data-frag'); });
   return cont.innerHTML;
 }
+
+// ══════════ LEER EN VOZ ALTA (como Word) ══════════
+// Lee desde el cursor (o solo la selección) con la voz del navegador; resalta el
+// párrafo y la palabra que se leen sin modificar el documento (CSS Highlight API).
+const SELECTOR_BLOQUES_LECTOR = 'p, li, h1, h2, h3, h4, h5, h6, td, th, blockquote, pre';
+const lector = { activo: false, pausado: false, grupos: [], gi: 0, pos: 0, fin: null, sesion: 0 };
+
+function bloquesLector() {
+  const cont = document.getElementById('a4-pages-container');
+  if (!cont) return [];
+  const todos = Array.from(cont.querySelectorAll('.a4-page-content')).flatMap(c => {
+    const bloques = Array.from(c.querySelectorAll(SELECTOR_BLOQUES_LECTOR)).filter(el => !el.querySelector(SELECTOR_BLOQUES_LECTOR));
+    // Texto suelto directamente en la hoja (div sin párrafos)
+    Array.from(c.children).forEach(el => { if (!el.matches(SELECTOR_BLOQUES_LECTOR) && !el.querySelector(SELECTOR_BLOQUES_LECTOR) && el.textContent.trim()) bloques.push(el); });
+    return bloques.sort((a, b) => a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1);
+  });
+  // Un párrafo partido entre hojas se lee como uno solo
+  const grupos = [];
+  todos.forEach(el => {
+    const ult = grupos[grupos.length - 1];
+    const prev = ult?.els[ult.els.length - 1];
+    if (prev && el.dataset.cont === '1' && el.dataset.frag && el.dataset.frag === prev.dataset.frag) ult.els.push(el);
+    else grupos.push({ els: [el] });
+  });
+  grupos.forEach(g => {
+    g.nodos = []; let texto = '';
+    g.els.forEach((el, i) => {
+      if (i > 0 && !/\s$/.test(texto)) texto += ' ';
+      const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      let n;
+      while ((n = w.nextNode())) { g.nodos.push({ nodo: n, ini: texto.length }); texto += n.nodeValue; }
+    });
+    g.texto = texto;
+  });
+  return grupos.filter(g => g.texto.trim());
+}
+
+// Posición (nodo, offset) → índice en el texto del grupo
+function indiceEnGrupo(g, nodo, offset) {
+  for (const x of g.nodos) if (x.nodo === nodo) return x.ini + Math.min(offset, x.nodo.nodeValue.length);
+  // El punto está en un elemento: tomar el primer texto que le sigue
+  for (const x of g.nodos) {
+    if (nodo.nodeType === 1 && (nodo.contains(x.nodo) || (nodo.compareDocumentPosition(x.nodo) & Node.DOCUMENT_POSITION_FOLLOWING))) return x.ini;
+  }
+  return 0;
+}
+function grupoDeNodo(grupos, nodo) {
+  const el = nodo.nodeType === 1 ? nodo : nodo.parentElement;
+  return grupos.findIndex(g => g.els.some(e => e === el || e.contains(el)));
+}
+// Índice en el texto del grupo → Range
+function rangoEnGrupo(g, ini, fin) {
+  const punto = i => {
+    let x = g.nodos[0];
+    for (const n of g.nodos) { if (n.ini <= i) x = n; else break; }
+    return [x.nodo, Math.max(0, Math.min(i - x.ini, x.nodo.nodeValue.length))];
+  };
+  const r = document.createRange();
+  try { r.setStart(...punto(ini)); r.setEnd(...punto(fin)); } catch (e) { return null; }
+  return r;
+}
+
+function resaltarLector(g, ini, fin) {
+  if (!window.CSS?.highlights) return;
+  if (g) {
+    const rp = document.createRange();
+    rp.setStartBefore(g.els[0]); rp.setEndAfter(g.els[g.els.length - 1]);
+    CSS.highlights.set('lector-parrafo', new Highlight(rp));
+  } else CSS.highlights.delete('lector-parrafo');
+  const rw = g && fin > ini ? rangoEnGrupo(g, ini, fin) : null;
+  if (rw) CSS.highlights.set('lector-palabra', new Highlight(rw)); else CSS.highlights.delete('lector-palabra');
+}
+
+// Lo que se pronuncia: mismo largo que el texto (para ubicar cada palabra)
+function textoParaVoz(t) { return t.replace(/[\[\]_|]/g, ' ').replace(/[•·]/g, ','); }
+
+function trozosLectura(texto, desde, hasta) {
+  const trozos = []; let i = desde;
+  while (i < hasta) {
+    let f = Math.min(hasta, i + 220);
+    if (f < hasta) {
+      const corte = Math.max(texto.lastIndexOf('. ', f), texto.lastIndexOf('; ', f), texto.lastIndexOf(', ', f));
+      if (corte > i + 60) f = corte + 1; else { const esp = texto.lastIndexOf(' ', f); if (esp > i + 20) f = esp; }
+    }
+    trozos.push([i, f]); i = f;
+  }
+  return trozos;
+}
+
+function vocesEspanol() {
+  const voces = speechSynthesis.getVoices();
+  const es = voces.filter(v => /^es/i.test(v.lang));
+  const orden = v => (/natural|online|google/i.test(v.name) ? 0 : 1) * 10 + (['es-PE', 'es-419', 'es-MX', 'es-US', 'es-ES'].indexOf(v.lang) + 1 || 9);
+  return (es.length ? es : voces).sort((a, b) => orden(a) - orden(b));
+}
+function llenarVocesLector() {
+  const sel = document.getElementById('lector-voces');
+  if (!sel || !window.speechSynthesis) return;
+  const voces = vocesEspanol();
+  let guardada = ''; try { guardada = localStorage.getItem('odacl_lector_voz') || ''; } catch (e) {}
+  sel.innerHTML = voces.map(v => `<option value="${qdlgEscapar(v.name)}" ${v.name === guardada ? 'selected' : ''}>${qdlgEscapar(v.name.replace(/^Microsoft |^Google /, ''))} (${v.lang})</option>`).join('');
+}
+if (window.speechSynthesis) speechSynthesis.addEventListener?.('voiceschanged', llenarVocesLector);
+
+function hablarDesde(gi, pos) {
+  speechSynthesis.cancel();
+  const sesion = ++lector.sesion;
+  const finGi = lector.fin ? lector.fin.gi : lector.grupos.length - 1;
+  if (gi < 0) gi = 0;
+  if (gi > finGi || !lector.grupos[gi]) { detenerLector(); return; }
+  const g = lector.grupos[gi];
+  if (!g.els[0].isConnected) { // el documento cambió: se vuelve a leer desde aquí
+    const grupos = bloquesLector();
+    const k = grupos.findIndex(x => x.texto === g.texto);
+    lector.grupos = grupos; lector.fin = null;
+    if (k < 0) { detenerLector(); return; }
+    return hablarDesde(k, pos);
+  }
+  lector.gi = gi; lector.pos = pos;
+  const hasta = lector.fin && gi === lector.fin.gi ? lector.fin.pos : g.texto.length;
+  g.els[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+  resaltarLector(g, 0, 0);
+  const trozos = trozosLectura(g.texto, pos, hasta).filter(([a, b]) => g.texto.slice(a, b).trim());
+  const voz = vocesEspanol().find(v => v.name === document.getElementById('lector-voces')?.value) || vocesEspanol()[0];
+  const velocidad = parseFloat(document.getElementById('lector-velocidad')?.value) || 1;
+  const decir = k => {
+    if (sesion !== lector.sesion) return;
+    if (k >= trozos.length) { hablarDesde(gi + 1, 0); return; }
+    const [a, b] = trozos[k];
+    const u = new SpeechSynthesisUtterance(textoParaVoz(g.texto.slice(a, b)));
+    if (voz) { u.voice = voz; u.lang = voz.lang; } else u.lang = 'es-PE';
+    u.rate = velocidad;
+    u.onboundary = e => {
+      if (sesion !== lector.sesion || e.name !== 'word') return;
+      const ini = a + e.charIndex;
+      const m = /^\S+/.exec(g.texto.slice(ini));
+      const fin = ini + (e.charLength || (m ? m[0].length : 0));
+      lector.pos = ini;
+      resaltarLector(g, ini, fin);
+    };
+    u.onend = () => decir(k + 1);
+    u.onerror = e => { if (sesion === lector.sesion && e.error !== 'interrupted' && e.error !== 'canceled') decir(k + 1); };
+    speechSynthesis.speak(u);
+  };
+  decir(0);
+}
+
+function iniciarLectorVoz() {
+  if (!window.speechSynthesis) { qAlert('Tu navegador no permite la lectura en voz alta. Usa Chrome o Edge actualizados.', { tipo: 'warning' }); return; }
+  const grupos = bloquesLector();
+  if (!grupos.length) { mostrarNotificacionToast('No hay texto para leer'); return; }
+  lector.grupos = grupos; lector.fin = null;
+  let gi = 0, pos = 0;
+  const sel = window.getSelection();
+  const cont = document.getElementById('a4-pages-container');
+  if (sel.rangeCount && cont.contains(sel.anchorNode)) {
+    const r = sel.getRangeAt(0);
+    const a = grupoDeNodo(grupos, r.startContainer);
+    if (a >= 0) { gi = a; pos = indiceEnGrupo(grupos[a], r.startContainer, r.startOffset); }
+    if (!r.collapsed) { // solo lo seleccionado
+      const b = grupoDeNodo(grupos, r.endContainer);
+      if (b >= 0) lector.fin = { gi: b, pos: indiceEnGrupo(grupos[b], r.endContainer, r.endOffset) };
+    } else {
+      // Desde el inicio de la palabra donde está el cursor (al final del párrafo: el siguiente)
+      const t = grupos[gi]?.texto || '';
+      while (pos > 0 && /\S/.test(t[pos - 1])) pos--;
+      if (!t.slice(pos).trim()) { gi++; pos = 0; }
+    }
+    sel.removeAllRanges();
+  }
+  lector.activo = true; lector.pausado = false;
+  llenarVocesLector();
+  document.getElementById('lector-voz').hidden = false;
+  document.getElementById('lector-pausa').textContent = '⏸';
+  document.getElementById('btn-leer-voz')?.classList.add('activo');
+  hablarDesde(gi, pos);
+}
+
+function detenerLector() {
+  lector.sesion++;
+  lector.activo = false; lector.pausado = false;
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  resaltarLector(null);
+  const pl = document.getElementById('lector-voz'); if (pl) pl.hidden = true;
+  document.getElementById('btn-leer-voz')?.classList.remove('activo');
+}
+function alternarLectorVoz() { if (lector.activo) detenerLector(); else iniciarLectorVoz(); }
+// Pausa = detener recordando la palabra; reanudar sigue desde ahí (más fiable que pause())
+function lectorPausar() {
+  if (!lector.activo) return;
+  if (lector.pausado) { lector.pausado = false; document.getElementById('lector-pausa').textContent = '⏸'; hablarDesde(lector.gi, lector.pos); }
+  else { lector.pausado = true; lector.sesion++; speechSynthesis.cancel(); document.getElementById('lector-pausa').textContent = '▶'; }
+}
+function lectorSiguiente() { if (lector.activo) { lector.pausado = false; document.getElementById('lector-pausa').textContent = '⏸'; hablarDesde(lector.gi + 1, 0); } }
+function lectorAnterior() { if (lector.activo) { lector.pausado = false; document.getElementById('lector-pausa').textContent = '⏸'; hablarDesde(lector.pos > 3 ? lector.gi : lector.gi - 1, 0); } }
+function lectorCambiarAjuste() {
+  try { localStorage.setItem('odacl_lector_voz', document.getElementById('lector-voces').value); } catch (e) {}
+  if (lector.activo && !lector.pausado) hablarDesde(lector.gi, lector.pos);
+}
+// Ctrl+Alt+Espacio: leer / pausar (como Word)
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.altKey && (e.code === 'Space' || e.key === ' ') && document.getElementById('subview-editor')?.classList.contains('active')) {
+    e.preventDefault();
+    if (lector.activo) lectorPausar(); else iniciarLectorVoz();
+  }
+});
 
 function descargarDocumentoWord(opciones = {}) {
   const title = (opciones.titulo || document.getElementById('word-doc-title').value || '').trim() || 'Documento_Legal_QUBIRA';
