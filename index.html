@@ -1621,10 +1621,6 @@
         width: 210mm !important;
         min-width: 210mm !important;
         max-width: 210mm !important;
-        height: 297mm !important;
-        min-height: 297mm !important;
-        max-height: 297mm !important;
-        padding: 25.4mm !important; /* Margen APA 7 exacto */
         box-sizing: border-box !important;
         page-break-after: always !important;
         break-after: page !important;
@@ -1634,25 +1630,9 @@
       .a4-page-sheet::before {
         display: none !important; /* Ocultar guías de margen en impresión */
       }
-      .a4-page-header {
-        top: 6mm !important;
-        left: 25.4mm !important;
-        right: 25.4mm !important;
-        display: flex !important;
-        border-bottom: 1.5px solid #0f172a !important;
+      .a4-page-header, .a4-page-footer {
         outline: none !important;
         background: transparent !important;
-      }
-      .a4-page-footer {
-        bottom: 10mm !important;
-        left: 25.4mm !important;
-        right: 25.4mm !important;
-        display: flex !important;
-      }
-      .a4-page-content {
-        height: 246.2mm !important;
-        max-height: 246.2mm !important;
-        line-height: 2.0 !important; /* APA 7 */
       }
     }
   </style>
@@ -6326,7 +6306,8 @@ function obtenerHtmlCompletoDocumento() {
   const contents = container.querySelectorAll('.a4-page-content');
   const pages = [];
   contents.forEach((c, idx) => {
-    pages.push(`<div class="a4-page-export" data-page="${idx+1}" data-fuente="${fuenteGlobal}" data-tamano="${tamanoFuenteGlobalPt}" data-interlineado="${interlineadoActual}" data-margen="${margenActual}" data-orientacion="${orientacionActual}">${c.innerHTML}</div>`);
+    const salto = c.closest('.a4-page-sheet')?.dataset.saltoManual === '1' ? ' data-salto="1"' : '';
+    pages.push(`<div class="a4-page-export" data-page="${idx+1}"${salto} data-fuente="${fuenteGlobal}" data-tamano="${tamanoFuenteGlobalPt}" data-interlineado="${interlineadoActual}" data-margen="${margenActual}" data-orientacion="${orientacionActual}">${c.innerHTML}</div>`);
   });
   return htmlMetaEncabezadoPie() + pages.join('\n<!-- a4-page-break -->\n<div class="a4-page-break" style="page-break-after:always; break-after:page;"></div>\n');
 }
@@ -8235,6 +8216,25 @@ async function guardarEnCloudinary() {
 }
 
 // Exportar a Microsoft Word (.doc) respetando las hojas A4 y formato oficial Word MSO
+// Une las hojas del editor en un solo flujo para Word: los párrafos partidos entre
+// hojas vuelven a ser uno y solo los saltos manuales (Ctrl+Enter) fuerzan hoja nueva.
+function flujoContinuoWord(paginas) {
+  const cont = document.createElement('div');
+  paginas.forEach((pg, i) => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = pg.html || '';
+    tmp.querySelectorAll('.a4-page-break').forEach(n => n.remove());
+    if (i > 0 && pg.salto) cont.insertAdjacentHTML('beforeend', `<br clear=all style='mso-special-character:line-break;page-break-before:always'>`);
+    Array.from(tmp.childNodes).forEach(n => {
+      const prev = cont.lastElementChild;
+      if (!pg.salto && n.nodeType === 1 && esContinuacionDe(n, prev)) unirContinuacion(prev, n);
+      else cont.appendChild(n);
+    });
+  });
+  cont.querySelectorAll('[data-cont], [data-frag]').forEach(e => { e.removeAttribute('data-cont'); e.removeAttribute('data-frag'); });
+  return cont.innerHTML;
+}
+
 function descargarDocumentoWord(opciones = {}) {
   const title = (opciones.titulo || document.getElementById('word-doc-title').value || '').trim() || 'Documento_Legal_QUBIRA';
   const fuenteDoc = opciones.fuente || fuenteGlobal;
@@ -8250,12 +8250,20 @@ function descargarDocumentoWord(opciones = {}) {
   const ruc = firstSheet?.querySelector('.a4-header-ruc')?.innerText?.trim() || headerRucGlobal || 'RUC: 10764275981';
   const addr = firstSheet?.querySelector('.a4-header-address')?.innerText?.trim() || headerAddressGlobal || 'Lima, República del Perú';
   const contact = firstSheet?.querySelector('.a4-header-web')?.innerText?.trim() || headerContactGlobal || 'qubirasac@gmail.com | www.qubira.vercel.app';
-  const footerLeft = firstSheet?.querySelector('.a4-footer-left')?.innerText?.trim() || footerLeftTextoGlobal || 'QUBIRA • RUC 10764275981 • Área Legal';
+  const footerLeft = opciones.pie || firstSheet?.querySelector('.a4-footer-left')?.innerText?.trim() || footerLeftTextoGlobal || 'QUBIRA • RUC 10764275981 • Área Legal';
 
-  // Extraer el contenido continuo de todas las hojas del documento
-  const paginasHtml = opciones.paginas || Array.from(sheets).map(sh => sh.querySelector('.a4-page-content')?.innerHTML || '');
-  // Salto de página oficial en Word para respetar la división entre hojas A4
-  const fullBodyHtml = paginasHtml.join(`\n<br clear=all style='mso-special-character:line-break;page-break-before:always'>\n`);
+  // Contenido en un solo flujo: Word pagina por su cuenta (forzar un salto por cada
+  // hoja del editor dejaba hojas a medio llenar). Solo se conservan los saltos manuales.
+  const paginas = (opciones.paginas || Array.from(sheets).map(sh => ({
+    html: sh.querySelector('.a4-page-content')?.innerHTML || '',
+    salto: sh.dataset.saltoManual === '1'
+  }))).map(pg => typeof pg === 'string' ? { html: pg, salto: false } : pg);
+  const fullBodyHtml = flujoContinuoWord(paginas);
+  const margenCm = (MARGENES_MM[opciones.margen || margenActual] || 25.4) / 10;
+  const interPct = Math.round((parseFloat(interDoc) || 1.15) * 100) + '%';
+  // Encabezado: membrete QUBIRA (null), ninguno ('') o el propio del documento
+  const encabezado = opciones.encabezado !== undefined ? opciones.encabezado : encabezadoDocHtml;
+  const conEncabezado = encabezado !== '';
 
   const wordHtml = `
     <html xmlns:v="urn:schemas-microsoft-com:vml"
@@ -8278,10 +8286,10 @@ function descargarDocumentoWord(opciones = {}) {
       <style>
         @page Section1 {
           size: ${orientacionActual === 'landscape' ? '29.7cm 21.0cm' : '21.0cm 29.7cm'};
-          margin: 2.54cm 2.54cm 2.54cm 2.54cm;
-          mso-header-margin: 1.27cm;
-          mso-footer-margin: 1.27cm;
-          mso-header: h1;
+          margin: ${margenCm}cm ${margenCm}cm ${margenCm}cm ${margenCm}cm;
+          mso-header-margin: ${Math.min(1.27, margenCm / 2).toFixed(2)}cm;
+          mso-footer-margin: ${Math.min(1.27, margenCm / 2).toFixed(2)}cm;
+          ${conEncabezado ? 'mso-header: h1;' : ''}
           mso-footer: f1;
         }
         div.Section1 {
@@ -8318,14 +8326,14 @@ function descargarDocumentoWord(opciones = {}) {
         body {
           font-family: ${pilaFuente(fuenteDoc)};
           font-size: ${tamanoDoc}pt;
-          line-height: ${interDoc};
+          line-height: ${interPct};
           color: #0f172a;
           text-align: justify;
         }
-        p {
+        p, li {
           margin: 0 0 10pt 0;
           text-align: justify;
-          line-height: ${interlineadoActual};
+          line-height: ${interPct};
         }
         h1, h2, h3, h4 {
           font-family: 'Times New Roman', serif;
@@ -8361,7 +8369,7 @@ function descargarDocumentoWord(opciones = {}) {
         <tr>
           <td>
             <!-- ENCABEZADO OFICIAL MSO WORD -->
-            <div style="mso-element:header" id="h1" class="MsoHeader">
+            ${!conEncabezado ? '' : encabezado !== null ? `<div style="mso-element:header" id="h1" class="MsoHeader">${encabezado}</div>` : `<div style="mso-element:header" id="h1" class="MsoHeader">
               <table class="MsoHeaderTable" style="width:100%; border:none; border-bottom:1.5pt solid #0f172a; padding-bottom:4pt;">
                 <tr style="border:none;">
                   <td style="border:none; width:60%; vertical-align:middle; text-align:left; padding:0;">
@@ -8384,7 +8392,7 @@ function descargarDocumentoWord(opciones = {}) {
                   </td>
                 </tr>
               </table>
-            </div>
+            </div>`}
 
             <!-- PIE DE PÁGINA OFICIAL MSO WORD CON NÚMEROS DE PÁGINA DINÁMICOS -->
             <div style="mso-element:footer" id="f1" class="MsoFooter">
@@ -8460,6 +8468,7 @@ function imprimirOExportarPdf() {
   const fontFam = document.getElementById('word-font-family')?.value || "'Times New Roman', Georgia, serif";
   const docTitle = document.getElementById('word-doc-title')?.value || 'Documento Legal Qubira';
 
+  const estilosApp = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]')).map(el => el.outerHTML).join('');
   const doc = printFrame.contentWindow.document;
   doc.open();
   doc.write(`
@@ -8468,107 +8477,16 @@ function imprimirOExportarPdf() {
     <head>
       <meta charset="utf-8">
       <title>${docTitle}</title>
+      ${estilosApp}
       <style>
-        @page {
-          size: ${orientacionActual === 'landscape' ? '297mm 210mm' : '210mm 297mm'};
-          margin: 0;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body {
-          background: #ffffff;
-          margin: 0;
-          padding: 0;
-          width: 100%;
-          color: #0f172a;
-          font-family: ${fontFam};
-        }
-        .a4-page-sheet {
-          width: ${orientacionActual === 'landscape' ? '297mm' : '210mm'} !important;
-          height: ${orientacionActual === 'landscape' ? '210mm' : '297mm'} !important;
-          min-height: ${orientacionActual === 'landscape' ? '210mm' : '297mm'} !important;
-          max-height: ${orientacionActual === 'landscape' ? '210mm' : '297mm'} !important;
-          padding: 25.4mm !important;
-          box-sizing: border-box !important;
-          position: relative !important;
-          background: #ffffff !important;
-          page-break-after: always !important;
-          break-after: page !important;
-          page-break-inside: avoid !important;
-          break-inside: avoid !important;
-          overflow: hidden !important;
-          box-shadow: none !important;
-          border: none !important;
-          display: flex !important;
-          flex-direction: column !important;
-        }
-        .a4-page-sheet::before { display: none !important; }
-        .a4-page-header {
-          position: absolute !important;
-          top: 6mm !important;
-          left: 25.4mm !important;
-          right: 25.4mm !important;
-          min-height: 14mm !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: space-between !important;
-          border-bottom: 1.5px solid #0f172a !important;
-          padding-bottom: 4px !important;
-          background: transparent !important;
-        }
-        .a4-page-header::before { display: none !important; }
-        .a4-header-letterhead { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-        .a4-header-brand { display: flex; align-items: center; gap: 10px; }
-        .a4-header-logo { width: 40px; height: 40px; object-fit: contain; }
-        .a4-header-titles { display: flex; flex-direction: column; justify-content: center; }
-        .a4-header-company { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 800; color: #0f172a; line-height: 1.2; }
-        .a4-header-tagline { font-family: 'Inter', sans-serif; font-size: 9.5px; font-weight: 800; color: #b45309; text-transform: uppercase; line-height: 1.2; }
-        .a4-header-contact { display: flex; flex-direction: column; align-items: flex-end; text-align: right; font-family: 'Inter', sans-serif; line-height: 1.35; font-size: 9.5px; color: #475569; }
-        .a4-header-ruc { font-size: 11px; font-weight: 800; color: #1e3a8a; }
-        .a4-page-footer {
-          position: absolute !important;
-          bottom: 10mm !important;
-          left: 25.4mm !important;
-          right: 25.4mm !important;
-          min-height: 8mm !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: space-between !important;
-          font-family: 'Arial', sans-serif !important;
-          font-size: 8.5pt !important;
-          color: #64748b !important;
-          border-top: 1px dashed #cbd5e1 !important;
-          padding-top: 3px !important;
-        }
-        .a4-page-footer::before { display: none !important; }
-        .a4-page-content {
-          width: 100% !important;
-          height: ${orientacionActual === 'landscape' ? '159.2mm' : '246.2mm'} !important;
-          min-height: ${orientacionActual === 'landscape' ? '159.2mm' : '246.2mm'} !important;
-          max-height: ${orientacionActual === 'landscape' ? '159.2mm' : '246.2mm'} !important;
-          overflow: hidden !important;
-          outline: none !important;
-          font-family: ${fontFam};
-          font-size: 12pt;
-          line-height: ${interlineadoActual};
-          color: #0f172a;
-          text-align: justify;
-        }
-        .a4-page-content p { margin: 0 0 10pt 0; text-align: justify; }
-        .a4-page-content h1, .a4-page-content h2, .a4-page-content h3 { font-family: ${fontFam}; font-weight: 700; margin: 8pt 0; color: #0f172a; }
-        .a4-page-content table { border-collapse: collapse; width: 100%; margin: 10pt 0; }
-        .a4-page-content th, .a4-page-content td { border: 1px solid #475569; padding: 5pt 8pt; font-size: 10pt; }
-        .word-signature-block {
-          display: flex; justify-content: space-between; gap: 40px; margin-top: 36px; padding-top: 10px;
-        }
-        .word-signature-block > div { flex: 1; text-align: center; }
-        .signature-line {
-          border-top: 1px solid #0f172a; padding-top: 6px; font-size: 12px; line-height: 1.4; color: #0f172a;
-        }
-        .a4-watermark {
-          position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
-          font-size: 58pt; font-weight: 900; color: rgba(100, 116, 139, 0.12);
-          letter-spacing: 8px; user-select: none; pointer-events: none; z-index: 1; text-transform: uppercase;
-        }
+        /* Mismos estilos que el editor: solo se quita lo propio de la pantalla */
+        @page { size: ${orientacionActual === 'landscape' ? '297mm 210mm' : '210mm 297mm'}; margin: 0; }
+        html, body { background: #ffffff !important; margin: 0 !important; padding: 0 !important; display: block !important; min-height: 0 !important; overflow: visible !important; }
+        .a4-page-sheet { box-shadow: none !important; border-radius: 0 !important; margin: 0 !important; break-after: page; page-break-after: always; break-inside: avoid; }
+        .a4-page-sheet:last-child { break-after: auto; page-break-after: auto; }
+        .a4-page-sheet::before, .a4-page-header::before, .a4-page-footer::before { display: none !important; }
+        .a4-page-header, .a4-page-footer { outline: none !important; background: transparent !important; }
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       </style>
     </head>
     <body>
@@ -8578,7 +8496,12 @@ function imprimirOExportarPdf() {
   `);
   doc.close();
 
-  setTimeout(() => {
+  // Esperar fuentes e imágenes (membrete) para que la paginación sea la misma del editor
+  const listo = Promise.all([
+    doc.fonts ? doc.fonts.ready : null,
+    ...Array.from(doc.images).map(img => img.complete ? null : new Promise(r => { img.onload = img.onerror = r; }))
+  ]);
+  Promise.race([listo, new Promise(r => setTimeout(r, 2500))]).then(() => setTimeout(() => {
     try {
       printFrame.contentWindow.focus();
       printFrame.contentWindow.print();
@@ -8588,7 +8511,7 @@ function imprimirOExportarPdf() {
     setTimeout(() => {
       printFrame.remove();
     }, 2500);
-  }, 300);
+  }, 150));
 }
 
 function copiarContenidoWord() {
@@ -8667,17 +8590,21 @@ function descargarWordDesdeItem(docId) {
   const docs = JSON.parse(localStorage.getItem('odacl_cloud_documents') || '[]');
   const doc = docs.find(d => d.id === docId);
   if (!doc) return;
+  const meta = extraerEncabezadoPieDocumento(doc.contenido_html || '');
   const tmp = document.createElement('div');
-  tmp.innerHTML = doc.contenido_html || '';
+  tmp.innerHTML = meta.html || '';
   const envolturas = tmp.querySelectorAll('.a4-page-export');
-  const paginas = envolturas.length ? Array.from(envolturas).map(w => w.innerHTML) : [tmp.innerHTML];
+  const paginas = envolturas.length ? Array.from(envolturas).map(w => ({ html: w.innerHTML, salto: w.dataset.salto === '1' })) : [tmp.innerHTML];
   const f = tmp.querySelector('.a4-page-export[data-tamano]');
   descargarDocumentoWord({
     titulo: doc.titulo,
     paginas,
     fuente: f ? f.dataset.fuente : null,
     tamano: f ? parseFloat(f.dataset.tamano) : null,
-    interlineado: f ? f.dataset.interlineado : null
+    interlineado: f ? f.dataset.interlineado : null,
+    margen: f ? f.dataset.margen : null,
+    encabezado: meta.encabezado,
+    pie: meta.pie || null
   });
 }
 
