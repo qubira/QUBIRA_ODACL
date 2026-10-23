@@ -1446,7 +1446,9 @@
       display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px;
     }
     .a4-page-header.a4-header-doc { display: block; border-bottom: none; padding-bottom: 0; }
-    .a4-header-custom { width: 100%; font-family: Arial, sans-serif; font-size: 10pt; line-height: 1.15; outline: none; }
+    .a4-page-content { tab-size: 4; }
+    .a4-header-custom:empty::before { content: attr(data-vacio); color: #94a3b8; font-style: italic; font-size: 9pt; }
+    .a4-header-custom { min-height: 10mm; width: 100%; font-family: Arial, sans-serif; font-size: 10pt; line-height: 1.15; outline: none; }
     .a4-header-custom table { width: 100%; border-collapse: collapse; }
     .a4-header-custom p { margin: 0; }
     .anexos-grupo { margin-bottom: 26px; }
@@ -2293,12 +2295,23 @@
                       </select>
 
                       <select id="word-font-size" class="word-select" onchange="cambiarTamanoFuente(this.value)" title="Tamaño de letra de todo el documento (todas las hojas)">
-                        <option value="2">10 pt</option>
-                        <option value="3" selected>12 pt (APA 7)</option>
-                        <option value="4">14 pt</option>
-                        <option value="5">18 pt</option>
-                        <option value="6">24 pt</option>
-                        <option value="7">32 pt</option>
+                        <option value="8">8 pt</option>
+                        <option value="9">9 pt</option>
+                        <option value="10">10 pt</option>
+                        <option value="10.5">10.5 pt</option>
+                        <option value="11">11 pt</option>
+                        <option value="12" selected>12 pt (APA 7)</option>
+                        <option value="14">14 pt</option>
+                        <option value="16">16 pt</option>
+                        <option value="18">18 pt</option>
+                        <option value="20">20 pt</option>
+                        <option value="22">22 pt</option>
+                        <option value="24">24 pt</option>
+                        <option value="26">26 pt</option>
+                        <option value="28">28 pt</option>
+                        <option value="36">36 pt</option>
+                        <option value="48">48 pt</option>
+                        <option value="72">72 pt</option>
                       </select>
 
                       <button type="button" class="word-btn" onclick="aumentarTamanoFuente()" title="Aumentar el tamaño de letra de todo el documento (A▲)">A▲</button>
@@ -2399,7 +2412,7 @@
 
                     <!-- Elementos Contractuales Legales -->
                     <div class="word-tool-group">
-                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarMembreteQubira()">🏛️ Membrete QUBIRA</button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarMembreteQubira()" title="Pone el membrete QUBIRA en el encabezado de todas las hojas">🏛️ Membrete QUBIRA</button>
                       <button type="button" class="btn btn-outline btn-sm" onclick="insertarCuadroFirmas()">✍️ Cuadro de Firmas</button>
                       <button type="button" class="btn btn-outline btn-sm" onclick="insertarClausulaLegalSiguiente()" title="Insertar la siguiente cláusula numerada automáticamente (PRIMERA, SEGUNDA, TERCERA...)">📜 Cláusula Siguiente</button>
                       <button type="button" class="btn btn-outline btn-sm" onclick="insertarFechaLugar()">📅 Fecha & Lugar</button>
@@ -2525,8 +2538,14 @@
                       <button type="button" class="btn btn-outline btn-sm" onclick="insertarFechaHoraEncabezado()" title="Insertar fecha en el encabezado activo">
                         📅 Insertar Fecha
                       </button>
-                      <button type="button" class="btn btn-outline btn-sm" onclick="insertarMembreteEnEncabezado()" title="Insertar membrete QUBIRA en el encabezado">
-                        🏛️ Membrete en Header
+                      <button type="button" class="btn btn-outline btn-sm" onclick="ponerMembreteEnEncabezado()" title="Poner el membrete QUBIRA en el encabezado de todas las hojas">
+                        🏛️ Membrete QUBIRA
+                      </button>
+                      <button type="button" class="btn btn-outline btn-sm" onclick="quitarMembreteEncabezado()" title="Quitar el membrete: el encabezado queda libre para escribir">
+                        🚫 Quitar membrete
+                      </button>
+                      <button type="button" class="btn btn-outline btn-sm" id="btn-encabezado-original" onclick="restaurarEncabezadoDocumento()" title="Volver al encabezado con el que se abrió el documento">
+                        ↺ Encabezado original
                       </button>
                       <button type="button" class="btn btn-outline btn-sm" onclick="restaurarEncabezadoApa7()" title="Restaurar formato APA 7 estándar">
                         🔄 Restaurar APA 7
@@ -4500,7 +4519,8 @@ let headerContactGlobal = 'qubirasac@gmail.com | www.qubira.vercel.app';
 let runningHeadTextGlobal = '';
 let footerLeftTextoGlobal = 'QUBIRA • RUC 10764275981 • Área Legal';
 const PIE_POR_DEFECTO = 'QUBIRA • RUC 10764275981 • Área Legal';
-let encabezadoDocHtml = null; // encabezado propio del documento (null = membrete QUBIRA)
+let encabezadoDocHtml = null; // encabezado propio del documento (null = membrete QUBIRA, '' = sin membrete)
+let encabezadoOriginalDoc = null;
 let pieDocPropio = false;     // el documento trae su propio texto de pie
 
 // Separa del HTML del documento su encabezado y pie propios (<div class="doc-encabezado|doc-pie" hidden>)
@@ -4540,41 +4560,75 @@ function crearElementoHojaA4(pageNumber, runningHead = '') {
 
   let footLeft = footerLeftTextoGlobal || 'QUBIRA • RUC 10764275981 • Área Legal';
 
-  const encabezadoHtml = encabezadoDocHtml !== null
-    ? `<div class="a4-page-header a4-header-doc" contenteditable="false" title="Encabezado del documento (doble clic para editar)">
-        <div class="a4-header-custom" contenteditable="true" spellcheck="false">${encabezadoDocHtml}</div>
-      </div>`
-    : null;
   sheet.innerHTML = `
     <div class="a4-watermark ${watermarkActual ? 'active' : ''}">${watermarkActual}</div>
-    ${encabezadoHtml || `<div class="a4-page-header" contenteditable="false" title="Doble clic para editar el Encabezado">
-      <div class="a4-header-letterhead">
-        <div class="a4-header-brand">
-          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="Logo Qubira" class="a4-header-logo">
-          <div class="a4-header-titles">
-            <div class="a4-header-company" contenteditable="true" spellcheck="false" title="Editar nombre de empresa">${comp}</div>
-            <div class="a4-header-tagline" contenteditable="true" spellcheck="false" title="Editar rubro corporativo">${tag}</div>
-          </div>
-        </div>
-        <div class="a4-header-contact">
-          <div class="a4-header-ruc" contenteditable="true" spellcheck="false" title="Editar RUC"><strong>${ruc}</strong></div>
-          <div class="a4-header-address" contenteditable="true" spellcheck="false" title="Editar dirección fiscal">${addr}</div>
-          <div class="a4-header-web" contenteditable="true" spellcheck="false" title="Editar correo y web">${web}</div>
-        </div>
-      </div>
-    </div>`}
+    <div class="${claseEncabezado()}" contenteditable="false" title="Doble clic para editar el Encabezado">${htmlInteriorEncabezado()}</div>
     <div class="a4-page-content" contenteditable="true" spellcheck="true" data-page-index="${pageNumber}"></div>
     <div class="a4-page-footer" contenteditable="false" title="Doble clic para editar el Pie de página">
       <div class="a4-footer-left" contenteditable="true" spellcheck="false" title="Haga clic para editar el pie de página">${footLeft}</div>
       <div class="a4-footer-right a4-page-counter-footer" contenteditable="false">Página ${pageNumber}</div>
     </div>
   `;
+  void comp; void tag; void ruc; void addr; void web;
 
   // Heredar márgenes, orientación, fuente, tamaño e interlineado del documento
   aplicarFormatoGlobalAHoja(sheet);
 
   conectarEventosHoja(sheet);
   return sheet;
+}
+
+// Encabezado de cada hoja: membrete QUBIRA (por defecto), encabezado propio del documento
+// o vacío (sin membrete). Siempre va en el encabezado, nunca dentro del texto.
+function claseEncabezado() { return encabezadoDocHtml !== null ? 'a4-page-header a4-header-doc' : 'a4-page-header'; }
+function htmlInteriorEncabezado() {
+  if (encabezadoDocHtml !== null) {
+    return `<div class="a4-header-custom" contenteditable="true" spellcheck="false" data-vacio="Escribe el encabezado o usa «🏛️ Membrete QUBIRA»">${encabezadoDocHtml}</div>`;
+  }
+  return `
+      <div class="a4-header-letterhead">
+        <div class="a4-header-brand">
+          <img src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="Logo Qubira" class="a4-header-logo">
+          <div class="a4-header-titles">
+            <div class="a4-header-company" contenteditable="true" spellcheck="false" title="Editar nombre de empresa">${headerCompanyGlobal}</div>
+            <div class="a4-header-tagline" contenteditable="true" spellcheck="false" title="Editar rubro corporativo">${headerTaglineGlobal}</div>
+          </div>
+        </div>
+        <div class="a4-header-contact">
+          <div class="a4-header-ruc" contenteditable="true" spellcheck="false" title="Editar RUC"><strong>${headerRucGlobal}</strong></div>
+          <div class="a4-header-address" contenteditable="true" spellcheck="false" title="Editar dirección fiscal">${headerAddressGlobal}</div>
+          <div class="a4-header-web" contenteditable="true" spellcheck="false" title="Editar correo y web">${headerContactGlobal}</div>
+        </div>
+      </div>`;
+}
+
+// Vuelve a pintar el encabezado de todas las hojas (sin perder sus eventos)
+function repintarEncabezados() {
+  registrarHistorialWord(true);
+  setTimeout(() => registrarHistorialWord(true), 50);
+  document.querySelectorAll('#a4-pages-container .a4-page-header').forEach(h => {
+    h.className = claseEncabezado();
+    h.innerHTML = htmlInteriorEncabezado();
+  });
+  guardarAutoguardadoWord?.();
+}
+// Pone el membrete QUBIRA en el encabezado de todas las hojas
+function ponerMembreteEnEncabezado() {
+  encabezadoDocHtml = null;
+  repintarEncabezados();
+  mostrarNotificacionToast('🏛️ Membrete QUBIRA en el encabezado de todas las hojas');
+}
+// Quita el membrete: el encabezado queda vacío y editable
+function quitarMembreteEncabezado() {
+  encabezadoDocHtml = '';
+  repintarEncabezados();
+  mostrarNotificacionToast('Membrete quitado · el encabezado queda libre para escribir');
+}
+// Vuelve al encabezado propio con el que se abrió el documento (p. ej. el de un anexo)
+function restaurarEncabezadoDocumento() {
+  encabezadoDocHtml = encabezadoOriginalDoc;
+  repintarEncabezados();
+  mostrarNotificacionToast('↺ Encabezado original del documento restaurado');
 }
 
 // Conectar eventos a cada hoja A4
@@ -6016,11 +6070,8 @@ function cargarHtmlEnPaginasA4(html) {
   if (cleanHtml.includes('qubira-official-header')) {
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = cleanHtml;
-    const oldHeader = tempDiv.querySelector('.qubira-official-header');
-    if (oldHeader) {
-      oldHeader.remove();
-      cleanHtml = tempDiv.innerHTML;
-    }
+    tempDiv.querySelectorAll('.qubira-official-header').forEach(h => h.remove());
+    cleanHtml = tempDiv.innerHTML;
   }
 
   // Recuperar el formato global guardado con el documento (si lo tiene)
@@ -6048,10 +6099,13 @@ function cargarHtmlEnPaginasA4(html) {
     sincronizarControlesFormatoGlobal();
   }
 
+  // Cada documento nuevo empieza su propio historial (no al deshacer/rehacer)
+  if (!historialWord.aplicando) reiniciarHistorialWord();
   // Encabezado y pie propios del documento (anexos); sin ellos, membrete QUBIRA
   const meta = extraerEncabezadoPieDocumento(cleanHtml);
   cleanHtml = meta.html;
   encabezadoDocHtml = meta.encabezado;
+  encabezadoOriginalDoc = meta.encabezado;
   if (meta.pie !== null) { footerLeftTextoGlobal = meta.pie; pieDocPropio = true; }
   else if (pieDocPropio) { footerLeftTextoGlobal = PIE_POR_DEFECTO; pieDocPropio = false; }
 
@@ -6414,6 +6468,23 @@ document.addEventListener('keydown', (e) => {
     }
     desactivarCopiarFormato();
     desactivarControlesImagen();
+  }
+  // Atajos de Word dentro del texto: alinear, sangría con Tab y tamaño de la selección
+  const enTexto = document.activeElement?.closest?.('.a4-page-content') && document.getElementById('subview-editor')?.classList.contains('active');
+  if (enTexto) {
+    const k = e.key.toLowerCase();
+    const ctrl = e.ctrlKey || e.metaKey;
+    const alineacion = { e: 'justifyCenter', l: 'justifyLeft', r: 'justifyRight', j: 'justifyFull' };
+    if (ctrl && !e.shiftKey && !e.altKey && alineacion[k]) { e.preventDefault(); ejecutarFormatoWord(alineacion[k]); return; }
+    if (ctrl && (e.key === ']' || (e.shiftKey && (e.key === '>' || e.code === 'Period')))) { e.preventDefault(); cambiarTamanoSeleccion(1); return; }
+    if (ctrl && (e.key === '[' || (e.shiftKey && (e.key === '<' || e.code === 'Comma')))) { e.preventDefault(); cambiarTamanoSeleccion(-1); return; }
+    if (e.key === 'Tab' && !ctrl && !e.altKey) {
+      e.preventDefault();
+      const enLista = window.getSelection()?.anchorNode?.parentElement?.closest('li');
+      if (enLista) ejecutarFormatoWord(e.shiftKey ? 'outdent' : 'indent');
+      else if (!e.shiftKey) document.execCommand('insertHTML', false, '<span class="word-tab" style="white-space:pre">\t</span>');
+      return;
+    }
   }
   // Ctrl + S: Guardar directamente en la Nube (Cloudinary)
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
@@ -6887,7 +6958,91 @@ function ejecutarFormatoMultiHoja(command, value, range) {
   });
 }
 
+// ══════════ DESHACER / REHACER PROPIO (como Word) ══════════
+// El deshacer del navegador no entiende que el texto se reparte entre hojas (podía
+// perder texto). Se guarda el documento completo: al escribir (agrupado por pausas)
+// y antes/después de cada formato, con la posición del cursor.
+const historialWord = { pila: [], idx: -1, timer: null, aplicando: false };
+function instantaneaWord() {
+  let cur = null;
+  try {
+    const sel = window.getSelection();
+    if (sel.rangeCount && document.getElementById('a4-pages-container')?.contains(sel.getRangeAt(0).startContainer)) cur = guardarSeleccionGlobal(sel.getRangeAt(0));
+  } catch (e) {}
+  return { html: obtenerHtmlCompletoDocumento(), sel: cur };
+}
+function registrarHistorialWord(inmediato) {
+  if (historialWord.aplicando) return;
+  clearTimeout(historialWord.timer);
+  historialWord.timer = null;
+  const guardar = () => {
+    historialWord.timer = null;
+    const snap = instantaneaWord();
+    const actual = historialWord.pila[historialWord.idx];
+    if (actual && actual.html === snap.html) { if (snap.sel) actual.sel = snap.sel; return; }
+    historialWord.pila = historialWord.pila.slice(0, historialWord.idx + 1);
+    historialWord.pila.push(snap);
+    if (historialWord.pila.length > 150) historialWord.pila.shift();
+    historialWord.idx = historialWord.pila.length - 1;
+  };
+  if (inmediato) guardar(); else historialWord.timer = setTimeout(guardar, 600);
+}
+function reiniciarHistorialWord() {
+  clearTimeout(historialWord.timer);
+  historialWord.pila = []; historialWord.idx = -1;
+  setTimeout(() => registrarHistorialWord(true), 700);
+}
+function aplicarInstantaneaWord(snap) {
+  historialWord.aplicando = true;
+  const original = encabezadoOriginalDoc;
+  cargarHtmlEnPaginasA4(snap.html);
+  encabezadoOriginalDoc = original;
+  setTimeout(() => {
+    try {
+      if (snap.sel) restaurarSeleccionGlobal(snap.sel);
+      else { const c0 = document.querySelector('#a4-pages-container .a4-page-content'); if (c0) { c0.focus({ preventScroll: true }); colocarCursorAlInicio(c0); } }
+    } catch (e) {}
+    actualizarEstadisticasWord?.();
+    // Tras repaginar, el estado restaurado es el de referencia (así no borra el «rehacer»)
+    snap.html = obtenerHtmlCompletoDocumento();
+    clearTimeout(historialWord.timer); historialWord.timer = null;
+    historialWord.aplicando = false;
+  }, 260);
+}
+function deshacerWord() {
+  if (historialWord.aplicando) return;
+  registrarHistorialWord(true); // lo último escrito también se puede deshacer
+  if (historialWord.idx <= 0) { mostrarNotificacionToast('No hay más cambios para deshacer'); return; }
+  historialWord.idx--;
+  aplicarInstantaneaWord(historialWord.pila[historialWord.idx]);
+}
+function rehacerWord() {
+  if (historialWord.aplicando) return;
+  if (historialWord.timer) registrarHistorialWord(true);
+  if (historialWord.idx >= historialWord.pila.length - 1) { mostrarNotificacionToast('No hay cambios para rehacer'); return; }
+  historialWord.idx++;
+  aplicarInstantaneaWord(historialWord.pila[historialWord.idx]);
+}
+// Escribir en el documento (texto, encabezado o pie) se registra agrupado por pausas
+document.addEventListener('input', e => { if (e.target?.closest?.('#a4-pages-container')) registrarHistorialWord(); }, true);
+// Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z usan el historial propio
+document.addEventListener('keydown', e => {
+  if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+  // Dentro del documento, o con el editor abierto y el foco fuera de un campo de texto
+  const ae = document.activeElement;
+  const enDoc = ae?.closest?.('#a4-pages-container');
+  const editorAbierto = document.getElementById('subview-editor')?.classList.contains('active') && !/^(INPUT|TEXTAREA|SELECT)$/.test(ae?.tagName || '') && !ae?.closest?.('[role=dialog], .modal-overlay.open');
+  if (!enDoc && !editorAbierto) return;
+  const k = e.key.toLowerCase();
+  if (k === 'z' && !e.shiftKey) { e.preventDefault(); e.stopPropagation(); deshacerWord(); }
+  else if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); e.stopPropagation(); rehacerWord(); }
+}, true);
+
 function ejecutarFormatoWord(command, value = null) {
+  if (command === 'undo') { deshacerWord(); return; }
+  if (command === 'redo') { rehacerWord(); return; }
+  registrarHistorialWord(true);
+  setTimeout(() => registrarHistorialWord(true), 120);
   const multi = seleccionMultiHoja();
   if (multi) {
     ejecutarFormatoMultiHoja(command, value, multi);
@@ -6907,7 +7062,7 @@ function ejecutarFormatoWord(command, value = null) {
 // heredan estos valores y se guardan junto con el documento.
 let fuenteGlobal = 'Times New Roman';
 let tamanoFuenteGlobalPt = 12;
-const TAMANOS_FUENTE_PT = { 2: 10, 3: 12, 4: 14, 5: 18, 6: 24, 7: 32 };
+const TAMANOS_WORD_PT = [8, 9, 10, 10.5, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72];
 const MARGENES_MM = { apa7: 25.4, normal: 25, estrecho: 12.7 };
 
 function pilaFuente(nombre) {
@@ -6918,8 +7073,14 @@ function pilaFuente(nombre) {
 }
 
 function valorSelectTamano(pt) {
-  const e = Object.entries(TAMANOS_FUENTE_PT).find(([, v]) => v === pt);
-  return e ? e[0] : '3';
+  // Si el documento usa un tamaño que no está en la lista, se agrega (como Word)
+  const sel = document.getElementById('word-font-size');
+  if (sel && !Array.from(sel.options).some(o => Number(o.value) === Number(pt))) {
+    const op = new Option(`${pt} pt`, String(pt));
+    const sig = Array.from(sel.options).find(o => Number(o.value) > Number(pt));
+    sel.insertBefore(op, sig || null);
+  }
+  return String(pt);
 }
 
 // Aplica el formato global a una hoja (también a las hojas nuevas)
@@ -6964,6 +7125,7 @@ function sincronizarControlesFormatoGlobal() {
 
 // Aplica el formato a todas las hojas, reacomoda y avisa al usuario
 function aplicarFormatoGlobalDocumento(mensaje) {
+  setTimeout(() => registrarHistorialWord(true), 300);
   const sheets = document.querySelectorAll('#a4-pages-container .a4-page-sheet');
   sheets.forEach(aplicarFormatoGlobalAHoja);
   sincronizarControlesFormatoGlobal();
@@ -7002,19 +7164,19 @@ function cambiarFuenteGlobal(nombre) {
 }
 
 function cambiarTamanoFuente(val) {
-  tamanoFuenteGlobalPt = TAMANOS_FUENTE_PT[val] || 12;
+  tamanoFuenteGlobalPt = parseFloat(val) || 12;
   limpiarFormatoInterno('fontSize');
   aplicarFormatoGlobalDocumento(`Tamaño ${tamanoFuenteGlobalPt} pt`);
 }
 
 function aumentarTamanoFuente() {
-  const actual = parseInt(valorSelectTamano(tamanoFuenteGlobalPt), 10);
-  if (actual < 7) cambiarTamanoFuente(actual + 1);
+  const sig = TAMANOS_WORD_PT.find(t => t > tamanoFuenteGlobalPt);
+  if (sig) cambiarTamanoFuente(sig);
 }
 
 function reducirTamanoFuente() {
-  const actual = parseInt(valorSelectTamano(tamanoFuenteGlobalPt), 10);
-  if (actual > 2) cambiarTamanoFuente(actual - 1);
+  const ant = [...TAMANOS_WORD_PT].reverse().find(t => t < tamanoFuenteGlobalPt);
+  if (ant) cambiarTamanoFuente(ant);
 }
 
 // Mini barra flotante: cambia SOLO el texto seleccionado (p. ej. un título)
@@ -7334,14 +7496,7 @@ function toggleModoRevisionLegal() {
 }
 
 // ── MEMBRETE CORPORATIVO EN ENCABEZADO ──
-function insertarMembreteEnEncabezado() {
-  activarModoEncabezado();
-  const rh = document.querySelector('.a4-page-sheet .a4-running-head');
-  if (rh) {
-    rh.innerHTML = `QUBIRA &bull; OFICINA DE ASUNTOS CORPORATIVOS Y LEGALES &bull; RUC 10764275981`;
-    manejarInputEncabezado(rh);
-  }
-}
+function insertarMembreteEnEncabezado() { ponerMembreteEnEncabezado(); }
 
 // ── MODO PANTALLA COMPLETA / CONCENTRACIÓN ZEN ──
 function toggleModoZen() {
@@ -7569,7 +7724,9 @@ function aplicarSangriaApa() {
 }
 
 // Inserciones rápidas legales
-function insertarMembreteQubira() {
+// El membrete va en el encabezado de todas las hojas (como en Word), nunca en el texto
+function insertarMembreteQubira() { ponerMembreteEnEncabezado(); }
+function insertarMembreteEnCuerpoAntiguo() {
   const container = document.getElementById('a4-pages-container');
   const sheet1 = container?.querySelector('.a4-page-sheet[data-page="1"]');
   const content1 = sheet1?.querySelector('.a4-page-content') || obtenerPaginaActiva();
