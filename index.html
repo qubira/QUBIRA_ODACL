@@ -304,6 +304,11 @@
     }
     .status-vigente { background: #d1fae5; color: #065f46; }
     .doc-nav-tabs { flex-wrap: nowrap; gap: 5px !important; overflow-x: auto; scrollbar-width: thin; }
+    /* Pestañas fijas al bajar (debajo de la barra superior) */
+    .doc-nav-tabs { position: sticky; top: 70px; z-index: 45; background: var(--bg); padding-top: 12px; margin-top: -12px; }
+    .gestion-cabecera { position: sticky; top: calc(70px + var(--tabs-h, 58px)); z-index: 44; background: var(--bg); padding: 10px 0 12px; margin-top: -10px; }
+    .gestion-lista { top: calc(82px + var(--tabs-h, 58px) + var(--gestion-cab-h, 64px)) !important; max-height: calc(100vh - 110px - var(--tabs-h, 58px) - var(--gestion-cab-h, 64px)) !important; }
+    body.word-fullscreen-mode .doc-nav-tabs { position: static; }
     .doc-nav-tabs .doc-tab-btn { flex: none; white-space: nowrap; }
     .doc-nav-tabs .doc-tab-btn { font-size: 12px; padding: 7px 8px; gap: 5px; }
     .doc-nav-tabs .doc-tab-btn svg { width: 15px; height: 15px; }
@@ -2754,7 +2759,7 @@
 
           <!-- SUBVIEW 5: GESTIÓN (casos supuestos → documentos) -->
           <div class="doc-subview" id="subview-gestion">
-            <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
+            <div class="gestion-cabecera" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
               <div>
                 <h3 style="font-size:17px; font-weight:800; color:var(--text);">🧭 Gestión documental por caso</h3>
                 <p style="font-size:12.5px; color:#64748b; margin-top:2px;">Elige la situación y verás qué documentos necesitas, listos para imprimir o editar en Word.</p>
@@ -4612,6 +4617,17 @@ const PLANTILLAS_LEGALES = {
 };
 
 // Sub-navegación dentro de Doc. Legal
+// Alturas reales de las barras fijas (pestañas y cabecera de Gestión)
+if (window.ResizeObserver) {
+  const medir = () => {
+    const t = document.querySelector('.doc-nav-tabs'), g = document.querySelector('.gestion-cabecera');
+    if (t && t.offsetHeight) document.documentElement.style.setProperty('--tabs-h', t.offsetHeight + 'px');
+    if (g && g.offsetHeight) document.documentElement.style.setProperty('--gestion-cab-h', g.offsetHeight + 'px');
+  };
+  const ro = new ResizeObserver(medir);
+  document.addEventListener('DOMContentLoaded', () => { ['.doc-nav-tabs', '.gestion-cabecera'].forEach(q => { const el = document.querySelector(q); if (el) ro.observe(el); }); medir(); });
+}
+
 // Secciones del catálogo (cada plantilla va a la suya)
 const GRUPOS_CATALOGO = {
   contratos: { titulo: 'Contratos', sub: 'Contratos con clientes, personal y proveedores. Ábrelos en el editor Word.', nuevo: 'Nueva plantilla de contrato', tipo: 'Contrato' },
