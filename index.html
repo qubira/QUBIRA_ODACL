@@ -1645,6 +1645,7 @@
       }
     }
   </style>
+  <script src="https://api-qubira.onrender.com/api/public/areas.js" defer></script>
 </head>
 <body>
 
@@ -2896,7 +2897,7 @@
           <div class="form-row">
             <div class="form-group">
               <label>Área Solicitante</label>
-              <select id="consulta-area" required>
+              <select id="consulta-area" required data-qb-areas>
                 <option value="OTI">Oficina de Tecnología e Información (OTI / TI)</option>
                 <option value="ODN">Oficina de Desarrollo de Negocios (ODN / Comercial)</option>
                 <option value="RRHH">Oficina de Recursos Humanos (ORH)</option>
@@ -3883,6 +3884,8 @@ function copiarContratoCompleto() {
    ============================================================ */
 const ESTADOS_CONSULTA = { pendiente: ['Pendiente', 'status-riesgo-medio'], en_analisis: ['En análisis', 'status-resuelto'], dictaminado: ['Dictaminado', 'status-vigente'], archivado: ['Archivado', 'status-resuelto'] };
 const AREAS = { OTI: 'OTI / TI', ODN: 'ODN / Comercial', RRHH: 'RRHH', ADG: 'Administración General', OPP: 'OPP / Finanzas' };
+// Áreas desde el catálogo de ORH (fuente única); esta lista queda solo como respaldo
+(window.__qbListasAreas ||= []).push([AREAS, null]);
 
 function renderConsultas() {
   const tbody = document.getElementById('advisory-table-body');
