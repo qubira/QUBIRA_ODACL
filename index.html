@@ -2942,8 +2942,8 @@
           <input type="hidden" id="ncon-id">
           <div class="form-row">
             <div class="form-group">
-              <label>Código de contrato (opcional)</label>
-              <input type="text" id="ncon-codigo" placeholder="Se asigna EXT-AAAA-NNN si lo dejas vacío">
+              <label>N.° de la contraparte (opcional)</label>
+              <input type="text" id="ncon-codigo" placeholder="El código ODACL-CTR-AAAA-NNN lo asigna el sistema">
             </div>
             <div class="form-group">
               <label>Contraparte *</label>
@@ -3956,7 +3956,7 @@ function abrirModalNuevoContrato(id) {
   const c = id ? CONTRATOS_DATA.find(x => x.id === id && x.origen === 'odacl') : null;
   const set = (k, v) => { const el = document.getElementById(k); if (el) el.value = v ?? ''; };
   set('ncon-id', c?.id || '');
-  set('ncon-codigo', c?.codigo || '');
+  set('ncon-codigo', c?.referencia_externa || '');
   set('ncon-cliente', c?.contraparte || '');
   set('ncon-tipo', c?.tipo || '');
   set('ncon-moneda', c?.moneda || 'PEN');
@@ -3975,7 +3975,7 @@ async function guardarNuevoContrato(e) {
   e.preventDefault();
   const v = id => document.getElementById(id).value.trim();
   const id = v('ncon-id');
-  const datos = { codigo: v('ncon-codigo'), contraparte: v('ncon-cliente'), tipo: v('ncon-tipo'), moneda: v('ncon-moneda'), monto: parseFloat(v('ncon-monto')) || 0,
+  const datos = { referencia_externa: v('ncon-codigo'), contraparte: v('ncon-cliente'), tipo: v('ncon-tipo'), moneda: v('ncon-moneda'), monto: parseFloat(v('ncon-monto')) || 0,
     forma_pago: v('ncon-pago'), fecha_inicio: v('ncon-fecha'), fecha_fin: v('ncon-fin'), estado: v('ncon-estado'), notas: v('ncon-notas') };
   if (datos.fecha_fin && datos.fecha_inicio && datos.fecha_fin < datos.fecha_inicio) { qAlert('La fecha de fin no puede ser anterior a la de inicio.', { tipo: 'warning' }); return; }
   try {
@@ -3986,17 +3986,20 @@ async function guardarNuevoContrato(e) {
   } catch (err) { qAlert('No se pudo guardar el contrato: ' + err.message, { tipo: 'error' }); }
 }
 
+// Un contrato no se elimina: se anula con motivo (su número no se reutiliza)
 async function eliminarContratoExterno() {
   const id = document.getElementById('ncon-id').value;
   if (!id) return;
-  const ok = await qConfirm('¿Eliminar este contrato del registro de ODACL?', { titulo: 'Eliminar contrato', tipo: 'warning', aceptar: 'Eliminar', peligro: true });
-  if (!ok) return;
+  const v = await qPrompt('Anular contrato', [{ label: 'Motivo de la anulación', valor: '', tipo: 'textarea' }],
+    { tipo: 'warning', aceptar: 'Anular', mensaje: `El contrato ${id} quedará ANULADO: no se borra y su número no se reutiliza.` });
+  const motivo = v && String(v[0] || '').trim();
+  if (!motivo) return;
   try {
-    await apiOdacl(`/contratos-externos/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    await apiOdacl(`/contratos-externos/${encodeURIComponent(id)}/anular`, { method: 'POST', body: JSON.stringify({ motivo }) });
     cerrarModal('modal-nuevo-contrato');
     await cargarDatosLegales();
-    mostrarNotificacionToast('Contrato eliminado');
-  } catch (err) { qAlert('No se pudo eliminar: ' + err.message, { tipo: 'error' }); }
+    mostrarNotificacionToast(`Contrato ${id} anulado`);
+  } catch (err) { qAlert('No se pudo anular: ' + err.message, { tipo: 'error' }); }
 }
 
 /* ============================================================
@@ -9018,6 +9021,7 @@ function renderCloudDocuments() {
 
   const docs = JSON.parse(localStorage.getItem('odacl_cloud_documents') || '[]');
   if (countBadge) countBadge.textContent = docs.length;
+  sincronizarCodigosDocumentos(docs);
 
   if (!docs.length) {
     tbody.innerHTML = `
@@ -9034,7 +9038,8 @@ function renderCloudDocuments() {
   tbody.innerHTML = docs.map(d => `
     <tr>
       <td>
-        <strong style="color:var(--text);">${d.titulo}</strong>
+        ${d.codigo ? `<div style="font-size:11px;font-weight:700;color:var(--gold);font-family:'JetBrains Mono',monospace;">${qdlgEscapar(d.codigo)}${d.estado === 'Anulado' ? ' · ANULADO' : ''}</div>` : '<div style="font-size:10.5px;color:#94a3b8;">BORRADOR · sin código</div>'}
+        <strong style="color:var(--text);">${qdlgEscapar(d.titulo)}</strong>
         <div style="font-size:11px; color:#64748b; font-family:'JetBrains Mono',monospace;">${d.archivo_nombre || d.id}</div>
         ${Object.values(PLANTILLAS_LEGALES).filter(p => p.oficial && p.oficial.origenId === d.id).map(p => `<span class="doc-oficial-badge" title="Actualizada ${formatoFechaHora(p.oficial.fecha)}">★ Plantilla oficial: ${qdlgEscapar(p.titulo)}</span>`).join('')}
       </td>
@@ -9054,9 +9059,10 @@ function renderCloudDocuments() {
           <button class="btn btn-sm btn-oficial" onclick="ponerComoPlantillaOficial('${d.id}')" title="Reemplazar la plantilla oficial del Catálogo con este documento">
             ★ Plantilla oficial
           </button>
-          <button class="btn btn-outline btn-sm danger" onclick="eliminarDocumentoNube('${d.id}')" title="Eliminar">
-            &times;
-          </button>
+          ${d.codigo
+            ? (d.estado === 'Anulado' ? '' : `<button class="btn btn-outline btn-sm danger" onclick="anularDocumentoNube('${d.id}')" title="Anular (con motivo)">Anular</button>`)
+            : `<button class="btn btn-sm btn-oficial" onclick="emitirDocumentoNube('${d.id}')" title="Asignar su código y emitirlo">Emitir</button>
+               <button class="btn btn-outline btn-sm danger" onclick="eliminarDocumentoNube('${d.id}')" title="Quitar de esta lista (borrador)">&times;</button>`}
         </div>
       </td>
     </tr>
@@ -9085,6 +9091,57 @@ function descargarWordDesdeItem(docId) {
     encabezado: meta.encabezado,
     pie: meta.pie || null
   });
+}
+
+/* Códigos del registro de documentos: el servidor es la fuente; aquí se copian a la lista local */
+let _sincCodigos = 0;
+async function sincronizarCodigosDocumentos(docs) {
+  if (Date.now() - _sincCodigos < 30000) return;
+  _sincCodigos = Date.now();
+  try {
+    const r = await apiOdacl('/documents');
+    const srv = Object.fromEntries((r.documents || []).map(d => [d.id, d]));
+    let cambio = false;
+    docs.forEach(d => { const s = srv[d.id]; if (s && (s.codigo || null) !== (d.codigo || null)) { d.codigo = s.codigo; d.estado = s.estado; cambio = true; } });
+    if (cambio) { localStorage.setItem('odacl_cloud_documents', JSON.stringify(docs)); renderCloudDocuments(); }
+  } catch (e) { /* sin conexión: queda la lista local */ }
+}
+
+// Emitir: el código depende de la contraparte (cliente → ODN-CTR · proveedor/tercero → ODACL-CTR · modelo → ODACL-FMT)
+async function emitirDocumentoNube(docId) {
+  const docs = JSON.parse(localStorage.getItem('odacl_cloud_documents') || '[]');
+  const doc = docs.find(d => d.id === docId);
+  if (!doc) return;
+  const v = await qPrompt('Emitir documento', [{ label: 'Contraparte', tipo: 'select', valor: 'cliente', opciones: [{ valor: 'cliente', texto: 'Cliente → ODN-CTR' }, { valor: 'proveedor', texto: 'Proveedor o tercero → ODACL-CTR (Externo)' }, { valor: 'formato', texto: 'Modelo o formato → ODACL-FMT' }] }],
+    { tipo: 'info', aceptar: 'Emitir', mensaje: `«${doc.titulo}» recibirá su código y ya no se podrá editar (un formato sí, como versión nueva). Cliente → ODN-CTR · Proveedor o tercero → ODACL-CTR · Modelo/formato → ODACL-FMT.` });
+  if (!v) return;
+  const t0 = String(v[0] || '').toLowerCase();
+  const contraparte = /prov|terc|ext/.test(t0) ? 'externo' : /form|model/.test(t0) ? 'formato' : /cli/.test(t0) ? 'cliente' : null;
+  if (!contraparte) return;
+  try {
+    const r = await apiOdacl(`/documents/${encodeURIComponent(docId)}/emitir`, { method: 'POST', body: JSON.stringify({ contraparte }) });
+    Object.assign(doc, { codigo: r.document.codigo, estado: r.document.estado, contenido_html: r.document.contenido_html });
+    localStorage.setItem('odacl_cloud_documents', JSON.stringify(docs));
+    renderCloudDocuments();
+    mostrarNotificacionToast(`✓ Emitido: ${r.document.codigo}`);
+  } catch (err) { qAlert('No se pudo emitir: ' + err.message, { tipo: 'error' }); }
+}
+
+async function anularDocumentoNube(docId) {
+  const docs = JSON.parse(localStorage.getItem('odacl_cloud_documents') || '[]');
+  const doc = docs.find(d => d.id === docId);
+  if (!doc) return;
+  const v = await qPrompt('Anular documento', [{ label: 'Motivo de la anulación', valor: '', tipo: 'textarea' }],
+    { tipo: 'warning', aceptar: 'Anular', mensaje: `${doc.codigo} quedará ANULADO: no se borra y su número no se reutiliza.` });
+  const motivo = v && String(v[0] || '').trim();
+  if (!motivo) return;
+  try {
+    await apiOdacl(`/documents/${encodeURIComponent(docId)}/anular`, { method: 'POST', body: JSON.stringify({ motivo }) });
+    doc.estado = 'Anulado';
+    localStorage.setItem('odacl_cloud_documents', JSON.stringify(docs));
+    renderCloudDocuments();
+    mostrarNotificacionToast(`${doc.codigo} anulado`);
+  } catch (err) { qAlert('No se pudo anular: ' + err.message, { tipo: 'error' }); }
 }
 
 async function eliminarDocumentoNube(docId) {
