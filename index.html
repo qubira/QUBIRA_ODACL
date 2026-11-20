@@ -1647,6 +1647,7 @@
   </style>
   <script src="https://api-qubira.onrender.com/api/public/areas.js" defer></script>
   <script src="https://api-qubira.onrender.com/api/public/bandeja.js?v=20261120" defer></script>
+  <script src="https://api-qubira.onrender.com/api/public/flujo-proyecto.js?v=20261120" defer></script>
 </head>
 <body>
 
@@ -1672,6 +1673,10 @@
       <div class="nav-item" data-tab="pendientes" title="Pendientes de revisar o aprobar">
         <svg viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
         <span>Pendientes</span>
+      </div>
+      <div class="nav-item" data-tab="flujo" title="Flujo de proyectos">
+        <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"></circle><circle cx="6" cy="18" r="2.5"></circle><circle cx="18" cy="12" r="2.5"></circle><path d="M6 8.5v7M8.5 6h3a4 4 0 0 1 4 4v-.5M8.5 18h3a4 4 0 0 0 4-4"></path></svg>
+        <span>Flujo de proyectos</span>
       </div>
 
       <div class="nav-label">Empresa & Leyes</div>
@@ -2790,6 +2795,10 @@
         </div>
       </section>
 
+      <section class="tab-content" id="tab-flujo">
+        <div class="card" style="padding:20px"><div id="flujo-proyectos"></div></div>
+      </section>
+
       <section class="tab-content" id="tab-pendientes">
         <div class="card" style="padding:20px"><div id="bandeja-docs"></div></div>
       </section>
@@ -3516,9 +3525,19 @@ function renderBandejaODACL() {
   document.addEventListener('qb-bandeja-lista', dibujar, { once: true });
 }
 
+/* Flujo de proyectos: ODACL responde consultas, audita reglas de negocio y lleva riesgos legales */
+function renderFlujoODACL() {
+  const c = document.getElementById('flujo-proyectos');
+  const dibujar = () => window.qbFlujo.lista(c, { token: () => localStorage.getItem('qodacl_token') || localStorage.getItem('qubira_token') });
+  if (window.qbFlujo) return dibujar();
+  c.innerHTML = '<p style="color:#64748b">Cargando el flujo de proyectos…</p>';
+  document.addEventListener('qb-flujo-listo', dibujar, { once: true });
+}
+
 function switchTab(tabId) {
   if (tabId === 'societario') cargarInfoSocietaria();
   if (tabId === 'pendientes') renderBandejaODACL();
+  if (tabId === 'flujo') renderFlujoODACL();
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.toggle('active', item.dataset.tab === tabId);
   });
@@ -3528,6 +3547,7 @@ function switchTab(tabId) {
 
   const titles = {
     dashboard: { title: 'Dashboard Legal & Corporativo', desc: 'Métricas, contratos y marco regulatorio de QUBIRA' },
+    flujo: { title: 'Flujo de proyectos', desc: 'Etapas y puertas de cada proyecto: auditoría de reglas de negocio y riesgos legales' },
     pendientes: { title: 'Pendientes de revisar o aprobar', desc: 'Actas de reglas de negocio, contratos y documentos que le tocan a ODACL' },
     societario: { title: 'Información Societaria Oficial', desc: 'RUC 10764275981, partida registral, SUNARP y signos distintivos' },
     leyes: { title: 'Marco Normativo & Legislación del Perú', desc: 'Compendio legal de software, protección de datos y societario' },
