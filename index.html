@@ -1646,6 +1646,7 @@
     }
   </style>
   <script src="https://api-qubira.onrender.com/api/public/areas.js" defer></script>
+  <script src="https://api-qubira.onrender.com/api/public/bandeja.js?v=20261120" defer></script>
 </head>
 <body>
 
@@ -1667,6 +1668,10 @@
       <div class="nav-item active" data-tab="dashboard" title="Dashboard Legal">
         <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
         <span>Dashboard Legal</span>
+      </div>
+      <div class="nav-item" data-tab="pendientes" title="Pendientes de revisar o aprobar">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+        <span>Pendientes</span>
       </div>
 
       <div class="nav-label">Empresa & Leyes</div>
@@ -2785,6 +2790,10 @@
         </div>
       </section>
 
+      <section class="tab-content" id="tab-pendientes">
+        <div class="card" style="padding:20px"><div id="bandeja-docs"></div></div>
+      </section>
+
     </div>
   </main>
 
@@ -3497,8 +3506,19 @@ document.getElementById('btn-logout').addEventListener('click', () => {
 });
 
 // 2. Control de Pestañas (Tabs)
+/* Pendientes: actas de reglas de negocio (ODACL-ACT), contratos y otros documentos que le toca
+   revisar o aprobar a ODACL. Lo dibuja la bandeja compartida de la API. */
+function renderBandejaODACL() {
+  const c = document.getElementById('bandeja-docs');
+  const dibujar = () => window.qbBandeja.render(c, { token: () => localStorage.getItem('qodacl_token') || localStorage.getItem('qubira_token') });
+  if (window.qbBandeja) return dibujar();
+  c.innerHTML = '<p style="color:#64748b">Cargando tus pendientes…</p>';
+  document.addEventListener('qb-bandeja-lista', dibujar, { once: true });
+}
+
 function switchTab(tabId) {
   if (tabId === 'societario') cargarInfoSocietaria();
+  if (tabId === 'pendientes') renderBandejaODACL();
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.toggle('active', item.dataset.tab === tabId);
   });
@@ -3508,6 +3528,7 @@ function switchTab(tabId) {
 
   const titles = {
     dashboard: { title: 'Dashboard Legal & Corporativo', desc: 'Métricas, contratos y marco regulatorio de QUBIRA' },
+    pendientes: { title: 'Pendientes de revisar o aprobar', desc: 'Actas de reglas de negocio, contratos y documentos que le tocan a ODACL' },
     societario: { title: 'Información Societaria Oficial', desc: 'RUC 10764275981, partida registral, SUNARP y signos distintivos' },
     leyes: { title: 'Marco Normativo & Legislación del Perú', desc: 'Compendio legal de software, protección de datos y societario' },
     contratos: { title: 'Gestión de Contratos Corporativos', desc: 'Catálogo de contratos y modelo oficial de 14 cláusulas' },
