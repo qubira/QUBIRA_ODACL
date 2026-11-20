@@ -1648,6 +1648,7 @@
   <script src="https://api-qubira.onrender.com/api/public/areas.js" defer></script>
   <script src="https://api-qubira.onrender.com/api/public/bandeja.js?v=20261120" defer></script>
   <script src="https://api-qubira.onrender.com/api/public/flujo-proyecto.js?v=20261120" defer></script>
+  <script src="https://api-qubira.onrender.com/api/public/casos-derivados.js?v=20261120" defer></script>
 </head>
 <body>
 
@@ -1677,6 +1678,10 @@
       <div class="nav-item" data-tab="flujo" title="Flujo de proyectos">
         <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"></circle><circle cx="6" cy="18" r="2.5"></circle><circle cx="18" cy="12" r="2.5"></circle><path d="M6 8.5v7M8.5 6h3a4 4 0 0 1 4 4v-.5M8.5 18h3a4 4 0 0 0 4-4"></path></svg>
         <span>Flujo de proyectos</span>
+      </div>
+      <div class="nav-item" data-tab="casos" title="Incidentes con datos personales">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3.5"></circle><path d="M5.6 5.6l3.9 3.9M14.5 14.5l3.9 3.9M18.4 5.6l-3.9 3.9M9.5 14.5l-3.9 3.9"></path></svg>
+        <span>Incidentes de datos</span>
       </div>
 
       <div class="nav-label">Empresa & Leyes</div>
@@ -2795,6 +2800,10 @@
         </div>
       </section>
 
+      <section class="tab-content" id="tab-casos">
+        <div class="card" style="padding:20px"><div id="casos-derivados"></div></div>
+      </section>
+
       <section class="tab-content" id="tab-flujo">
         <div class="card" style="padding:20px"><div id="flujo-proyectos"></div></div>
       </section>
@@ -3538,6 +3547,7 @@ function switchTab(tabId) {
   if (tabId === 'societario') cargarInfoSocietaria();
   if (tabId === 'pendientes') renderBandejaODACL();
   if (tabId === 'flujo') renderFlujoODACL();
+  if (tabId === 'casos') { const c = document.getElementById('casos-derivados'); const dib = () => window.qbCasos.render(c, { token: () => localStorage.getItem('qodacl_token') || localStorage.getItem('qubira_token') }); if (window.qbCasos) dib(); else { c.textContent = 'Cargando los incidentes…'; document.addEventListener('qb-casos-listo', dib, { once: true }); } }
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.toggle('active', item.dataset.tab === tabId);
   });
@@ -3547,6 +3557,7 @@ function switchTab(tabId) {
 
   const titles = {
     dashboard: { title: 'Dashboard Legal & Corporativo', desc: 'Métricas, contratos y marco regulatorio de QUBIRA' },
+    casos: { title: 'Incidentes con datos personales', desc: 'Evaluación legal de los incidentes de seguridad que expusieron datos personales (Ley 29733)' },
     flujo: { title: 'Flujo de proyectos', desc: 'Etapas y puertas de cada proyecto: auditoría de reglas de negocio y riesgos legales' },
     pendientes: { title: 'Pendientes de revisar o aprobar', desc: 'Actas de reglas de negocio, contratos y documentos que le tocan a ODACL' },
     societario: { title: 'Información Societaria Oficial', desc: 'RUC 10764275981, partida registral, SUNARP y signos distintivos' },
