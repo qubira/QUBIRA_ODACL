@@ -1649,23 +1649,24 @@
   <script src="https://api-qubira.onrender.com/api/public/bandeja.js?v=20261120" defer></script>
   <script src="https://api-qubira.onrender.com/api/public/flujo-proyecto.js?v=20261120" defer></script>
   <script src="https://api-qubira.onrender.com/api/public/casos-derivados.js?v=20261120" defer></script>
+  <link rel="stylesheet" href="./sidebar.css?v=1">
 </head>
 <body>
 
   <!-- ── SIDEBAR ── -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
+  <aside class="sidebar" id="sidebar" data-qb-sidebar="ODACL">
+    <div class="sidebar-header" data-qb-brand>
       <img class="sidebar-logo-img" src="https://raw.githubusercontent.com/qubira/IMAGENES/main/logo2.png" alt="QUBIRA">
-      <div>
-        <div class="brand-title">QUBIRA</div>
-        <div class="brand-sub">⚖️ ODACL &bull; Legal</div>
+      <div data-qb-brand-text>
+        <div class="brand-title" data-qb-title>QUBIRA</div>
+        <div class="brand-sub" data-qb-subtitle>⚖️ ODACL &bull; Legal</div>
       </div>
       <button type="button" class="sidebar-collapse-btn" id="sidebar-collapse-btn" title="Reducir/expandir menú">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
       </button>
     </div>
 
-    <div class="sidebar-nav">
+    <div class="sidebar-nav" data-qb-nav>
       <div class="nav-label">General</div>
       <div class="nav-item active" data-tab="dashboard" title="Dashboard Legal">
         <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
@@ -1719,7 +1720,7 @@
       </div>
     </div>
 
-    <div class="sidebar-footer">
+    <div class="sidebar-footer" data-pie-modulo>
       <div class="user-profile">
         <div class="user-avatar" id="sidebar-user-avatar">ML</div>
         <div class="user-meta">
@@ -1728,11 +1729,11 @@
         </div>
       </div>
       <div class="sidebar-actions">
-        <button class="sidebar-btn" id="btn-hub-central" title="Volver al menú de módulos">
+        <button class="sidebar-btn" id="btn-hub-central" data-pie-cambiar title="Volver al menú de módulos">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
           <span>Módulos</span>
         </button>
-        <button class="sidebar-btn danger" id="btn-logout" title="Cerrar sesión">
+        <button class="sidebar-btn danger" id="btn-logout" data-pie-salir title="Cerrar sesión">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
           <span>Salir</span>
         </button>
@@ -9910,5 +9911,7 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 <!-- Estado del servidor QUBIRA (tiempo encendido y horas de Render) -->
 <script src="https://api-qubira.onrender.com/api/public/estado.js" defer></script>
 <script src="https://api-qubira.onrender.com/api/public/notificaciones.js?v=20261121" data-token="qodacl_token,qubira_token" defer></script>
+
+<script src="./pie-modulo.js?v=1" data-token="qodacl_token,qubira_token" defer></script>
 </body>
 </html>
